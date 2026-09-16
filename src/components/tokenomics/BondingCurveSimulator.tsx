@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Lock,
 } from "lucide-react";
+import { TOKEN_CONFIG } from "@/config/token";
 
 export const BondingCurveSimulator: React.FC = () => {
   const [solAmount, setSolAmount] = useState<number>(2.5);
@@ -48,11 +49,22 @@ export const BondingCurveSimulator: React.FC = () => {
           </p>
         </div>
 
-        <div className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-right font-mono">
-          <div className="text-[10px] text-slate-400 uppercase">Bonding Threshold</div>
-          <div className="text-sm sm:text-base font-bold text-solana-green">
-            85 SOL • $69k Raydium Migration
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-right font-mono">
+            <div className="text-[10px] text-slate-400 uppercase">Bonding Threshold</div>
+            <div className="text-sm sm:text-base font-bold text-solana-green">
+              85 SOL • $69k Raydium Migration
+            </div>
           </div>
+          <a
+            href={TOKEN_CONFIG.pumpFunUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs font-mono shadow-lg shadow-emerald-500/20 hover:scale-[1.02] transition-all"
+          >
+            <Rocket className="w-4 h-4" />
+            <span>TRADE ON PUMP.FUN</span>
+          </a>
         </div>
       </div>
 
