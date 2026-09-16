@@ -1,18 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Rocket, Sparkles, BookOpen, Wrench, ShieldCheck, Flame, MessageSquare, LogIn, LogOut, Wallet } from "lucide-react";
+import { Rocket, Sparkles, BookOpen, Wrench, ShieldCheck, Flame, MessageSquare, LogIn, LogOut, Wallet, Zap } from "lucide-react";
 import { GithubIcon } from "./icons";
 import { useAuth } from "@/context/AuthContext";
 import { UserBadge } from "../auth/UserBadge";
 import { GlobalCandiesTicker } from "./GlobalCandiesTicker";
 import { TokenTickerBar } from "./TokenTickerBar";
 import { TOKEN_CONFIG } from "@/config/token";
+import { QuickBuyModal } from "../wallet/QuickBuyModal";
 
 export const Navbar: React.FC = () => {
   const { user, openAuthModal, logout } = useAuth();
+  const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-background/80 backdrop-blur-xl">
@@ -123,7 +125,7 @@ export const Navbar: React.FC = () => {
 
           {/* GitHub Repo */}
           <a
-            href="https://github.com"
+            href="https://github.com/jsepkt/nomverse"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all hover:border-slate-500"
@@ -131,6 +133,15 @@ export const Navbar: React.FC = () => {
             <GithubIcon className="w-4 h-4" />
             <span>GitHub</span>
           </a>
+
+          {/* Quick Buy Modal Trigger */}
+          <button
+            onClick={() => setIsQuickBuyOpen(true)}
+            className="relative group inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-all hover:scale-105"
+          >
+            <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <span>Quick Buy</span>
+          </button>
 
           {/* Buy on pump.fun CTA */}
           <a
@@ -144,6 +155,11 @@ export const Navbar: React.FC = () => {
           </a>
         </div>
       </div>
+
+      <QuickBuyModal
+        isOpen={isQuickBuyOpen}
+        onClose={() => setIsQuickBuyOpen(false)}
+      />
     </header>
   );
 };

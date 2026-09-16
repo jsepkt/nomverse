@@ -18,6 +18,7 @@ import { MobileWaddlePaddles } from "./MobileWaddlePaddles";
 import { RaidBossBanner } from "./RaidBossBanner";
 import { HolderPerksModal } from "../wallet/HolderPerksModal";
 import { WhaleAlertToast } from "../ui/WhaleAlertToast";
+import { ArcadeJukebox } from "../audio/ArcadeJukebox";
 import {
   HOLDER_TIERS,
   HolderPerks,
@@ -756,6 +757,9 @@ export const GameContainer: React.FC = () => {
       <WhaleAlertToast
         onTriggerFrenzy={() => setFrenzySignal(Date.now())}
       />
+
+      {/* Ambient Arcade Chiptune Jukebox */}
+      <ArcadeJukebox />
     </div>
   );
 };

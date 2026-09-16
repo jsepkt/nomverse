@@ -17,8 +17,10 @@ import {
   Sparkles,
   RotateCcw,
   Swords,
+  ExternalLink,
 } from "lucide-react";
 import { SkinId } from "@/lib/skins";
+import { TOKEN_CONFIG } from "@/config/token";
 import { ShareableScoreCard } from "./ShareableScoreCard";
 
 interface GameOverModalProps {
@@ -170,6 +172,21 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
 
         {/* Community Life SOS Actions */}
         <div className="space-y-2">
+          {/* Action 0: Ape to Revive on pump.fun */}
+          <a
+            href={TOKEN_CONFIG.pumpFunUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              sounds.playGiftReceived();
+              onLifeRestored();
+            }}
+            className="w-full py-3 px-4 rounded-xl font-mono font-bold text-xs bg-gradient-to-r from-emerald-500 via-teal-400 to-solana-green hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-[0_0_25px_rgba(20,241,149,0.35)] transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+          >
+            <span>🚀 BUY ON PUMP.FUN FOR INSTANT REVIVE</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+
           {/* Action 1: Post SOS on NomWall */}
           <button
             onClick={handleBroadcastSOS}

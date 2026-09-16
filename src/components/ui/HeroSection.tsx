@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { GameContainer } from "../game/GameContainer";
+import { BondingMilestonesCard } from "../game/BondingMilestonesCard";
 import { ShieldCheck, Sparkles, Flame, Rocket, Terminal, Zap } from "lucide-react";
 import { GithubIcon } from "./icons";
 import { TOKEN_CONFIG } from "@/config/token";
@@ -87,6 +88,11 @@ export const HeroSection: React.FC = () => {
         <div className="w-full lg:w-auto flex-1 flex justify-center">
           <GameContainer />
         </div>
+      </div>
+
+      {/* Real-Data Raydium Bonding Milestones */}
+      <div className="max-w-7xl mx-auto mt-6">
+        <BondingMilestonesCard />
       </div>
     </section>
   );
