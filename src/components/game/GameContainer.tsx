@@ -562,6 +562,8 @@ export const GameContainer: React.FC = () => {
         {user && isGameOver && (
           <GameOverModal
             score={score}
+            streak={streak}
+            equippedSkin={equippedSkin}
             cooldownUntil={cooldownUntil}
             onRequestSOS={handleRequestSOS}
             onLifeRestored={handleLifeRestored}

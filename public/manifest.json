@@ -1,0 +1,24 @@
+﻿{
+  "name": "NomVerse: CC0 Mascot Arcade",
+  "short_name": "NomVerse",
+  "description": "Feed Nomster, battle the World Raid Boss, and explore the CC0 mascot universe for pump.fun!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050914",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/mascot.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

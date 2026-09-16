@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     shortcut: "/favicon.svg",
     apple: "/favicon.svg",
   },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "NomVerse",
+  },
   openGraph: {
     title: "NomVerse — The Hungry Open-Source Mascot of Web3 (CC0)",
     description:

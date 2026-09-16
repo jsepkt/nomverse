@@ -21,6 +21,9 @@ export class MainScene extends Phaser.Scene {
   private fudHazard!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private groundSensor!: Phaser.GameObjects.Rectangle;
   private aimGraphics?: Phaser.GameObjects.Graphics;
+  private bgGraphics!: Phaser.GameObjects.Graphics;
+  private gridGraphics!: Phaser.GameObjects.Graphics;
+  private currentStageId: string = "meadow";
 
   // Power-Ups and Cosmetics
   private currentSkin: SkinId = "default";
@@ -98,18 +101,9 @@ export class MainScene extends Phaser.Scene {
     this.createProceduralTextures();
 
     // Background Gradient with Cyber Grid
-    const bgGraphics = this.add.graphics();
-    bgGraphics.fillGradientStyle(0x0a101f, 0x0a101f, 0x04070d, 0x04070d, 1);
-    bgGraphics.fillRect(0, 0, width, height);
-
-    const gridGraphics = this.add.graphics();
-    gridGraphics.lineStyle(1, 0x18243b, 0.35);
-    for (let x = 0; x < width; x += 36) {
-      gridGraphics.lineBetween(x, 0, x, height);
-    }
-    for (let y = 0; y < height; y += 36) {
-      gridGraphics.lineBetween(0, y, width, y);
-    }
+    this.bgGraphics = this.add.graphics();
+    this.gridGraphics = this.add.graphics();
+    this.updateStageEnvironment("meadow");
 
     this.aimGraphics = this.add.graphics();
 
@@ -836,6 +830,124 @@ export class MainScene extends Phaser.Scene {
     });
   }
 
+  // Returns current physics gravity based on dynamic stage
+  private getStageGravity(): number {
+    if (this.currentStageId === "moon") return 220;
+    if (this.currentStageId === "matrix") return 540;
+    if (this.currentStageId === "hyperdrive") return 480;
+    return 460;
+  }
+
+  // Dynamic stage shifting engine (Updates background colors, grid, and gravity)
+  private updateStageEnvironment(stageId: string): void {
+    if (!this.bgGraphics || !this.gridGraphics) return;
+    const { width, height } = this.cameras.main;
+    this.currentStageId = stageId;
+
+    let topColor = 0x0a101f;
+    let bottomColor = 0x04070d;
+    let gridColor = 0x18243b;
+
+    if (stageId === "moon") {
+      topColor = 0x140b2b;
+      bottomColor = 0x060212;
+      gridColor = 0x3b185f;
+    } else if (stageId === "matrix") {
+      topColor = 0x1f070a;
+      bottomColor = 0x0a0103;
+      gridColor = 0x5f1824;
+    } else if (stageId === "hyperdrive") {
+      topColor = 0x241800;
+      bottomColor = 0x080500;
+      gridColor = 0x5f4a18;
+    }
+
+    this.bgGraphics.clear();
+    this.bgGraphics.fillGradientStyle(topColor, topColor, bottomColor, bottomColor, 1);
+    this.bgGraphics.fillRect(0, 0, width, height);
+
+    this.gridGraphics.clear();
+    this.gridGraphics.lineStyle(1, gridColor, 0.4);
+    for (let x = 0; x < width; x += 36) {
+      this.gridGraphics.lineBetween(x, 0, x, height);
+    }
+    for (let y = 0; y < height; y += 36) {
+      this.gridGraphics.lineBetween(0, y, width, y);
+    }
+
+    if (this.candy && this.candy.active) {
+      this.candy.setGravityY(this.activePowerUps.slowmo ? 180 : this.getStageGravity());
+    }
+  }
+
+  // Evaluates score thresholds and triggers dynamic stage transformations
+  private checkStageProgression(currentScore: number): void {
+    if (currentScore === 10 && this.currentStageId !== "moon") {
+      this.triggerLevelUp("moon", "🌙 STAGE 02: MOON ORBIT ZERO-G!");
+    } else if (currentScore === 25 && this.currentStageId !== "matrix") {
+      this.triggerLevelUp("matrix", "⚡ STAGE 03: GLITCH CYBERSTORM!");
+    } else if (currentScore === 50 && this.currentStageId !== "hyperdrive") {
+      this.triggerLevelUp("hyperdrive", "👑 STAGE 04: SOLANA HYPER-DRIVE!");
+    }
+  }
+
+  // Level Up announcement and celebratory banner
+  private triggerLevelUp(stageId: string, bannerText: string): void {
+    this.updateStageEnvironment(stageId);
+    sounds.playPowerUpCollect();
+
+    const { width } = this.cameras.main;
+    const banner = this.add.text(width / 2, 130, bannerText, {
+      fontFamily: "monospace",
+      fontSize: "15px",
+      fontStyle: "bold",
+      color: stageId === "moon" ? "#9945FF" : stageId === "matrix" ? "#EF4444" : "#F59E0B",
+      backgroundColor: "#050914F0",
+      padding: { x: 14, y: 7 },
+      stroke: "#000000",
+      strokeThickness: 4,
+    });
+    banner.setOrigin(0.5);
+
+    this.tweens.add({
+      targets: banner,
+      scaleX: { from: 0.5, to: 1.15 },
+      scaleY: { from: 0.5, to: 1.15 },
+      y: 90,
+      alpha: { from: 1, to: 0 },
+      duration: 1800,
+      ease: "Back.easeOut",
+      onComplete: () => banner.destroy(),
+    });
+  }
+
+  // Spawns floating combat damage text synced with the World Raid Boss
+  private showRaidDamageFloat(x: number, y: number, streak: number): void {
+    const isCrit = streak >= 3;
+    const text = isCrit ? `-2 CRIT! 💥 (x${streak})` : `-1 RAID DMG ⚔️`;
+
+    const floatText = this.add.text(x, y - 10, text, {
+      fontFamily: "monospace",
+      fontSize: isCrit ? "14px" : "12px",
+      fontStyle: "bold",
+      color: isCrit ? "#F59E0B" : "#14F195",
+      stroke: "#000000",
+      strokeThickness: 3,
+    });
+    floatText.setOrigin(0.5);
+
+    this.tweens.add({
+      targets: floatText,
+      y: y - 55,
+      alpha: 0,
+      scaleX: isCrit ? 1.3 : 1.1,
+      scaleY: isCrit ? 1.3 : 1.1,
+      duration: 750,
+      ease: "Quad.easeOut",
+      onComplete: () => floatText.destroy(),
+    });
+  }
+
   private spawnCandy(x: number, y: number): void {
     const { width } = this.cameras.main;
     const spawnX = x || Phaser.Math.Between(width * 0.2, width * 0.8);
@@ -844,7 +956,7 @@ export class MainScene extends Phaser.Scene {
     // Roll for special power-up candy
     this.currentPowerUpType = rollForPowerUp(this.score);
 
-    const baseGravity = this.activePowerUps.slowmo ? 220 : 460;
+    const baseGravity = this.activePowerUps.slowmo ? 180 : this.getStageGravity();
 
     if (!this.candy) {
       this.candy = this.physics.add.sprite(spawnX, spawnY, "candy");
@@ -915,6 +1027,12 @@ export class MainScene extends Phaser.Scene {
 
     this.score++;
     this.streak++;
+
+    // Dynamic Stage Upgrade Check (Level Up!)
+    this.checkStageProgression(this.score);
+
+    // Floating Raid Boss Combat Text
+    this.showRaidDamageFloat(this.mouthCollider.x, this.mouthCollider.y - 20, this.streak);
 
     if (this.streak === 10) {
       this.activateFrenzyMode();
@@ -1413,6 +1531,7 @@ export class MainScene extends Phaser.Scene {
     this.nomster.setScale(1.0);
     this.nomster.setAlpha(1);
     this.updateNomsterMood();
+    this.updateStageEnvironment("meadow");
 
     if (this.callbacks.onLivesUpdate) {
       this.callbacks.onLivesUpdate(this.lives);

@@ -17,9 +17,13 @@ import {
   Sparkles,
   RotateCcw,
 } from "lucide-react";
+import { SkinId } from "@/lib/skins";
+import { ShareableScoreCard } from "./ShareableScoreCard";
 
 interface GameOverModalProps {
   score: number;
+  streak?: number;
+  equippedSkin?: SkinId;
   cooldownUntil: number | null;
   onRequestSOS: () => Promise<boolean>;
   onLifeRestored: () => void;
@@ -27,6 +31,8 @@ interface GameOverModalProps {
 
 export const GameOverModal: React.FC<GameOverModalProps> = ({
   score,
+  streak = 0,
+  equippedSkin = "default",
   cooldownUntil,
   onRequestSOS,
   onLifeRestored,
@@ -229,6 +235,14 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
               </>
             )}
           </button>
+
+          {/* Shareable Arcade Flex Card Generator */}
+          <ShareableScoreCard
+            score={score}
+            streak={streak}
+            equippedSkin={equippedSkin}
+            userName={user?.name}
+          />
         </div>
       </div>
     </div>

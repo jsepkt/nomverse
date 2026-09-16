@@ -8,6 +8,7 @@ import { GithubIcon } from "./icons";
 import { useAuth } from "@/context/AuthContext";
 import { UserBadge } from "../auth/UserBadge";
 import { GlobalCandiesTicker } from "./GlobalCandiesTicker";
+import { TokenTickerBar } from "./TokenTickerBar";
 import { TOKEN_CONFIG } from "@/config/token";
 
 export const Navbar: React.FC = () => {
@@ -15,6 +16,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-background/80 backdrop-blur-xl">
+      <TokenTickerBar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3">
