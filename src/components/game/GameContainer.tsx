@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -17,7 +17,19 @@ import { SkinSelector } from "./SkinSelector";
 import { MobileWaddlePaddles } from "./MobileWaddlePaddles";
 import { RaidBossBanner } from "./RaidBossBanner";
 import { sounds } from "../audio/soundEffects";
-import { Volume2, VolumeX, RotateCcw, Trophy, Sparkles, Heart, Flame, Shirt } from "lucide-react";
+import {
+  Volume2,
+  VolumeX,
+  RotateCcw,
+  Trophy,
+  Sparkles,
+  Heart,
+  Flame,
+  Shirt,
+  Maximize2,
+  Minimize2,
+  Play,
+} from "lucide-react";
 import confetti from "canvas-confetti";
 
 const PhaserCanvasDynamic = dynamic(
@@ -35,6 +47,7 @@ const PhaserCanvasDynamic = dynamic(
 
 export const GameContainer: React.FC = () => {
   const { user } = useAuth();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [score, setScore] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
@@ -44,6 +57,9 @@ export const GameContainer: React.FC = () => {
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [resetSignal, setResetSignal] = useState<number>(0);
+  const [startSignal, setStartSignal] = useState<number>(0);
+  const [gameState, setGameState] = useState<"idle" | "countdown" | "playing" | "respawning" | "gameover">("idle");
+  const [isFullWindow, setIsFullWindow] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [recentNom, setRecentNom] = useState<boolean>(false);
   const [hasPostedHighScore, setHasPostedHighScore] = useState<boolean>(false);
@@ -193,6 +209,7 @@ export const GameContainer: React.FC = () => {
 
   const handleGameOver = (finalScore: number) => {
     setIsGameOver(true);
+    setGameState("gameover");
     setActivePowerUps([]);
     if (user) {
       triggerHighScoreWallCelebration(finalScore, streak);
@@ -247,6 +264,93 @@ export const GameContainer: React.FC = () => {
     }
   };
 
+  // Full Window / Theater Mode Toggle
+  const toggleFullWindow = async () => {
+    const nextState = !isFullWindow;
+    setIsFullWindow(nextState);
+
+    if (nextState) {
+      try {
+        if (containerRef.current && containerRef.current.requestFullscreen) {
+          await containerRef.current.requestFullscreen().catch(() => {});
+        }
+      } catch {
+        // Fallback to CSS full-screen
+      }
+    } else {
+      try {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          await document.exitFullscreen().catch(() => {});
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 120);
+  };
+
+  // Synchronize fullscreen exit & keyboard shortcuts
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && isFullWindow) {
+        setIsFullWindow(false);
+        setTimeout(() => {
+          window.dispatchEvent(new Event("resize"));
+        }, 120);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isFullWindow) {
+        setIsFullWindow(false);
+        setTimeout(() => {
+          window.dispatchEvent(new Event("resize"));
+        }, 120);
+      } else if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+        setWaddleSignal({ direction: "left", timestamp: Date.now() });
+      } else if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+        setWaddleSignal({ direction: "right", timestamp: Date.now() });
+      } else if (e.key === " " && gameState === "idle") {
+        handleStartGame();
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isFullWindow, gameState]);
+
+  // Lock background body scroll in full window mode
+  useEffect(() => {
+    if (isFullWindow) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isFullWindow]);
+
+  const handleStartGame = () => {
+    if (lives <= 0) return;
+    setStartSignal((prev) => prev + 1);
+    setGameState("countdown");
+  };
+
+  const handleGameStateChange = (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => {
+    setGameState(state);
+    if (state === "gameover") {
+      setIsGameOver(true);
+    }
+  };
+
   // Life restored via trivia, gift, or countdown expiry
   const handleLifeRestored = () => {
     if (!user) return;
@@ -259,6 +363,7 @@ export const GameContainer: React.FC = () => {
     setStreak(0);
     setActivePowerUps([]);
     setResetSignal((prev) => prev + 1);
+    setGameState("countdown");
   };
 
   const handleManualReset = () => {
@@ -267,6 +372,7 @@ export const GameContainer: React.FC = () => {
     setStreak(0);
     setActivePowerUps([]);
     setResetSignal((prev) => prev + 1);
+    setGameState("countdown");
   };
 
   const handleToggleMute = () => {
@@ -284,9 +390,16 @@ export const GameContainer: React.FC = () => {
   const userKarma = user ? getClientLifeState(user.id).lifesaverKarma || 0 : 0;
 
   return (
-    <div className="relative w-full max-w-lg mx-auto flex flex-col items-center">
+    <div
+      ref={containerRef}
+      className={
+        isFullWindow
+          ? "fixed inset-0 z-[999] w-screen h-screen bg-[#050914] flex flex-col items-center justify-between p-2 sm:p-4 overflow-hidden select-none"
+          : "relative w-full max-w-lg mx-auto flex flex-col items-center"
+      }
+    >
       {/* Live Gift Received Announcement */}
-      {liveGiftAlert && (
+      {liveGiftAlert && !isFullWindow && (
         <div className="w-full mb-3 px-4 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/60 text-emerald-300 text-xs font-bold flex items-center justify-between gap-2 shadow-[0_0_25px_rgba(20,241,149,0.3)] animate-pulse">
           <span>{liveGiftAlert}</span>
           <button
@@ -298,8 +411,8 @@ export const GameContainer: React.FC = () => {
         </div>
       )}
 
-      {/* World Raid Boss: Lord Mega-FUD */}
-      <RaidBossBanner userId={user?.id} userName={user?.name} />
+      {/* World Raid Boss: Lord Mega-FUD (Normal view) */}
+      {!isFullWindow && <RaidBossBanner userId={user?.id} userName={user?.name} />}
 
       {/* Arcade Header HUD */}
       <div className="w-full mb-3 flex items-center justify-between px-3 py-2 bg-surface/90 border border-slate-800/80 rounded-xl backdrop-blur-md shadow-lg">
@@ -349,7 +462,7 @@ export const GameContainer: React.FC = () => {
           </div>
         </div>
 
-        {/* Action controls: Closet, Sound & Reset */}
+        {/* Action controls: Closet, Sound, Fullscreen & Reset */}
         <div className="flex items-center gap-2">
           {/* CC0 Closet Button */}
           <button
@@ -362,6 +475,7 @@ export const GameContainer: React.FC = () => {
             <span className="hidden sm:inline font-bold">Closet</span>
           </button>
 
+          {/* Sound Toggle */}
           <button
             onClick={handleToggleMute}
             aria-label={isMuted ? "Unmute audio" : "Mute audio"}
@@ -374,6 +488,31 @@ export const GameContainer: React.FC = () => {
             {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
 
+          {/* Fullscreen / Full Window Toggle */}
+          {isFullWindow ? (
+            <button
+              onClick={toggleFullWindow}
+              aria-label="Exit Fullscreen"
+              title="Exit Fullscreen (Esc)"
+              className="px-3 py-1.5 rounded-lg text-xs font-mono transition-colors border bg-rose-500/20 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 flex items-center gap-1.5 font-bold shadow-lg"
+            >
+              <Minimize2 className="w-4 h-4" />
+              <span className="hidden sm:inline">EXIT (ESC)</span>
+              <span className="sm:hidden">EXIT</span>
+            </button>
+          ) : (
+            <button
+              onClick={toggleFullWindow}
+              aria-label="Full Size Window"
+              title="Play in Full Size Window (Distraction-Free)"
+              className="p-2 rounded-lg text-xs font-mono transition-colors border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 flex items-center gap-1.5"
+            >
+              <Maximize2 className="w-4 h-4" />
+              <span className="hidden sm:inline font-bold">Fullscreen</span>
+            </button>
+          )}
+
+          {/* Reset / Restart Drop Button */}
           <button
             onClick={handleManualReset}
             disabled={lives <= 0}
@@ -409,7 +548,13 @@ export const GameContainer: React.FC = () => {
       )}
 
       {/* Phaser Canvas Container with Lockscreen / Game Over Overlays */}
-      <div className="relative w-full">
+      <div
+        className={
+          isFullWindow
+            ? "relative flex-1 w-full flex items-center justify-center min-h-0 my-auto"
+            : "relative w-full"
+        }
+      >
         {/* Unauthenticated Lockscreen */}
         {!user && <ArcadeLockscreen />}
 
@@ -423,6 +568,31 @@ export const GameContainer: React.FC = () => {
           />
         )}
 
+        {/* Ready to Play Start Overlay */}
+        {user && gameState === "idle" && !isGameOver && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/75 backdrop-blur-sm p-4 text-center select-none animate-fade-in rounded-2xl">
+            <div className="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-3">
+              PUMP.FUN FAIR LAUNCH ARCADE
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-black text-white font-mono mb-2">
+              FEED NOMSTER!
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-xs mb-5 leading-relaxed">
+              Collect falling crypto candies! Drag Nomster left &amp; right, or flick candies into his mouth. Don&apos;t drop them!
+            </p>
+            <button
+              onClick={handleStartGame}
+              className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-sm font-mono shadow-[0_0_35px_rgba(20,241,149,0.5)] hover:shadow-[0_0_50px_rgba(20,241,149,0.8)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
+            >
+              <Play className="w-5 h-5 fill-slate-950" />
+              <span>START GAME (3 LIVES)</span>
+            </button>
+            <span className="text-[10px] font-mono text-slate-400 mt-3">
+              (Press Space or tap anywhere on canvas to start)
+            </span>
+          </div>
+        )}
+
         {/* Playable Canvas */}
         <PhaserCanvasDynamic
           onScoreUpdate={handleScoreUpdate}
@@ -431,10 +601,13 @@ export const GameContainer: React.FC = () => {
           onNomNom={handleNomNom}
           onPowerUpActive={handlePowerUpActive}
           onPowerUpExpired={handlePowerUpExpired}
+          onGameStateChange={handleGameStateChange}
           resetSignal={resetSignal}
+          startSignal={startSignal}
           initialLives={lives}
           equippedSkin={equippedSkin}
           waddleSignal={waddleSignal}
+          isFullWindow={isFullWindow}
         />
       </div>
 
@@ -444,20 +617,22 @@ export const GameContainer: React.FC = () => {
         disabled={!user || isGameOver || lives <= 0}
       />
 
-      {/* Arcade Instructions & Status Footer */}
-      <div className="w-full mt-3 px-4 py-2.5 bg-surface/70 border border-slate-800/80 rounded-xl text-center flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-3.5 h-3.5 text-solana-green" />
-          <span>
-            <strong>Controls:</strong> Drag Nomster left/right to waddle. Fling candies into his mouth! Don&apos;t drop to the floor!
-          </span>
+      {/* Arcade Instructions & Status Footer (Hidden in Full Window for zero distraction) */}
+      {!isFullWindow && (
+        <div className="w-full mt-3 px-4 py-2.5 bg-surface/70 border border-slate-800/80 rounded-xl text-center flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-solana-green" />
+            <span>
+              <strong>Controls:</strong> Drag Nomster left/right or use Arrow Keys. Fling candies into his mouth!
+            </span>
+          </div>
+          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
+            <span className="text-rose-400 font-bold">3 Lives Rule</span>
+            <span>•</span>
+            <span className="text-solana-green">Arcade 60 FPS</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
-          <span className="text-rose-400 font-bold">3 Lives Rule</span>
-          <span>•</span>
-          <span className="text-solana-green">Arcade 60 FPS</span>
-        </div>
-      </div>
+      )}
 
       {/* CC0 Closet & Accessories Modal */}
       <SkinSelector

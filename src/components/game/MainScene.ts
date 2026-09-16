@@ -11,6 +11,7 @@ export interface SceneCallbacks {
   onNomNom?: () => void;
   onPowerUpActive?: (type: PowerUpType, durationSec: number) => void;
   onPowerUpExpired?: (type: PowerUpType) => void;
+  onGameStateChange?: (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => void;
 }
 
 export class MainScene extends Phaser.Scene {
@@ -36,6 +37,13 @@ export class MainScene extends Phaser.Scene {
   private magnetTimer?: Phaser.Time.TimerEvent;
   private slowmoTimer?: Phaser.Time.TimerEvent;
   private shieldTimer?: Phaser.Time.TimerEvent;
+
+  // Game Lifecycle & Countdown State
+  public isGameStarted: boolean = false;
+  public playState: "idle" | "countdown" | "playing" | "respawning" | "gameover" = "idle";
+  private countdownContainer?: Phaser.GameObjects.Container;
+  private countdownTimer?: Phaser.Time.TimerEvent;
+  private startPromptContainer?: Phaser.GameObjects.Container;
 
   private score: number = 0;
   private lives: number = 3;
@@ -70,7 +78,12 @@ export class MainScene extends Phaser.Scene {
     this.score = 0;
     this.streak = 0;
     this.isFrenzy = false;
+    this.isGameStarted = false;
+    this.playState = "idle";
     this.activePowerUps = { magnet: false, shield: false, slowmo: false };
+    if (this.callbacks.onGameStateChange) {
+      this.callbacks.onGameStateChange("idle");
+    }
   }
 
   public preload(): void {
@@ -140,11 +153,11 @@ export class MainScene extends Phaser.Scene {
     // Idle Breathing
     this.updateNomsterMood();
 
-    // Spawn First Candy
-    this.spawnCandy(width / 2, 45);
-
     // Floating Red FUD Glitch Hazard
     this.spawnFUDHazard();
+
+    // Setup Initial Candy Sprite (held in inactive pool until game starts)
+    this.initCandySprite();
 
     // Setup Interactive Controls
     this.setupInteractivity();
@@ -161,6 +174,9 @@ export class MainScene extends Phaser.Scene {
     this.physics.add.overlap(this.candy, this.fudHazard, () => {
       this.handleHitFUD();
     });
+
+    // Show on-canvas Start Prompt
+    this.showStartPrompt();
 
     if (this.callbacks.onLivesUpdate) {
       this.callbacks.onLivesUpdate(this.lives);
@@ -440,7 +456,21 @@ export class MainScene extends Phaser.Scene {
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
       if (this.lives <= 0) return;
 
-      const distToCandy = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.candy.x, this.candy.y);
+      if (!this.isGameStarted || this.playState === "idle") {
+        this.startGame();
+        return;
+      }
+
+      if (this.playState !== "playing") {
+        // While counting down or respawning, let player position Nomster
+        this.waddleNomsterTo(pointer.x);
+        return;
+      }
+
+      const distToCandy =
+        this.candy && this.candy.active
+          ? Phaser.Math.Distance.Between(pointer.x, pointer.y, this.candy.x, this.candy.y)
+          : 999;
       const distToNomster = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.nomster.x, this.nomster.y);
 
       if (distToCandy < 65) {
@@ -460,7 +490,7 @@ export class MainScene extends Phaser.Scene {
         this.waddleNomsterTo(pointer.x);
       }
 
-      if (this.isDraggingCandy && this.aimGraphics) {
+      if (this.isDraggingCandy && this.aimGraphics && this.candy && this.candy.active) {
         this.aimGraphics.clear();
         this.aimGraphics.lineStyle(2, 0x14f195, 0.85);
         this.aimGraphics.lineBetween(this.candy.x, this.candy.y, pointer.x, pointer.y);
@@ -484,7 +514,7 @@ export class MainScene extends Phaser.Scene {
         this.aimGraphics.clear();
       }
 
-      if (this.isDraggingCandy) {
+      if (this.isDraggingCandy && this.candy && this.candy.active) {
         this.isDraggingCandy = false;
         const pullX = (this.candy.x - pointer.x) * 4.8;
         const pullY = (this.candy.y - pointer.y) * 4.8;
@@ -496,6 +526,8 @@ export class MainScene extends Phaser.Scene {
         this.candy.setVelocity(vx, vy);
         this.candy.setAngularVelocity((vx > 0 ? 1 : -1) * 220);
         sounds.playFling();
+      } else {
+        this.isDraggingCandy = false;
       }
     });
   }
@@ -589,6 +621,218 @@ export class MainScene extends Phaser.Scene {
       angle: 360,
       duration: 3500,
       repeat: -1,
+    });
+  }
+
+  // Pre-instantiates the candy physics sprite in inactive state until game start
+  private initCandySprite(): void {
+    const { width } = this.cameras.main;
+    this.candy = this.physics.add.sprite(width / 2, -100, "candy");
+    this.candy.setCollideWorldBounds(true);
+    this.candy.setBounce(0.65, 0.65);
+    this.candy.setGravityY(460);
+    this.candy.setDrag(15, 10);
+    this.candy.setCircle(20, 2, 2);
+    this.candy.disableBody(true, true);
+  }
+
+  // Displays an interactive start prompt on canvas before game starts
+  private showStartPrompt(): void {
+    const { width, height } = this.cameras.main;
+    const container = this.add.container(width / 2, height * 0.38);
+    this.startPromptContainer = container;
+
+    // Glowing badge background
+    const bg = this.add.rectangle(0, 0, 270, 115, 0x070d1a, 0.92);
+    bg.setStrokeStyle(2, 0x14f195, 0.7);
+    container.add(bg);
+
+    const title = this.add.text(0, -28, "READY TO PLAY?", {
+      fontFamily: "monospace",
+      fontSize: "17px",
+      fontStyle: "bold",
+      color: "#14F195",
+      stroke: "#04070D",
+      strokeThickness: 3,
+    });
+    title.setOrigin(0.5);
+    container.add(title);
+
+    const btn = this.add.text(0, 6, "▶ TAP TO START", {
+      fontFamily: "monospace",
+      fontSize: "15px",
+      fontStyle: "bold",
+      color: "#030712",
+      backgroundColor: "#14f195",
+      padding: { x: 16, y: 7 },
+    });
+    btn.setOrigin(0.5);
+    btn.setInteractive({ cursor: "pointer" });
+    btn.on("pointerdown", () => {
+      this.startGame();
+    });
+    container.add(btn);
+
+    const subtitle = this.add.text(0, 38, "3 Lives • Drag Nomster to Eat", {
+      fontFamily: "monospace",
+      fontSize: "11px",
+      color: "#94a3b8",
+    });
+    subtitle.setOrigin(0.5);
+    container.add(subtitle);
+
+    // Gentle float tween
+    this.tweens.add({
+      targets: container,
+      y: height * 0.38 - 6,
+      duration: 1200,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+  }
+
+  // Initiates 3-2-1 arcade countdown and launches the game
+  public startGame(): void {
+    if (this.playState === "playing" || this.playState === "countdown") return;
+
+    if (this.startPromptContainer) {
+      this.startPromptContainer.destroy();
+      this.startPromptContainer = undefined;
+    }
+
+    this.startCountdown("start", () => {
+      const { width } = this.cameras.main;
+      this.spawnCandy(width / 2, 45);
+    });
+  }
+
+  // Unified Countdown Engine (Pre-game & Between lives grace period)
+  private startCountdown(
+    reason: "start" | "respawn",
+    onComplete: () => void
+  ): void {
+    this.playState = reason === "start" ? "countdown" : "respawning";
+    if (this.callbacks.onGameStateChange) {
+      this.callbacks.onGameStateChange(this.playState);
+    }
+
+    const { width, height } = this.cameras.main;
+
+    // Smoothly re-center Nomster
+    this.waddleNomsterTo(width / 2);
+
+    if (this.countdownContainer) {
+      this.countdownContainer.destroy();
+      this.countdownContainer = undefined;
+    }
+    if (this.countdownTimer) {
+      this.countdownTimer.remove();
+      this.countdownTimer = undefined;
+    }
+
+    const container = this.add.container(width / 2, height * 0.38);
+    this.countdownContainer = container;
+
+    // Background pill badge
+    const bgPill = this.add.rectangle(0, 0, 250, 110, 0x050914, 0.92);
+    bgPill.setStrokeStyle(2, reason === "start" ? 0x14f195 : 0xef4444, 0.7);
+    container.add(bgPill);
+
+    const subtext = this.add.text(
+      0,
+      -30,
+      reason === "start" ? "READY TO PLAY" : `LIFE LOST! (${this.lives} ❤️ LEFT)`,
+      {
+        fontFamily: "monospace",
+        fontSize: "13px",
+        fontStyle: "bold",
+        color: reason === "start" ? "#14F195" : "#EF4444",
+        stroke: "#04070D",
+        strokeThickness: 3,
+        align: "center",
+      }
+    );
+    subtext.setOrigin(0.5);
+    container.add(subtext);
+
+    const countText = this.add.text(0, 15, "3", {
+      fontFamily: "monospace",
+      fontSize: "52px",
+      fontStyle: "bold",
+      color: "#F59E0B",
+      stroke: "#04070D",
+      strokeThickness: 6,
+      align: "center",
+    });
+    countText.setOrigin(0.5);
+    container.add(countText);
+
+    let count = 3;
+    sounds.playCountdownTick();
+
+    this.tweens.add({
+      targets: countText,
+      scaleX: { from: 1.5, to: 1.0 },
+      scaleY: { from: 1.5, to: 1.0 },
+      duration: 300,
+      ease: "Back.easeOut",
+    });
+
+    this.countdownTimer = this.time.addEvent({
+      delay: 750,
+      repeat: 3,
+      callback: () => {
+        count--;
+        if (count === 2) {
+          countText.setText("2");
+          countText.setColor("#9945FF");
+          sounds.playCountdownTick();
+          this.tweens.add({
+            targets: countText,
+            scaleX: { from: 1.5, to: 1.0 },
+            scaleY: { from: 1.5, to: 1.0 },
+            duration: 300,
+            ease: "Back.easeOut",
+          });
+        } else if (count === 1) {
+          countText.setText("1");
+          countText.setColor("#14F195");
+          sounds.playCountdownTick();
+          this.tweens.add({
+            targets: countText,
+            scaleX: { from: 1.5, to: 1.0 },
+            scaleY: { from: 1.5, to: 1.0 },
+            duration: 300,
+            ease: "Back.easeOut",
+          });
+        } else if (count === 0) {
+          countText.setText("GO!");
+          countText.setColor("#14F195");
+          subtext.setText("CATCH THE CANDY!");
+          subtext.setColor("#F59E0B");
+          sounds.playCountdownGo();
+          this.tweens.add({
+            targets: countText,
+            scaleX: { from: 1.7, to: 1.0 },
+            scaleY: { from: 1.7, to: 1.0 },
+            duration: 300,
+            ease: "Back.easeOut",
+          });
+        } else {
+          // Finished countdown
+          if (this.countdownContainer) {
+            this.countdownContainer.destroy();
+            this.countdownContainer = undefined;
+          }
+          this.playState = "playing";
+          this.isGameStarted = true;
+          if (this.callbacks.onGameStateChange) {
+            this.callbacks.onGameStateChange("playing");
+          }
+          onComplete();
+        }
+      },
     });
   }
 
@@ -908,14 +1152,16 @@ export class MainScene extends Phaser.Scene {
     });
 
     if (this.lives <= 0) {
+      this.playState = "gameover";
+      if (this.callbacks.onGameStateChange) {
+        this.callbacks.onGameStateChange("gameover");
+      }
       this.triggerGameOver();
     } else {
       this.candy.disableBody(true, true);
-      this.time.delayedCall(600, () => {
-        if (this.lives > 0) {
-          const { width } = this.cameras.main;
-          this.spawnCandy(width / 2, 45);
-        }
+      this.startCountdown("respawn", () => {
+        const { width } = this.cameras.main;
+        this.spawnCandy(width / 2, 45);
       });
     }
   }
@@ -999,14 +1245,16 @@ export class MainScene extends Phaser.Scene {
     }
 
     if (this.lives <= 0) {
+      this.playState = "gameover";
+      if (this.callbacks.onGameStateChange) {
+        this.callbacks.onGameStateChange("gameover");
+      }
       this.triggerGameOver();
     } else {
       this.candy.disableBody(true, true);
-      this.time.delayedCall(650, () => {
-        if (this.lives > 0) {
-          const { width } = this.cameras.main;
-          this.spawnCandy(width / 2, 45);
-        }
+      this.startCountdown("respawn", () => {
+        const { width } = this.cameras.main;
+        this.spawnCandy(width / 2, 45);
       });
     }
   }
@@ -1156,7 +1404,10 @@ export class MainScene extends Phaser.Scene {
     // Reset power-ups
     this.activePowerUps = { magnet: false, shield: false, slowmo: false };
     if (this.shieldSprite) this.shieldSprite.setVisible(false);
-    if (this.candy) this.candy.setGravityY(460);
+    if (this.candy) {
+      this.candy.setGravityY(460);
+      this.candy.disableBody(true, true);
+    }
 
     this.nomster.setAngle(0);
     this.nomster.setScale(1.0);
@@ -1170,7 +1421,6 @@ export class MainScene extends Phaser.Scene {
       this.callbacks.onScoreUpdate(this.score, this.streak);
     }
 
-    const { width } = this.cameras.main;
-    this.spawnCandy(width / 2, 45);
+    this.startGame();
   }
 }

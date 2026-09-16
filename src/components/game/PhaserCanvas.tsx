@@ -13,10 +13,13 @@ interface PhaserCanvasProps {
   onNomNom?: () => void;
   onPowerUpActive?: (type: PowerUpType, durationSec: number) => void;
   onPowerUpExpired?: (type: PowerUpType) => void;
+  onGameStateChange?: (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => void;
   resetSignal?: number;
+  startSignal?: number;
   initialLives?: number;
   equippedSkin?: SkinId;
   waddleSignal?: { direction: "left" | "right"; timestamp: number } | null;
+  isFullWindow?: boolean;
 }
 
 export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
@@ -26,10 +29,13 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   onNomNom,
   onPowerUpActive,
   onPowerUpExpired,
+  onGameStateChange,
   resetSignal,
+  startSignal,
   initialLives = 3,
   equippedSkin = "default",
   waddleSignal,
+  isFullWindow = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<PhaserType.Game | null>(null);
@@ -53,6 +59,9 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
 
   const onPowerUpExpiredRef = useRef(onPowerUpExpired);
   onPowerUpExpiredRef.current = onPowerUpExpired;
+
+  const onGameStateChangeRef = useRef(onGameStateChange);
+  onGameStateChangeRef.current = onGameStateChange;
 
   useEffect(() => {
     let isMounted = true;
@@ -130,6 +139,11 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
                 onPowerUpExpiredRef.current(type);
               }
             },
+            onGameStateChange: (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => {
+              if (onGameStateChangeRef.current) {
+                onGameStateChangeRef.current(state);
+              }
+            },
           },
         });
 
@@ -164,6 +178,13 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
     }
   }, [equippedSkin]);
 
+  // Handle start signal triggered from parent HUD
+  useEffect(() => {
+    if (startSignal && startSignal > 0 && sceneRef.current) {
+      sceneRef.current.startGame();
+    }
+  }, [startSignal]);
+
   // Handle resets triggered from parent HUD
   useEffect(() => {
     if (resetSignal && resetSignal > 0 && sceneRef.current) {
@@ -181,8 +202,24 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
     }
   }, [waddleSignal]);
 
+  // Refresh Phaser canvas scale when entering/exiting full-window mode
+  useEffect(() => {
+    if (gameRef.current) {
+      const timer = setTimeout(() => {
+        gameRef.current?.scale.refresh();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isFullWindow]);
+
   return (
-    <div className="relative w-full max-w-[440px] aspect-[440/520] mx-auto overflow-hidden rounded-2xl border-2 border-solana-green/30 bg-[#080D1A] shadow-[0_0_35px_rgba(20,241,149,0.15)] flex items-center justify-center">
+    <div
+      className={`relative mx-auto overflow-hidden rounded-2xl border-2 border-solana-green/30 bg-[#080D1A] shadow-[0_0_35px_rgba(20,241,149,0.15)] flex items-center justify-center ${
+        isFullWindow
+          ? "w-full h-full max-h-[min(78vh,680px)] aspect-[440/520] max-w-full"
+          : "w-full max-w-[440px] aspect-[440/520]"
+      }`}
+    >
       {isLoading && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm gap-3">
           <div className="w-10 h-10 border-4 border-solana-green border-t-transparent rounded-full animate-spin" />

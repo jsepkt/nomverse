@@ -5,6 +5,7 @@ import Image from "next/image";
 import { GameContainer } from "../game/GameContainer";
 import { ShieldCheck, Sparkles, Flame, Rocket, Terminal, Zap } from "lucide-react";
 import { GithubIcon } from "./icons";
+import { TOKEN_CONFIG } from "@/config/token";
 
 export const HeroSection: React.FC = () => {
   return (
@@ -45,7 +46,7 @@ export const HeroSection: React.FC = () => {
           {/* Primary CTA Buttons */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
             <a
-              href="https://pump.fun"
+              href={TOKEN_CONFIG.pumpFunUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 transition-all"
@@ -55,7 +56,7 @@ export const HeroSection: React.FC = () => {
             </a>
 
             <a
-              href="https://github.com"
+              href="https://github.com/jsepkt/nomverse"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm text-slate-200 bg-surface hover:bg-slate-800 border border-slate-700 hover:border-slate-500 transition-all"
