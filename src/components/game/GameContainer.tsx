@@ -16,6 +16,14 @@ import { GameOverModal } from "./GameOverModal";
 import { SkinSelector } from "./SkinSelector";
 import { MobileWaddlePaddles } from "./MobileWaddlePaddles";
 import { RaidBossBanner } from "./RaidBossBanner";
+import { HolderPerksModal } from "../wallet/HolderPerksModal";
+import { WhaleAlertToast } from "../ui/WhaleAlertToast";
+import {
+  HOLDER_TIERS,
+  HolderPerks,
+  getStoredHolderState,
+  getTierForBalance,
+} from "@/lib/holderTiers";
 import { sounds } from "../audio/soundEffects";
 import {
   Volume2,
@@ -29,6 +37,9 @@ import {
   Maximize2,
   Minimize2,
   Play,
+  Swords,
+  Coins,
+  Crown,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -80,6 +91,13 @@ export const GameContainer: React.FC = () => {
   // Live community gift banner
   const [liveGiftAlert, setLiveGiftAlert] = useState<string | null>(null);
 
+  // Rival Challenge & Holder Tiers State
+  const [rival, setRival] = useState<{ score: number; challenger: string } | null>(null);
+  const [rivalDethroned, setRivalDethroned] = useState<boolean>(false);
+  const [isHolderModalOpen, setIsHolderModalOpen] = useState<boolean>(false);
+  const [holderPerks, setHolderPerks] = useState<HolderPerks>(HOLDER_TIERS.fish);
+  const [frenzySignal, setFrenzySignal] = useState<number>(0);
+
   // Synchronize life and skin state on user login
   useEffect(() => {
     if (!user) return;
@@ -109,6 +127,38 @@ export const GameContainer: React.FC = () => {
       // ignore
     }
   }, [user]);
+
+  // Parse Rival Challenge URL and Holder Tier State on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const rScore = parseInt(params.get("rivalScore") || "", 10);
+        const rChallenger = params.get("challenger");
+        if (!isNaN(rScore) && rScore > 0 && rChallenger) {
+          setRival({ score: rScore, challenger: rChallenger });
+        }
+      } catch {
+        // ignore
+      }
+
+      const savedHolder = getStoredHolderState();
+      if (savedHolder) {
+        const perks = getTierForBalance(savedHolder.balance);
+        setHolderPerks(perks);
+      }
+    }
+  }, []);
+
+  const handleRivalDethroned = useCallback((finalScore: number, challenger: string) => {
+    setRivalDethroned(true);
+    confetti({
+      particleCount: 120,
+      spread: 100,
+      origin: { y: 0.4 },
+      colors: ["#F59E0B", "#14F195", "#9945FF", "#38BDF8"],
+    });
+  }, []);
 
   // Real-time polling for incoming life gifts on The NomWall during Game Over
   useEffect(() => {
@@ -462,8 +512,25 @@ export const GameContainer: React.FC = () => {
           </div>
         </div>
 
-        {/* Action controls: Closet, Sound, Fullscreen & Reset */}
+        {/* Action controls: Holder Bag, Closet, Sound, Fullscreen & Reset */}
         <div className="flex items-center gap-2">
+          {/* Holder Perks Bag Button */}
+          <button
+            onClick={() => setIsHolderModalOpen(true)}
+            aria-label="Proof of Bag - Holder Perks"
+            title={`Proof of Bag: ${holderPerks.label}`}
+            className="px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105"
+            style={{
+              backgroundColor: `${holderPerks.accentColor}18`,
+              borderColor: `${holderPerks.accentColor}50`,
+              color: holderPerks.accentColor,
+            }}
+          >
+            <Coins className="w-3.5 h-3.5" />
+            <span className="font-bold">{holderPerks.badge}</span>
+            {holderPerks.hasCrown && <Crown className="w-3 h-3 text-amber-400" />}
+          </button>
+
           {/* CC0 Closet Button */}
           <button
             onClick={() => setIsSkinModalOpen(true)}
@@ -547,6 +614,27 @@ export const GameContainer: React.FC = () => {
         </div>
       )}
 
+      {/* Rival Challenge Banner */}
+      {rival && (
+        <div className="w-full mb-2 p-2.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-amber-500/30 flex items-center justify-between text-xs font-mono animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <Swords className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>
+              {rivalDethroned ? (
+                <strong className="text-emerald-400">👑 VICTORY! You dethroned {rival.challenger}!</strong>
+              ) : (
+                <span>
+                  <strong>RIVAL BOUNTY:</strong> Beat <span className="text-amber-300 font-bold">{rival.challenger}&apos;s</span> score of <span className="text-white font-bold">{rival.score}</span>!
+                </span>
+              )}
+            </span>
+          </div>
+          <span className="text-[10px] text-amber-400/90 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+            {rivalDethroned ? "RIVAL DETHRONED" : "ACTIVE BOUNTY"}
+          </span>
+        </div>
+      )}
+
       {/* Phaser Canvas Container with Lockscreen / Game Over Overlays */}
       <div
         className={
@@ -604,9 +692,18 @@ export const GameContainer: React.FC = () => {
           onPowerUpActive={handlePowerUpActive}
           onPowerUpExpired={handlePowerUpExpired}
           onGameStateChange={handleGameStateChange}
+          onRivalDethroned={handleRivalDethroned}
+          rival={rival || undefined}
+          holderTierPerks={{
+            extraLives: holderPerks.extraLives,
+            scoreMultiplier: holderPerks.scoreMultiplier,
+            raidMultiplier: holderPerks.raidMultiplier,
+            hasCrown: holderPerks.hasCrown,
+          }}
+          frenzySignal={frenzySignal}
           resetSignal={resetSignal}
           startSignal={startSignal}
-          initialLives={lives}
+          initialLives={lives + holderPerks.extraLives}
           equippedSkin={equippedSkin}
           waddleSignal={waddleSignal}
           isFullWindow={isFullWindow}
@@ -645,6 +742,19 @@ export const GameContainer: React.FC = () => {
         highScore={highScore}
         maxStreak={maxStreak}
         karma={userKarma}
+        isHolder={Boolean(holderPerks.unlockedSkinId === "diamond")}
+      />
+
+      {/* Proof of Bag - Holder Perks Modal */}
+      <HolderPerksModal
+        isOpen={isHolderModalOpen}
+        onClose={() => setIsHolderModalOpen(false)}
+        onTierUpdated={(perks) => setHolderPerks(perks)}
+      />
+
+      {/* Live Whale Alert Toasts & In-Game Golden Frenzy Trigger */}
+      <WhaleAlertToast
+        onTriggerFrenzy={() => setFrenzySignal(Date.now())}
       />
     </div>
   );

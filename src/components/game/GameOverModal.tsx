@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Sparkles,
   RotateCcw,
+  Swords,
 } from "lucide-react";
 import { SkinId } from "@/lib/skins";
 import { ShareableScoreCard } from "./ShareableScoreCard";
@@ -42,6 +43,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   const [isRequestingSOS, setIsRequestingSOS] = useState<boolean>(false);
   const [sosSent, setSosSent] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [copiedChallenge, setCopiedChallenge] = useState<boolean>(false);
 
   // Trivia state
   const [showTrivia, setShowTrivia] = useState<boolean>(false);
@@ -91,6 +93,17 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleCopyChallengeLink = () => {
+    const challengerName = user?.name || "ArcadeChampion";
+    const url = `${window.location.origin}/?rivalScore=${score}&challenger=${encodeURIComponent(
+      challengerName
+    )}`;
+    navigator.clipboard.writeText(url);
+    setCopiedChallenge(true);
+    sounds.playGoldenChime();
+    setTimeout(() => setCopiedChallenge(false), 2500);
   };
 
   const handleTriviaAnswer = (index: number) => {
@@ -232,6 +245,24 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
               <>
                 <Copy className="w-3.5 h-3.5" />
                 <span>Share SOS Link with Friends</span>
+              </>
+            )}
+          </button>
+
+          {/* Action 4: Challenge a Rival Button */}
+          <button
+            onClick={handleCopyChallengeLink}
+            className="w-full py-2.5 px-4 rounded-xl font-mono text-xs bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-orange-500/30 text-amber-300 border border-amber-500/40 transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(245,158,11,0.15)] font-bold"
+          >
+            {copiedChallenge ? (
+              <>
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
+                <span>Rival Challenge Copied! Send to Group Chat</span>
+              </>
+            ) : (
+              <>
+                <Swords className="w-3.5 h-3.5 text-amber-400" />
+                <span>⚔️ Challenge a Rival (Beat My {score} Pts)</span>
               </>
             )}
           </button>

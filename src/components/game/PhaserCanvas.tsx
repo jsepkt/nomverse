@@ -14,6 +14,15 @@ interface PhaserCanvasProps {
   onPowerUpActive?: (type: PowerUpType, durationSec: number) => void;
   onPowerUpExpired?: (type: PowerUpType) => void;
   onGameStateChange?: (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => void;
+  onRivalDethroned?: (score: number, challenger: string) => void;
+  rival?: { score: number; challenger: string };
+  holderTierPerks?: {
+    extraLives: number;
+    scoreMultiplier: number;
+    raidMultiplier: number;
+    hasCrown: boolean;
+  };
+  frenzySignal?: number;
   resetSignal?: number;
   startSignal?: number;
   initialLives?: number;
@@ -30,6 +39,10 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   onPowerUpActive,
   onPowerUpExpired,
   onGameStateChange,
+  onRivalDethroned,
+  rival,
+  holderTierPerks,
+  frenzySignal,
   resetSignal,
   startSignal,
   initialLives = 3,
@@ -62,6 +75,9 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
 
   const onGameStateChangeRef = useRef(onGameStateChange);
   onGameStateChangeRef.current = onGameStateChange;
+
+  const onRivalDethronedRef = useRef(onRivalDethroned);
+  onRivalDethronedRef.current = onRivalDethroned;
 
   useEffect(() => {
     let isMounted = true;
@@ -108,6 +124,8 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
         game.scene.add("MainScene", scene, true, {
           initialLives,
           initialSkin: equippedSkin,
+          rival,
+          holderTierPerks,
           callbacks: {
             onScoreUpdate: (score: number, streak: number) => {
               if (onScoreUpdateRef.current) {
@@ -142,6 +160,11 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
             onGameStateChange: (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => {
               if (onGameStateChangeRef.current) {
                 onGameStateChangeRef.current(state);
+              }
+            },
+            onRivalDethroned: (score: number, challenger: string) => {
+              if (onRivalDethronedRef.current) {
+                onRivalDethronedRef.current(score, challenger);
               }
             },
           },
@@ -191,6 +214,13 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
       sceneRef.current.resetGame(3);
     }
   }, [resetSignal]);
+
+  // Handle live whale buy frenzy signals
+  useEffect(() => {
+    if (frenzySignal && frenzySignal > 0 && sceneRef.current) {
+      sceneRef.current.triggerGoldenFrenzy(20);
+    }
+  }, [frenzySignal]);
 
   // Handle mobile waddle signals
   useEffect(() => {

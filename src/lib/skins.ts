@@ -1,6 +1,6 @@
 // NomVerse CC0 Unlockable Cosmetics & Accessories Catalog
 
-export type SkinId = "default" | "cap" | "shades" | "crown" | "horns";
+export type SkinId = "default" | "cap" | "shades" | "crown" | "horns" | "diamond";
 
 export interface SkinItem {
   id: SkinId;
@@ -8,7 +8,7 @@ export interface SkinItem {
   emoji: string;
   description: string;
   requirement: string;
-  isUnlocked: (stats: { highScore: number; maxStreak: number; karma: number }) => boolean;
+  isUnlocked: (stats: { highScore: number; maxStreak: number; karma: number; isHolder?: boolean }) => boolean;
 }
 
 export const SKINS_CATALOG: SkinItem[] = [
@@ -51,6 +51,14 @@ export const SKINS_CATALOG: SkinItem[] = [
     description: "Glowing neon red horns earned in the Lord Mega-FUD World Raid.",
     requirement: "Score 5+ Candies during the Community Raid",
     isUnlocked: ({ highScore }) => highScore >= 5,
+  },
+  {
+    id: "diamond",
+    name: "Diamondbag Nomster",
+    emoji: "💎",
+    description: "Gleaming crystalline diamond crown and crystal aura for verified $NOM Dolphin/Whale holders.",
+    requirement: "Hold 1,000,000+ $NOM or reach High Score 30+",
+    isUnlocked: ({ highScore, isHolder }) => Boolean(isHolder || highScore >= 30),
   },
 ];
 

@@ -13,6 +13,7 @@ interface SkinSelectorProps {
   highScore: number;
   maxStreak: number;
   karma: number;
+  isHolder?: boolean;
 }
 
 export const SkinSelector: React.FC<SkinSelectorProps> = ({
@@ -23,6 +24,7 @@ export const SkinSelector: React.FC<SkinSelectorProps> = ({
   highScore,
   maxStreak,
   karma,
+  isHolder = false,
 }) => {
   const { user } = useAuth();
 
@@ -38,7 +40,7 @@ export const SkinSelector: React.FC<SkinSelectorProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in select-none">
-      <div className="relative w-full max-w-md bg-surface border border-slate-800 rounded-2xl p-6 shadow-2xl">
+      <div className="relative w-full max-w-md bg-surface border border-slate-800 rounded-2xl p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
@@ -52,14 +54,14 @@ export const SkinSelector: React.FC<SkinSelectorProps> = ({
           </div>
           <div>
             <h3 className="text-base font-bold text-white">Nomster CC0 Closet</h3>
-            <p className="text-xs text-slate-400">Unlock cosmetics by playing &amp; gifting lives!</p>
+            <p className="text-xs text-slate-400">Unlock cosmetics by playing, bag holding &amp; gifting lives!</p>
           </div>
         </div>
 
         {/* Skins Grid */}
         <div className="space-y-2.5">
           {SKINS_CATALOG.map((skin) => {
-            const unlocked = skin.isUnlocked({ highScore, maxStreak, karma });
+            const unlocked = skin.isUnlocked({ highScore, maxStreak, karma, isHolder });
             const isEquipped = equippedSkin === skin.id;
 
             return (

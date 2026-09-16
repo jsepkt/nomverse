@@ -12,6 +12,8 @@ export interface SceneCallbacks {
   onPowerUpActive?: (type: PowerUpType, durationSec: number) => void;
   onPowerUpExpired?: (type: PowerUpType) => void;
   onGameStateChange?: (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => void;
+  onRivalDethroned?: (score: number, challenger: string) => void;
+  onFrenzyEnd?: () => void;
 }
 
 export class MainScene extends Phaser.Scene {
@@ -25,9 +27,22 @@ export class MainScene extends Phaser.Scene {
   private gridGraphics!: Phaser.GameObjects.Graphics;
   private currentStageId: string = "meadow";
 
+  // Rival Challenge & Holder Tier Fields
+  private rival?: { score: number; challenger: string };
+  private rivalBeaten: boolean = false;
+  private rivalBadge?: Phaser.GameObjects.Container;
+  private holderTierPerks?: {
+    extraLives: number;
+    scoreMultiplier: number;
+    raidMultiplier: number;
+    hasCrown: boolean;
+  };
+  private frenzyTimer?: Phaser.Time.TimerEvent;
+
   // Power-Ups and Cosmetics
   private currentSkin: SkinId = "default";
   private accessorySprite?: Phaser.GameObjects.Sprite;
+  private crownBonusSprite?: Phaser.GameObjects.Sprite;
   private shieldSprite?: Phaser.GameObjects.Sprite;
   private currentPowerUpType: PowerUpType | null = null;
   private candyLabel?: Phaser.GameObjects.Text;
@@ -66,17 +81,32 @@ export class MainScene extends Phaser.Scene {
     callbacks?: SceneCallbacks;
     initialLives?: number;
     initialSkin?: SkinId;
+    rival?: { score: number; challenger: string };
+    holderTierPerks?: {
+      extraLives: number;
+      scoreMultiplier: number;
+      raidMultiplier: number;
+      hasCrown: boolean;
+    };
   }): void {
     if (data && data.callbacks) {
       this.callbacks = data.callbacks;
     }
-    if (data && typeof data.initialLives === "number") {
-      this.lives = data.initialLives;
-    } else {
-      this.lives = 3;
+    if (data && data.holderTierPerks) {
+      this.holderTierPerks = data.holderTierPerks;
     }
+    const baseLives = (data && typeof data.initialLives === "number") ? data.initialLives : 3;
+    this.lives = baseLives + (this.holderTierPerks?.extraLives || 0);
+
     if (data && data.initialSkin) {
       this.currentSkin = data.initialSkin;
+    }
+    if (data && data.rival) {
+      this.rival = data.rival;
+      this.rivalBeaten = false;
+    } else {
+      this.rival = undefined;
+      this.rivalBeaten = false;
     }
     this.score = 0;
     this.streak = 0;
@@ -171,6 +201,10 @@ export class MainScene extends Phaser.Scene {
 
     // Show on-canvas Start Prompt
     this.showStartPrompt();
+
+    if (this.rival) {
+      this.renderRivalBanner();
+    }
 
     if (this.callbacks.onLivesUpdate) {
       this.callbacks.onLivesUpdate(this.lives);
@@ -398,6 +432,67 @@ export class MainScene extends Phaser.Scene {
         canvas.refresh();
       }
     }
+
+    // 6. Diamondbag Nomster Crystal Crown & Gems
+    if (!this.textures.exists("skin_diamond")) {
+      const canvas = this.textures.createCanvas("skin_diamond", 78, 44);
+      if (canvas) {
+        const ctx = canvas.context;
+        // Central crystalline diamond
+        ctx.fillStyle = "#00e5ff";
+        ctx.beginPath();
+        ctx.moveTo(39, 4);
+        ctx.lineTo(58, 20);
+        ctx.lineTo(48, 38);
+        ctx.lineTo(30, 38);
+        ctx.lineTo(20, 20);
+        ctx.closePath();
+        ctx.fill();
+
+        // Facet lines
+        ctx.fillStyle = "#e0f7fa";
+        ctx.beginPath();
+        ctx.moveTo(39, 4);
+        ctx.lineTo(30, 20);
+        ctx.lineTo(48, 20);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#00b0ff";
+        ctx.beginPath();
+        ctx.moveTo(30, 20);
+        ctx.lineTo(39, 38);
+        ctx.lineTo(48, 20);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(20, 20);
+        ctx.lineTo(58, 20);
+        ctx.stroke();
+
+        // Outer glow stroke
+        ctx.strokeStyle = "#00f0ff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Crystal sparkle stars
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(39, 4, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(14, 18, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(64, 18, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
   }
 
   // Live Skin Setter called from React SkinSelector
@@ -430,6 +525,8 @@ export class MainScene extends Phaser.Scene {
         return { x: 0, y: -98 };
       case "horns":
         return { x: 0, y: -96 };
+      case "diamond":
+        return { x: 0, y: -98 };
       default:
         return { x: 0, y: 0 };
     }
@@ -924,13 +1021,17 @@ export class MainScene extends Phaser.Scene {
   // Spawns floating combat damage text synced with the World Raid Boss
   private showRaidDamageFloat(x: number, y: number, streak: number): void {
     const isCrit = streak >= 3;
-    const text = isCrit ? `-2 CRIT! 💥 (x${streak})` : `-1 RAID DMG ⚔️`;
+    const baseMult = this.holderTierPerks?.raidMultiplier || 1;
+    const dmg = (isCrit ? 2 : 1) * baseMult;
+    const text = isCrit
+      ? `-${dmg} CRIT! 💥${baseMult > 1 ? " (WHALE 2X)" : ` (x${streak})`}`
+      : `-${dmg} RAID DMG ⚔️${baseMult > 1 ? " (WHALE 2X)" : ""}`;
 
     const floatText = this.add.text(x, y - 10, text, {
       fontFamily: "monospace",
       fontSize: isCrit ? "14px" : "12px",
       fontStyle: "bold",
-      color: isCrit ? "#F59E0B" : "#14F195",
+      color: isCrit ? "#F59E0B" : baseMult > 1 ? "#38BDF8" : "#14F195",
       stroke: "#000000",
       strokeThickness: 3,
     });
@@ -945,6 +1046,119 @@ export class MainScene extends Phaser.Scene {
       duration: 750,
       ease: "Quad.easeOut",
       onComplete: () => floatText.destroy(),
+    });
+  }
+
+  // Renders persistent target badge at top of canvas when a rival challenge is active
+  private renderRivalBanner(): void {
+    if (!this.rival) return;
+    const { width } = this.cameras.main;
+    if (this.rivalBadge) {
+      this.rivalBadge.destroy();
+    }
+
+    const container = this.add.container(width / 2, 28);
+    this.rivalBadge = container;
+
+    const bg = this.add.rectangle(0, 0, 260, 28, 0x050914, 0.88);
+    bg.setStrokeStyle(1.5, 0xf59e0b, 0.85);
+    container.add(bg);
+
+    const text = this.add.text(
+      0,
+      0,
+      `🎯 RIVAL: Beat ${this.rival.challenger} (${this.rival.score} pts)`,
+      {
+        fontFamily: "monospace",
+        fontSize: "11px",
+        fontStyle: "bold",
+        color: "#F59E0B",
+      }
+    );
+    text.setOrigin(0.5);
+    container.add(text);
+  }
+
+  // Celebratory announcement and audio fanfare when rival is dethroned
+  private triggerRivalDethroned(): void {
+    sounds.playFrenzy();
+    const { width } = this.cameras.main;
+
+    const banner = this.add.text(
+      width / 2,
+      130,
+      `👑 RIVAL DETHRONED!\nYou beat ${this.rival?.challenger} (${this.rival?.score} pts)!`,
+      {
+        fontFamily: "monospace",
+        fontSize: "16px",
+        fontStyle: "bold",
+        color: "#F59E0B",
+        backgroundColor: "#050914FA",
+        padding: { x: 16, y: 8 },
+        stroke: "#000000",
+        strokeThickness: 5,
+        align: "center",
+      }
+    );
+    banner.setOrigin(0.5);
+
+    this.tweens.add({
+      targets: banner,
+      scaleX: { from: 0.6, to: 1.2 },
+      scaleY: { from: 0.6, to: 1.2 },
+      alpha: { from: 1, to: 0 },
+      y: 90,
+      duration: 2500,
+      ease: "Back.easeOut",
+      onComplete: () => banner.destroy(),
+    });
+
+    if (this.callbacks.onRivalDethroned && this.rival) {
+      this.callbacks.onRivalDethroned(this.score, this.rival.challenger);
+    }
+  }
+
+  // Public trigger for Whale Buy Golden Candy Frenzy event
+  public triggerGoldenFrenzy(durationSec: number = 20): void {
+    this.isFrenzy = true;
+    sounds.playFrenzy();
+
+    const { width } = this.cameras.main;
+    const banner = this.add.text(
+      width / 2,
+      120,
+      "🚨 WHALE BUY FRENZY! 2X POINTS & GOLDEN RAIN! 🚨",
+      {
+        fontFamily: "monospace",
+        fontSize: "14px",
+        fontStyle: "bold",
+        color: "#F59E0B",
+        backgroundColor: "#050914FA",
+        padding: { x: 14, y: 7 },
+        stroke: "#000000",
+        strokeThickness: 4,
+        align: "center",
+      }
+    );
+    banner.setOrigin(0.5);
+
+    this.tweens.add({
+      targets: banner,
+      scale: { from: 0.7, to: 1.15 },
+      alpha: { from: 1, to: 0 },
+      duration: 2200,
+      ease: "Back.easeOut",
+      onComplete: () => banner.destroy(),
+    });
+
+    if (this.frenzyTimer) {
+      this.frenzyTimer.remove();
+    }
+    this.frenzyTimer = this.time.delayedCall(durationSec * 1000, () => {
+      this.isFrenzy = false;
+      if (this.callbacks.onFrenzyEnd) {
+        this.callbacks.onFrenzyEnd();
+      }
     });
   }
 
@@ -1025,11 +1239,25 @@ export class MainScene extends Phaser.Scene {
       this.activatePowerUp(this.currentPowerUpType);
     }
 
-    this.score++;
+    let pointsEarned = 1;
+    if (this.isFrenzy) {
+      pointsEarned *= 2;
+    }
+    if (this.holderTierPerks?.scoreMultiplier && this.holderTierPerks.scoreMultiplier > 1) {
+      pointsEarned = Math.max(1, Math.round(pointsEarned * this.holderTierPerks.scoreMultiplier));
+    }
+
+    this.score += pointsEarned;
     this.streak++;
 
     // Dynamic Stage Upgrade Check (Level Up!)
     this.checkStageProgression(this.score);
+
+    // Check if rival challenge score is exceeded
+    if (this.rival && !this.rivalBeaten && this.score > this.rival.score) {
+      this.rivalBeaten = true;
+      this.triggerRivalDethroned();
+    }
 
     // Floating Raid Boss Combat Text
     this.showRaidDamageFloat(this.mouthCollider.x, this.mouthCollider.y - 20, this.streak);
@@ -1532,6 +1760,11 @@ export class MainScene extends Phaser.Scene {
     this.nomster.setAlpha(1);
     this.updateNomsterMood();
     this.updateStageEnvironment("meadow");
+
+    if (this.rival) {
+      this.rivalBeaten = false;
+      this.renderRivalBanner();
+    }
 
     if (this.callbacks.onLivesUpdate) {
       this.callbacks.onLivesUpdate(this.lives);
