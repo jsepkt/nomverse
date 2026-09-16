@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <circle cx="32" cy="32" r="30" fill="#15803D" />
+  <circle cx="32" cy="32" r="28" fill="#22C55E" />
+  <!-- Eyes -->
+  <ellipse cx="23" cy="24" rx="7" ry="9" fill="#FFFFFF" />
+  <ellipse cx="41" cy="24" rx="7" ry="9" fill="#FFFFFF" />
+  <circle cx="25" cy="24" r="4" fill="#0F172A" />
+  <circle cx="39" cy="24" r="4" fill="#0F172A" />
+  <circle cx="23" cy="22" r="1.5" fill="#FFFFFF" />
+  <circle cx="37" cy="22" r="1.5" fill="#FFFFFF" />
+  <!-- Open mouth -->
+  <path d="M 18 36 Q 32 32 46 36 Q 48 50 32 50 Q 16 50 18 36 Z" fill="#881337" />
+  <path d="M 26 46 Q 32 40 38 46 Q 32 49 26 46 Z" fill="#FB7185" />
+  <polygon points="27,35 29,39 31,35" fill="#FFFFFF" />
+  <polygon points="33,35 35,39 37,35" fill="#FFFFFF" />
+</svg>

@@ -1,0 +1,25 @@
+name: Immutable Token Mint Integrity Check
+
+on:
+  pull_request:
+    paths:
+      - "src/config/token.ts"
+
+jobs:
+  verify-immutable-token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if token mint address was modified
+        run: |
+          echo "Verifying that canonical token mint configuration was not altered..."
+          DIFF_FILES=$(git diff --name-only HEAD^ HEAD)
+          if echo "$DIFF_FILES" | grep -q "src/config/token.ts"; then
+            echo "::error::SECURITY ALERT: Modification to src/config/token.ts is strictly forbidden. The canonical token mint is immutably frozen."
+            exit 1
+          fi
+          echo "Token mint integrity check passed!"

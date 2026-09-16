@@ -1,0 +1,177 @@
+"use client";
+
+import React, { useState } from "react";
+import { X, GitPullRequest, Sparkles, Copy, CheckCircle2, Eye, Edit3, ExternalLink } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+
+interface LoreStudioModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const LoreStudioModal: React.FC<LoreStudioModalProps> = ({ isOpen, onClose }) => {
+  const { user } = useAuth();
+  const [title, setTitle] = useState<string>("The Great Solana Candy Halving");
+  const [chapterNum, setChapterNum] = useState<number>(3);
+  const [author, setAuthor] = useState<string>(user?.name || "Anonymous Builder");
+  const [tags, setTags] = useState<string>("arcade, halving, solana, feast");
+  const [content, setContent] = useState<string>(
+    `The Solana network began humming with an unearthly pitch.
+
+Nomster paused mid-munch. The golden block drops weren't falling every 400 milliseconds anymore—they were doubling in size and glowing with iridescent violet and cyan bands.
+
+"THE CANDY HALVING HAS COMMENCED," flashed a terminal on validator node #849.
+
+Nomster tightened his little green fists, adjusted his cyber shades, and grinned with his tiny fangs. If the candies were going to fall twice as fast, he would simply have to eat twice as fiercely.`
+  );
+  const [copied, setCopied] = useState<boolean>(false);
+
+  if (!isOpen) return null;
+
+  const fullMarkdown = `---
+title: "${title}"
+chapter: ${chapterNum}
+date: "${new Date().toISOString().slice(0, 10)}"
+author: "${author}"
+tags: [${tags.split(",").map((t) => `"${t.trim()}"`).join(", ")}]
+summary: "Nomster encounters the legendary Solana Candy Halving."
+---
+
+# Chapter ${chapterNum}: ${title}
+
+${content}`;
+
+  const handleCopyMarkdown = () => {
+    navigator.clipboard.writeText(fullMarkdown);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleOpenGitHubPR = () => {
+    // Generate GitHub file creation link with encoded content
+    const encodedContent = encodeURIComponent(fullMarkdown);
+    const githubUrl = `https://github.com/nomverse/nomverse/new/main?filename=src/content/stories/chapter-0${chapterNum}.md&value=${encodedContent}`;
+    window.open(githubUrl, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fade-in select-none">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-surface border border-slate-800 rounded-2xl p-6 shadow-2xl flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-solana-purple/10 border border-solana-purple/30 flex items-center justify-center text-solana-purple">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">NomVerse Living Lore Studio</h3>
+              <p className="text-xs text-slate-400">
+                Write a new canon chapter. 100% CC0 public domain story engine.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Metadata Inputs */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-3 border-b border-slate-800 text-xs">
+          <div>
+            <label className="text-[11px] font-mono text-slate-400">Chapter Title:</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full mt-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-mono text-slate-400">Author Credit:</label>
+            <input
+              type="text"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              className="w-full mt-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-mono text-slate-400">Tags (comma separated):</label>
+            <input
+              type="text"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              className="w-full mt-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white"
+            />
+          </div>
+        </div>
+
+        {/* Split Screen Editor & Live Preview */}
+        <div className="flex-1 min-h-[280px] grid grid-cols-1 md:grid-cols-2 gap-4 py-4 overflow-y-auto">
+          {/* Left: Raw Markdown Editor */}
+          <div className="flex flex-col space-y-1">
+            <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
+              <Edit3 className="w-3 h-3 text-solana-green" />
+              <span>Markdown Story Editor</span>
+            </span>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="flex-1 w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 font-mono focus:outline-none focus:border-solana-green/50 resize-none leading-relaxed"
+            />
+          </div>
+
+          {/* Right: Visual Reader Preview */}
+          <div className="flex flex-col space-y-1">
+            <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
+              <Eye className="w-3 h-3 text-solana-purple" />
+              <span>Visual Live Preview</span>
+            </span>
+            <div className="flex-1 p-4 rounded-xl bg-slate-900/60 border border-slate-800 overflow-y-auto space-y-3">
+              <h2 className="text-base font-bold text-white">
+                Chapter {chapterNum}: {title}
+              </h2>
+              <div className="text-[11px] font-mono text-emerald-400">By {author}</div>
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">
+                {content}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <button
+            onClick={handleCopyMarkdown}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition-colors"
+          >
+            {copied ? (
+              <>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Markdown Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy Raw Markdown</span>
+              </>
+            )}
+          </button>
+
+          <button
+            onClick={handleOpenGitHubPR}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-900/30 transition-all hover:scale-105"
+          >
+            <GitPullRequest className="w-4 h-4 text-pink-300" />
+            <span>Open GitHub PR (1-Click)</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

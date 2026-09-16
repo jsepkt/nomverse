@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <!-- Outer Glow Filter -->
+    <filter id="goldenGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Candy Base Radial Gradient (Golden Glow) -->
+    <radialGradient id="candyBodyGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="25%" stop-color="#FDE047" />
+      <stop offset="60%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#B45309" />
+    </radialGradient>
+
+    <!-- Solana Gradient for Stripes -->
+    <linearGradient id="solanaStripeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9945FF" />
+      <stop offset="50%" stop-color="#14F195" />
+      <stop offset="100%" stop-color="#00C2FF" />
+    </linearGradient>
+
+    <!-- Candy Wrapper Flare Gradients -->
+    <linearGradient id="wrapperLeftGrad" x1="100%" y1="50%" x2="0%" y2="50%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#9945FF" stop-opacity="0.4" />
+    </linearGradient>
+    <linearGradient id="wrapperRightGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#14F195" stop-opacity="0.4" />
+    </linearGradient>
+
+    <!-- Inner Highlight -->
+    <linearGradient id="candyShine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Clip Path for Candy Orb so stripes curve inside -->
+    <clipPath id="candyOrbClip">
+      <circle cx="60" cy="60" r="38" />
+    </clipPath>
+  </defs>
+
+  <!-- Ambient Energy Halo -->
+  <circle cx="60" cy="60" r="46" fill="#FBBF24" opacity="0.25" filter="url(#goldenGlow)" />
+  <circle cx="60" cy="60" r="42" fill="#14F195" opacity="0.2" filter="url(#goldenGlow)" />
+
+  <!-- Candy Wrapper Twists (Left and Right) -->
+  <!-- Left Wrapper Wing -->
+  <path d="M 24 60 C 6 42, 4 38, 2 34 L 6 86 C 10 80, 14 74, 24 60 Z" fill="url(#wrapperLeftGrad)" />
+  <path d="M 24 60 L 4 36" stroke="#FEF08A" stroke-width="1.5" opacity="0.8" />
+  <path d="M 24 60 L 6 84" stroke="#9945FF" stroke-width="1.5" opacity="0.7" />
+  <circle cx="22" cy="60" r="4" fill="#D97706" />
+
+  <!-- Right Wrapper Wing -->
+  <path d="M 96 60 C 114 42, 116 38, 118 34 L 114 86 C 110 80, 106 74, 96 60 Z" fill="url(#wrapperRightGrad)" />
+  <path d="M 96 60 L 116 36" stroke="#FEF08A" stroke-width="1.5" opacity="0.8" />
+  <path d="M 96 60 L 114 84" stroke="#14F195" stroke-width="1.5" opacity="0.7" />
+  <circle cx="98" cy="60" r="4" fill="#D97706" />
+
+  <!-- Main Candy Orb -->
+  <circle cx="60" cy="60" r="38" fill="url(#candyBodyGrad)" stroke="#FDE68A" stroke-width="2.5" filter="url(#goldenGlow)" />
+
+  <!-- Solana Transaction Stripes (Clipped inside Candy Orb) -->
+  <g clip-path="url(#candyOrbClip)">
+    <!-- Stripe 1 (Top) -->
+    <path d="M 20 44 L 100 34 L 105 40 L 25 50 Z" 
+          fill="url(#solanaStripeGrad)" 
+          opacity="0.9" />
+    
+    <!-- Stripe 2 (Middle) -->
+    <path d="M 15 58 L 105 48 L 110 54 L 20 64 Z" 
+          fill="url(#solanaStripeGrad)" 
+          opacity="0.95" />
+
+    <!-- Stripe 3 (Bottom) -->
+    <path d="M 20 72 L 100 62 L 105 68 L 25 78 Z" 
+          fill="url(#solanaStripeGrad)" 
+          opacity="0.9" />
+
+    <!-- Specular Highlight Curve -->
+    <ellipse cx="60" cy="38" rx="26" ry="12" fill="url(#candyShine)" transform="rotate(-10 60 38)" />
+    <circle cx="44" cy="34" r="5" fill="#FFFFFF" opacity="0.9" />
+  </g>
+
+  <!-- Sparkle Stars -->
+  <!-- Sparkle 1 (Top Left) -->
+  <path d="M 40 22 Q 40 28 46 28 Q 40 28 40 34 Q 40 28 34 28 Q 40 28 40 22 Z" fill="#FFFFFF" filter="drop-shadow(0 0 3px #14F195)" />
+  <!-- Sparkle 2 (Bottom Right) -->
+  <path d="M 82 82 Q 82 86 86 86 Q 82 86 82 90 Q 82 86 78 86 Q 82 86 82 82 Z" fill="#FFFBEB" filter="drop-shadow(0 0 3px #FBBF24)" />
+</svg>
