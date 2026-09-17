@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { TrendingUp, Rocket, Flame, Sparkles, ExternalLink } from "lucide-react";
@@ -76,12 +76,34 @@ export const TokenTickerBar: React.FC = () => {
           </div>
 
           <div
-            className={`hidden sm:flex items-center gap-1 font-bold ${
+            className={`hidden sm:flex items-center gap-1.5 font-bold ${
               isPositive ? "text-emerald-400" : "text-rose-400"
             }`}
           >
             <span>{isPositive ? "▲" : "▼"}</span>
             <span>{Math.abs(stats.priceChange24h).toFixed(1)}%</span>
+
+            {/* Mini Neon Trendline Sparkline */}
+            <svg className="w-12 h-3.5 ml-0.5 overflow-visible" viewBox="0 0 45 12" fill="none">
+              <defs>
+                <linearGradient id="tickerGlow" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor={isPositive ? "#10B981" : "#F43F5E"} stopOpacity="0.3" />
+                  <stop offset="100%" stopColor={isPositive ? "#14F195" : "#FB7185"} stopOpacity="1" />
+                </linearGradient>
+              </defs>
+              <path
+                d={isPositive ? "M 0 9 Q 10 11, 20 6 T 34 4 T 44 2" : "M 0 2 Q 10 2, 20 6 T 34 8 T 44 11"}
+                stroke="url(#tickerGlow)"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+              />
+              <circle
+                cx="44"
+                cy={isPositive ? 2 : 11}
+                r="1.75"
+                fill={isPositive ? "#14F195" : "#FB7185"}
+              />
+            </svg>
           </div>
         </div>
 

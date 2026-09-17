@@ -244,15 +244,38 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
 
   return (
     <div
-      className={`relative mx-auto overflow-hidden rounded-2xl border-2 border-solana-green/30 bg-[#080D1A] shadow-[0_0_35px_rgba(20,241,149,0.15)] flex items-center justify-center ${
+      className={`relative mx-auto overflow-hidden rounded-2xl border-2 border-solana-green/40 bg-[#060a14] shadow-[inset_0_0_25px_rgba(0,0,0,0.9),0_0_35px_rgba(20,241,149,0.18)] flex items-center justify-center group ${
         isFullWindow
           ? "w-full h-full max-h-[min(78vh,680px)] aspect-[440/520] max-w-full"
           : "w-full max-w-[440px] aspect-[440/520]"
       }`}
     >
+      {/* Top Arcade Cabinet Marquee Strip */}
+      <div className="absolute top-0 inset-x-0 h-6 bg-gradient-to-b from-slate-900/95 to-slate-950/80 backdrop-blur-xs border-b border-emerald-500/20 px-3 flex items-center justify-between z-10 pointer-events-none select-none">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#10b981]" />
+          <span className="text-[9px] sm:text-[10px] font-mono font-black tracking-widest text-emerald-400/90 uppercase">
+            NOM-O-MATIC 3000
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-[8px] sm:text-[9px] font-mono text-slate-400/80">
+          <span className="inline-block w-1 h-1 rounded-full bg-solana-purple" />
+          <span>60 FPS • ARCADE READY</span>
+        </div>
+      </div>
+
+      {/* Decorative Arcade Corner Rivets */}
+      <div className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-slate-700/80 border border-slate-500/50 pointer-events-none z-10" />
+      <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-slate-700/80 border border-slate-500/50 pointer-events-none z-10" />
+      <div className="absolute bottom-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-slate-700/80 border border-slate-500/50 pointer-events-none z-10" />
+      <div className="absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-slate-700/80 border border-slate-500/50 pointer-events-none z-10" />
+
+      {/* Retro Arcade Glass Reflection Sheen */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/[0.015] to-emerald-400/[0.04] z-10" />
+
       {isLoading && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm gap-3">
-          <div className="w-10 h-10 border-4 border-solana-green border-t-transparent rounded-full animate-spin" />
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-sm gap-3">
+          <div className="w-10 h-10 border-4 border-solana-green border-t-transparent rounded-full animate-spin shadow-[0_0_15px_#14f195]" />
           <span className="text-xs font-mono tracking-wider text-emerald-400">
             INITIALIZING ARCADE PHYSICS...
           </span>

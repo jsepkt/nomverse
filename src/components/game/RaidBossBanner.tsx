@@ -65,8 +65,11 @@ export const RaidBossBanner: React.FC<RaidBossBannerProps> = ({ userId, userName
       <div className="flex items-center justify-between gap-3">
         {/* Boss Icon & Name */}
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-xl animate-pulse">
-            👾
+          <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-rose-900/70 to-purple-950/80 border border-rose-500/50 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(244,63,94,0.4)] group overflow-hidden">
+            {/* Menacing glowing eye flare dots */}
+            <span className="absolute top-2 left-2.5 w-1 h-1 rounded-full bg-rose-400 animate-ping shadow-[0_0_8px_#f43f5e]" />
+            <span className="absolute top-2 right-2.5 w-1 h-1 rounded-full bg-rose-400 animate-ping shadow-[0_0_8px_#f43f5e]" />
+            <span className="relative z-10 select-none">👾</span>
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -114,9 +117,9 @@ export const RaidBossBanner: React.FC<RaidBossBannerProps> = ({ userId, userName
           </span>
         </div>
 
-        <div className="w-full h-3 rounded-full bg-slate-900 border border-slate-700 overflow-hidden relative">
+        <div className="w-full h-3.5 rounded-full bg-slate-950 border border-rose-500/30 overflow-hidden relative shadow-inner">
           <div
-            className="h-full bg-gradient-to-r from-rose-500 via-purple-500 to-solana-green transition-all duration-500 relative"
+            className="h-full bg-gradient-to-r from-rose-600 via-amber-500 to-rose-500 transition-all duration-500 relative shadow-[0_0_12px_rgba(244,63,94,0.6)]"
             style={{ width: `${hpPercent}%` }}
           >
             <div className="absolute inset-0 bg-white/20 animate-pulse" />

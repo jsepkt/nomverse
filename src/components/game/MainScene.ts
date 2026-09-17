@@ -27,6 +27,13 @@ export class MainScene extends Phaser.Scene {
   private gridGraphics!: Phaser.GameObjects.Graphics;
   private currentStageId: string = "meadow";
 
+  // Visual Polish: Cosmic Starfield, Eye Tracking & Mouth Anticipation
+  private stars: { circle: Phaser.GameObjects.Arc; speed: number }[] = [];
+  private leftPupil?: Phaser.GameObjects.Sprite;
+  private rightPupil?: Phaser.GameObjects.Sprite;
+  private mouthGlow?: Phaser.GameObjects.Arc;
+  private isAnticipating: boolean = false;
+
   // Rival Challenge & Holder Tier Fields
   private rival?: { score: number; challenger: string };
   private rivalBeaten: boolean = false;
@@ -130,9 +137,10 @@ export class MainScene extends Phaser.Scene {
 
     this.createProceduralTextures();
 
-    // Background Gradient with Cyber Grid
+    // Background Gradient with Cyber Grid & Starfield
     this.bgGraphics = this.add.graphics();
     this.gridGraphics = this.add.graphics();
+    this.initStarfield();
     this.updateStageEnvironment("meadow");
 
     this.aimGraphics = this.add.graphics();
@@ -147,16 +155,33 @@ export class MainScene extends Phaser.Scene {
     this.nomster = this.add.sprite(width / 2, nomsterY, "nomster");
     this.nomster.setOrigin(0.5, 0.85);
     this.nomster.setScale(1.0);
+    this.nomster.setDepth(10);
     this.nomster.setInteractive({ cursor: "grab" });
 
     // Nomster Mouth Trigger Area
     this.mouthCollider = this.add.circle(width / 2, nomsterY - 34, 24, 0x000000, 0);
     this.physics.add.existing(this.mouthCollider, true);
 
+    // Nomster Anticipation Mouth Glow
+    this.mouthGlow = this.add.circle(width / 2, nomsterY - 34, 18, 0xf43f5e, 0.65);
+    this.mouthGlow.setBlendMode(Phaser.BlendModes.ADD);
+    this.mouthGlow.setDepth(11);
+    this.mouthGlow.setVisible(false);
+
+    // Expressive Eye-Tracking Pupils
+    this.leftPupil = this.add.sprite(width / 2 - 18.5, nomsterY - 60, "pupil_sparkle");
+    this.leftPupil.setOrigin(0.5, 0.5);
+    this.leftPupil.setDepth(12);
+
+    this.rightPupil = this.add.sprite(width / 2 + 18.5, nomsterY - 60, "pupil_sparkle");
+    this.rightPupil.setOrigin(0.5, 0.5);
+    this.rightPupil.setDepth(12);
+
     // Bubble Gum Shield Sprite
     this.shieldSprite = this.add.sprite(width / 2, nomsterY - 40, "shield_bubble");
     this.shieldSprite.setVisible(false);
     this.shieldSprite.setAlpha(0.85);
+    this.shieldSprite.setDepth(16);
 
     this.tweens.add({
       targets: this.shieldSprite,
@@ -172,6 +197,7 @@ export class MainScene extends Phaser.Scene {
     // Equipped Cosmetic Accessory Sprite
     this.accessorySprite = this.add.sprite(width / 2, nomsterY, "skin_shades");
     this.accessorySprite.setVisible(false);
+    this.accessorySprite.setDepth(15);
     this.updateAccessoryVisual();
 
     // Idle Breathing
@@ -211,19 +237,167 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
-  // Update loop for Magnetic Pull and attached sprites alignment
+  // Update loop for Starfield, Eye Tracking, Mouth Anticipation, Trails, and Magnetic Pull
   public override update(time: number, delta: number): void {
     if (!this.nomster) return;
+
+    const dt = delta / 1000;
+    const { width: camWidth, height: camHeight } = this.cameras.main;
+
+    // 1. Drifting Cosmic Starfield Parallax
+    if (this.stars && this.stars.length > 0) {
+      for (const star of this.stars) {
+        star.circle.y -= star.speed * dt;
+        if (star.circle.y < -5) {
+          star.circle.y = camHeight + 5;
+          star.circle.x = Phaser.Math.Between(0, camWidth);
+        }
+      }
+    }
 
     // Keep mouth collider synced
     this.mouthCollider.x = this.nomster.x;
 
+    // 2. Eye Tracking & Expressive Pupil Following
+    const rad = Phaser.Math.DegToRad(this.nomster.angle);
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+
+    const offsetLX = -18.5;
+    const offsetLY = -60;
+    const offsetRX = 18.5;
+    const offsetRY = -60;
+
+    const baseLX = this.nomster.x + (offsetLX * cos - offsetLY * sin);
+    const baseLY = this.nomster.y + (offsetLX * sin + offsetLY * cos);
+    const baseRX = this.nomster.x + (offsetRX * cos - offsetRY * sin);
+    const baseRY = this.nomster.y + (offsetRX * sin + offsetRY * cos);
+
+    let lookTargetX = baseLX;
+    let lookTargetY = baseLY - 120;
+
+    if (this.candy && this.candy.active && this.lives > 0) {
+      lookTargetX = this.candy.x;
+      lookTargetY = this.candy.y;
+    }
+
+    const maxPupilOffset = 4.5;
+
+    const ldx = lookTargetX - baseLX;
+    const ldy = lookTargetY - baseLY;
+    const ldist = Math.sqrt(ldx * ldx + ldy * ldy) || 1;
+    const pupilLX = baseLX + (ldx / ldist) * Math.min(maxPupilOffset, ldist * 0.05);
+    const pupilLY = baseLY + (ldy / ldist) * Math.min(maxPupilOffset, ldist * 0.05);
+
+    const rdx = lookTargetX - baseRX;
+    const rdy = lookTargetY - baseRY;
+    const rdist = Math.sqrt(rdx * rdx + rdy * rdy) || 1;
+    const pupilRX = baseRX + (rdx / rdist) * Math.min(maxPupilOffset, rdist * 0.05);
+    const pupilRY = baseRY + (rdy / rdist) * Math.min(maxPupilOffset, rdist * 0.05);
+
+    if (this.leftPupil) {
+      this.leftPupil.setPosition(pupilLX, pupilLY);
+      this.leftPupil.setAngle(this.nomster.angle);
+    }
+    if (this.rightPupil) {
+      this.rightPupil.setPosition(pupilRX, pupilRY);
+      this.rightPupil.setAngle(this.nomster.angle);
+    }
+
+    // 3. Mouth Anticipation Stretch when candy descends close overhead
+    if (this.candy && this.candy.active && !this.isEating && this.playState === "playing") {
+      const mdx = this.candy.x - this.mouthCollider.x;
+      const mdy = this.candy.y - this.mouthCollider.y;
+      const distToMouth = Math.sqrt(mdx * mdx + mdy * mdy);
+
+      if (distToMouth < 130 && mdy < 0) {
+        if (!this.isAnticipating) {
+          this.isAnticipating = true;
+          this.tweens.add({
+            targets: this.nomster,
+            scaleY: 1.14,
+            scaleX: 0.90,
+            duration: 120,
+            ease: "Back.easeOut",
+          });
+          if (this.mouthGlow) {
+            this.mouthGlow.setVisible(true);
+            this.tweens.add({
+              targets: this.mouthGlow,
+              scale: 1.35,
+              alpha: 0.85,
+              duration: 140,
+              yoyo: true,
+              repeat: -1,
+            });
+          }
+        }
+      } else if (distToMouth >= 155 && this.isAnticipating) {
+        this.isAnticipating = false;
+        if (this.mouthGlow) {
+          this.tweens.killTweensOf(this.mouthGlow);
+          this.mouthGlow.setVisible(false);
+        }
+        this.tweens.add({
+          targets: this.nomster,
+          scaleY: 1.0,
+          scaleX: 1.0,
+          duration: 140,
+          ease: "Quad.easeOut",
+          onComplete: () => {
+            if (!this.isEating) this.updateNomsterMood();
+          },
+        });
+      }
+    }
+
+    if (this.mouthGlow && this.mouthGlow.visible) {
+      const mouthOffsetX = 0;
+      const mouthOffsetY = -34;
+      const mouthX = this.nomster.x + (mouthOffsetX * cos - mouthOffsetY * sin);
+      const mouthY = this.nomster.y + (mouthOffsetX * sin + mouthOffsetY * cos);
+      this.mouthGlow.setPosition(mouthX, mouthY);
+    }
+
+    // 4. Glowing Candy Particle Trails
+    if (this.candy && this.candy.active && this.candy.body && this.candy.body.velocity) {
+      const speed = this.candy.body.velocity.length();
+      if (speed > 45 && Math.random() < 0.4) {
+        const trailColor = this.isFrenzy
+          ? 0xf59e0b
+          : this.currentPowerUpType === "magnet"
+          ? 0x9945ff
+          : this.currentPowerUpType === "slowmo"
+          ? 0x06b6d4
+          : this.currentPowerUpType === "shield"
+          ? 0xec4899
+          : 0x14f195;
+
+        const trail = this.add.circle(
+          this.candy.x + Phaser.Math.Between(-4, 4),
+          this.candy.y + Phaser.Math.Between(-4, 4),
+          Phaser.Math.Between(2, 4),
+          trailColor,
+          0.75
+        );
+        trail.setBlendMode(Phaser.BlendModes.ADD);
+        trail.setDepth(5);
+        this.tweens.add({
+          targets: trail,
+          alpha: 0,
+          scale: 0.1,
+          duration: 250,
+          ease: "Sine.easeOut",
+          onComplete: () => trail.destroy(),
+        });
+      }
+    }
+
     // Keep accessory synchronized with Nomster movement and tilt
     if (this.accessorySprite && this.accessorySprite.visible) {
       const offset = this.getSkinOffset(this.currentSkin);
-      const rad = Phaser.Math.DegToRad(this.nomster.angle);
-      const rotatedOffsetX = offset.x * Math.cos(rad) - offset.y * Math.sin(rad);
-      const rotatedOffsetY = offset.x * Math.sin(rad) + offset.y * Math.cos(rad);
+      const rotatedOffsetX = offset.x * cos - offset.y * sin;
+      const rotatedOffsetY = offset.x * sin + offset.y * cos;
 
       this.accessorySprite.setPosition(
         this.nomster.x + rotatedOffsetX,
@@ -289,8 +463,55 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
-  // Generates 2D canvas textures for skins and shield
+  // Spawns drifting cosmic stardust particles with parallax speeds
+  private initStarfield(): void {
+    const { width, height } = this.cameras.main;
+    this.stars = [];
+    for (let i = 0; i < 35; i++) {
+      const x = Phaser.Math.Between(0, width);
+      const y = Phaser.Math.Between(0, height);
+      const radius = Phaser.Math.FloatBetween(1, 2.6);
+      const speed = Phaser.Math.FloatBetween(14, 40);
+      const alpha = Phaser.Math.FloatBetween(0.2, 0.85);
+      const circle = this.add.circle(x, y, radius, 0x14f195, alpha);
+      circle.setDepth(1);
+      this.stars.push({ circle, speed });
+    }
+  }
+
+  // Generates 2D canvas textures for skins, shield, and pupils
   private createProceduralTextures(): void {
+    // 0. Expressive Pupil with Specular Highlights
+    if (!this.textures.exists("pupil_sparkle")) {
+      const canvas = this.textures.createCanvas("pupil_sparkle", 16, 16);
+      if (canvas) {
+        const ctx = canvas.context;
+        // Dark pupil core
+        ctx.fillStyle = "#090d16";
+        ctx.beginPath();
+        ctx.arc(8, 8, 7, 0, Math.PI * 2);
+        ctx.fill();
+        // Inner cyber-emerald rim glint
+        ctx.fillStyle = "#14f195";
+        ctx.beginPath();
+        ctx.arc(8, 8, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#090d16";
+        ctx.beginPath();
+        ctx.arc(8, 8, 4.2, 0, Math.PI * 2);
+        ctx.fill();
+        // Specular white cartoon shines
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(6, 6, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(10.5, 10.5, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        canvas.refresh();
+      }
+    }
+
     // 1. Shades
     if (!this.textures.exists("skin_shades")) {
       const canvas = this.textures.createCanvas("skin_shades", 72, 24);
@@ -972,6 +1193,22 @@ export class MainScene extends Phaser.Scene {
       this.gridGraphics.lineBetween(0, y, width, y);
     }
 
+    // Dynamic Starfield color per stage
+    let starColor = 0x14f195;
+    if (stageId === "moon") {
+      starColor = 0x9945ff;
+    } else if (stageId === "matrix") {
+      starColor = 0xef4444;
+    } else if (stageId === "hyperdrive") {
+      starColor = 0xf59e0b;
+    }
+
+    if (this.stars && this.stars.length > 0) {
+      for (const star of this.stars) {
+        star.circle.setFillStyle(starColor, star.circle.alpha);
+      }
+    }
+
     if (this.candy && this.candy.active) {
       this.candy.setGravityY(this.activePowerUps.slowmo ? 180 : this.getStageGravity());
     }
@@ -1266,6 +1503,25 @@ export class MainScene extends Phaser.Scene {
       this.activateFrenzyMode();
     }
 
+    if (this.isAnticipating) {
+      this.isAnticipating = false;
+      if (this.mouthGlow) {
+        this.tweens.killTweensOf(this.mouthGlow);
+        this.mouthGlow.setVisible(false);
+      }
+    }
+
+    if (this.leftPupil && this.rightPupil) {
+      this.tweens.add({
+        targets: [this.leftPupil, this.rightPupil],
+        scaleX: 1.35,
+        scaleY: 1.35,
+        duration: 90,
+        yoyo: true,
+        repeat: 1,
+      });
+    }
+
     sounds.playNom();
 
     // Squash & Stretch
@@ -1412,6 +1668,14 @@ export class MainScene extends Phaser.Scene {
 
     if (this.candyLabel) {
       this.candyLabel.setVisible(false);
+    }
+
+    if (this.isAnticipating) {
+      this.isAnticipating = false;
+      if (this.mouthGlow) {
+        this.tweens.killTweensOf(this.mouthGlow);
+        this.mouthGlow.setVisible(false);
+      }
     }
 
     // Check Bubble Gum Shield absorption
@@ -1608,6 +1872,12 @@ export class MainScene extends Phaser.Scene {
   private triggerGameOver(): void {
     sounds.playGameOver();
 
+    this.isAnticipating = false;
+    if (this.mouthGlow) {
+      this.tweens.killTweensOf(this.mouthGlow);
+      this.mouthGlow.setVisible(false);
+    }
+
     if (this.idleTween) this.idleTween.stop();
 
     this.tweens.add({
@@ -1746,6 +2016,11 @@ export class MainScene extends Phaser.Scene {
     this.streak = 0;
     this.lives = livesCount;
     this.isEating = false;
+    this.isAnticipating = false;
+    if (this.mouthGlow) {
+      this.tweens.killTweensOf(this.mouthGlow);
+      this.mouthGlow.setVisible(false);
+    }
 
     // Reset power-ups
     this.activePowerUps = { magnet: false, shield: false, slowmo: false };
