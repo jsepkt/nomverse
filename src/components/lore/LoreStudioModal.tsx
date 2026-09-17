@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Portal } from "../ui/Portal";
 import { X, GitPullRequest, Sparkles, Copy, CheckCircle2, Eye, Edit3, ExternalLink } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -24,22 +25,34 @@ Nomster paused mid-munch. The golden block drops weren't falling every 400 milli
 
 Nomster tightened his little green fists, adjusted his cyber shades, and grinned with his tiny fangs. If the candies were going to fall twice as fast, he would simply have to eat twice as fiercely.`
   );
+  const [isPreview, setIsPreview] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   const fullMarkdown = `---
 title: "${title}"
 chapter: ${chapterNum}
-date: "${new Date().toISOString().slice(0, 10)}"
+date: "${new Date().toISOString().split("T")[0]}"
 author: "${author}"
-tags: [${tags.split(",").map((t) => `"${t.trim()}"`).join(", ")}]
-summary: "Nomster encounters the legendary Solana Candy Halving."
+tags: [${tags
+    .split(",")
+    .map((t) => `"${t.trim()}"`)
+    .join(", ")}]
 ---
 
-# Chapter ${chapterNum}: ${title}
-
-${content}`;
+${content}
+`;
 
   const handleCopyMarkdown = () => {
     navigator.clipboard.writeText(fullMarkdown);
@@ -55,29 +68,39 @@ ${content}`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fade-in select-none">
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-surface border border-slate-800 rounded-2xl p-6 shadow-2xl flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-solana-purple/10 border border-solana-purple/30 flex items-center justify-center text-solana-purple">
-              <Sparkles className="w-5 h-5" />
+    <Portal>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lore-studio-title"
+        onClick={onClose}
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 select-none"
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-4xl max-h-[90vh] bg-surface border border-slate-800 rounded-2xl p-6 shadow-2xl flex flex-col overflow-hidden"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-solana-purple/10 border border-solana-purple/30 flex items-center justify-center text-solana-purple">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 id="lore-studio-title" className="text-lg font-bold text-white">NomVerse Living Lore Studio</h3>
+                <p className="text-xs text-slate-400">
+                  Write a new canon chapter. 100% CC0 public domain story engine.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-white">NomVerse Living Lore Studio</h3>
-              <p className="text-xs text-slate-400">
-                Write a new canon chapter. 100% CC0 public domain story engine.
-              </p>
-            </div>
-          </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
         {/* Metadata Inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-3 border-b border-slate-800 text-xs">
@@ -173,5 +196,6 @@ ${content}`;
         </div>
       </div>
     </div>
+    </Portal>
   );
 };

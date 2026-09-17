@@ -15,7 +15,7 @@ export const HeroSection: React.FC = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-solana-purple/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-between gap-10 lg:gap-12">
         {/* Left Column: Vision & Pitch */}
         <div className="flex-1 text-center lg:text-left space-y-6 max-w-2xl">
           {/* Badges Bar */}
@@ -91,7 +91,7 @@ export const HeroSection: React.FC = () => {
       </div>
 
       {/* Real-Data Raydium Bonding Milestones */}
-      <div className="max-w-7xl mx-auto mt-6">
+      <div className="max-w-7xl mx-auto mt-10 sm:mt-12">
         <BondingMilestonesCard />
       </div>
     </section>

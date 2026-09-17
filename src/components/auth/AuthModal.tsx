@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Portal } from "../ui/Portal";
 import { useAuth } from "@/context/AuthContext";
 import { X, ShieldCheck, Wallet, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
 
@@ -17,6 +18,16 @@ export const AuthModal: React.FC = () => {
   const [googleName, setGoogleName] = useState<string>("");
   const [showGoogleInput, setShowGoogleInput] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isAuthModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeAuthModal();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isAuthModalOpen, closeAuthModal]);
 
   if (!isAuthModalOpen) return null;
 
@@ -47,8 +58,18 @@ export const AuthModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-md bg-surface border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+    <Portal>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        onClick={closeAuthModal}
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-md bg-surface border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-[0_0_50px_rgba(20,241,149,0.2)] max-h-[85vh] overflow-y-auto"
+        >
         {/* Close Button */}
         <button
           onClick={closeAuthModal}
@@ -195,5 +216,6 @@ export const AuthModal: React.FC = () => {
         </div>
       </div>
     </div>
+    </Portal>
   );
 };

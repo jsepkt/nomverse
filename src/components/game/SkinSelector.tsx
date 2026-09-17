@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { Portal } from "../ui/Portal";
 import { SkinId, SKINS_CATALOG, getEquippedSkin, setEquippedSkin } from "@/lib/skins";
 import { useAuth } from "@/context/AuthContext";
 import { X, Lock, CheckCircle2, Sparkles, Shirt } from "lucide-react";
@@ -28,6 +29,16 @@ export const SkinSelector: React.FC<SkinSelectorProps> = ({
 }) => {
   const { user } = useAuth();
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSelect = (skinId: SkinId, unlocked: boolean) => {
@@ -39,8 +50,18 @@ export const SkinSelector: React.FC<SkinSelectorProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in select-none">
-      <div className="relative w-full max-w-md bg-surface border border-slate-800 rounded-2xl p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+    <Portal>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="skin-selector-title"
+        onClick={onClose}
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 select-none"
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-md bg-surface border border-slate-800 rounded-2xl p-6 shadow-[0_0_50px_rgba(153,69,255,0.2)] max-h-[85vh] overflow-y-auto"
+        >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
@@ -123,5 +144,6 @@ export const SkinSelector: React.FC<SkinSelectorProps> = ({
         </div>
       </div>
     </div>
+    </Portal>
   );
 };

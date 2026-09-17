@@ -446,7 +446,7 @@ export const GameContainer: React.FC = () => {
       className={
         isFullWindow
           ? "fixed inset-0 z-[999] w-screen h-screen bg-[#050914] flex flex-col items-center justify-between p-2 sm:p-4 overflow-hidden select-none"
-          : "relative w-full max-w-lg mx-auto flex flex-col items-center"
+          : "relative w-full max-w-[460px] mx-auto flex flex-col items-center"
       }
     >
       {/* Live Gift Received Announcement */}
@@ -641,7 +641,7 @@ export const GameContainer: React.FC = () => {
         className={
           isFullWindow
             ? "relative flex-1 w-full flex items-center justify-center min-h-0 my-auto"
-            : "relative w-full"
+            : "relative w-full max-w-[440px] mx-auto aspect-[440/520] rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(20,241,149,0.2)]"
         }
       >
         {/* Unauthenticated Lockscreen */}

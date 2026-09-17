@@ -950,6 +950,11 @@ export class MainScene extends Phaser.Scene {
 
   // Displays an interactive start prompt on canvas before game starts
   private showStartPrompt(): void {
+    // If external UI manages start state, do not paint duplicate canvas elements
+    if (this.callbacks.onGameStateChange) {
+      return;
+    }
+
     const { width, height } = this.cameras.main;
     const container = this.add.container(width / 2, height * 0.38);
     this.startPromptContainer = container;

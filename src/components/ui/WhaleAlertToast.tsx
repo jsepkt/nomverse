@@ -75,10 +75,39 @@ export const WhaleAlertToast: React.FC<WhaleAlertToastProps> = ({ onTriggerFrenz
     };
   }, [onTriggerFrenzy]);
 
-  if (!isVisible || !stats) return null;
+  // Auto-tuck after 12s so it doesn't block reading body content
+  useEffect(() => {
+    if (!isVisible) return;
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+    }, 12000);
+    return () => clearTimeout(timer);
+  }, [isVisible]);
+
+  if (!stats) return null;
 
   const raydiumTarget = 69000;
   const distanceToRaydium = Math.max(0, raydiumTarget - stats.marketCap);
+
+  if (!isVisible) {
+    return (
+      <aside
+        aria-label="Live Token Stats Trigger"
+        className="fixed bottom-4 left-4 z-40 pointer-events-auto select-none"
+      >
+        <button
+          onClick={() => setIsVisible(true)}
+          aria-label="Show Live Stats"
+          title="Open Live pump.fun Stats"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/90 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-400 font-mono text-[11px] font-bold shadow-[0_0_15px_rgba(20,241,149,0.15)] backdrop-blur-md transition-all hover:scale-105"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span>${stats.priceUsd}</span>
+          <span className="text-slate-400 text-[10px]">({stats.bondingProgress}%)</span>
+        </button>
+      </aside>
+    );
+  }
 
   return (
     <aside

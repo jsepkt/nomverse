@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Portal } from "../ui/Portal";
 import { TOKEN_CONFIG } from "@/config/token";
 import {
   HOLDER_TIERS,
@@ -42,6 +43,16 @@ export const HolderPerksModal: React.FC<HolderPerksModalProps> = ({
   const [currentPerks, setCurrentPerks] = useState<HolderPerks>(HOLDER_TIERS.fish);
   const [verifiedBalance, setVerifiedBalance] = useState<number>(0);
   const [activeAddress, setActiveAddress] = useState<string | null>(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     const saved = getStoredHolderState();
@@ -135,13 +146,18 @@ export const HolderPerksModal: React.FC<HolderPerksModalProps> = ({
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="holder-perks-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
-    >
-      <div className="relative w-full max-w-lg rounded-3xl border border-emerald-500/30 bg-slate-950 p-6 shadow-[0_0_50px_rgba(20,241,149,0.18)] max-h-[90vh] overflow-y-auto">
+    <Portal>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="holder-perks-title"
+        onClick={onClose}
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-lg rounded-3xl border border-emerald-500/30 bg-slate-950 p-6 shadow-[0_0_50px_rgba(20,241,149,0.25)] max-h-[85vh] overflow-y-auto"
+        >
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -328,5 +344,6 @@ export const HolderPerksModal: React.FC<HolderPerksModalProps> = ({
         </a>
       </div>
     </div>
+    </Portal>
   );
 };
