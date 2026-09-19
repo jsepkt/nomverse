@@ -69,11 +69,13 @@ const PhaserCanvasDynamic = dynamic(
 export interface GameContainerProps {
   initialFullWindow?: boolean;
   showGameRoomButton?: boolean;
+  expandedMode?: boolean;
 }
 
 export const GameContainer: React.FC<GameContainerProps> = ({
   initialFullWindow = false,
   showGameRoomButton = false,
+  expandedMode = false,
 }) => {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -590,6 +592,8 @@ export const GameContainer: React.FC<GameContainerProps> = ({
       className={
         isFullWindow
           ? "fixed inset-0 z-[999] w-screen h-screen bg-[#050914] flex flex-col items-center justify-between p-2 sm:p-4 overflow-hidden select-none"
+          : expandedMode
+          ? "relative w-full max-w-[560px] sm:max-w-[580px] mx-auto flex flex-col items-center"
           : "relative w-full max-w-[460px] mx-auto flex flex-col items-center"
       }
     >
@@ -877,6 +881,8 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         className={
           isFullWindow
             ? "relative flex-1 w-full flex items-center justify-center min-h-0 my-auto"
+            : expandedMode
+            ? "relative w-full max-w-[540px] mx-auto aspect-[440/520] rounded-2xl overflow-hidden shadow-[0_0_45px_rgba(20,241,149,0.25)]"
             : "relative w-full max-w-[440px] mx-auto aspect-[440/520] rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(20,241,149,0.2)]"
         }
       >
@@ -976,6 +982,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           toddlerMode={toddlerMode}
           waddleSignal={waddleSignal}
           isFullWindow={isFullWindow}
+          expandedMode={expandedMode}
         />
       </div>
 
@@ -1002,7 +1009,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         onWaddle={(dir) => setWaddleSignal({ direction: dir, timestamp: Date.now() })}
         onDash={() => setDashSignal((prev) => prev + 1)}
         dashReady={dashReady}
-        disabled={!user || isGameOver || lives <= 0}
+        disabled={(!user && !isGuestMode) || isGameOver || lives <= 0}
       />
 
       {/* Arcade Instructions & Status Footer (Hidden in Full Window for zero distraction) */}

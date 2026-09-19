@@ -120,6 +120,26 @@ export const PixelSkinWorkshop: React.FC = () => {
     setTimeout(() => setEquippedSuccess(false), 3500);
   };
 
+  // Reset to default cute Nomster template
+  const handleResetTemplate = () => {
+    setPixels(PRESETS["Classic"].map((row) => [...row]));
+    sounds.playNom();
+  };
+
+  // Revert in-game skin to original mascot
+  const handleRevertToDefaultMascot = () => {
+    try {
+      localStorage.removeItem("nomverse_custom_skin_data");
+      window.dispatchEvent(
+        new CustomEvent("nomverse_custom_skin_equipped", { detail: { dataUrl: "" } })
+      );
+    } catch {
+      // ignore
+    }
+    sounds.playNom();
+    confetti({ particleCount: 40, spread: 45, origin: { y: 0.5 } });
+  };
+
   // Download high-resolution PNG
   const handleDownloadPng = () => {
     const exportCanvas = document.createElement("canvas");
@@ -315,6 +335,25 @@ export const PixelSkinWorkshop: React.FC = () => {
               <Download className="w-3.5 h-3.5" />
               <span>Download 512px PFP</span>
             </button>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                onClick={handleResetTemplate}
+                className="py-1.5 px-2.5 rounded-xl text-[11px] font-mono text-slate-400 hover:text-slate-200 bg-slate-900/60 hover:bg-slate-800 border border-slate-800 flex items-center justify-center gap-1 transition-all"
+                title="Reset editor canvas to classic Nomster pixel art"
+              >
+                <RotateCcw className="w-3 h-3 text-slate-400" />
+                <span>Reset Grid</span>
+              </button>
+
+              <button
+                onClick={handleRevertToDefaultMascot}
+                className="py-1.5 px-2.5 rounded-xl text-[11px] font-mono text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 flex items-center justify-center gap-1 transition-all"
+                title="Revert the live in-game Phaser character to original vector SVG mascot"
+              >
+                <span>Revert In-Game</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

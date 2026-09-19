@@ -74,8 +74,8 @@ export const MoreGamesTab: React.FC = () => {
 
   const handleTapBoss = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = typeof e.clientX === "number" && e.clientX > 0 ? e.clientX - rect.left : rect.width / 2;
+    const y = typeof e.clientY === "number" && e.clientY > 0 ? e.clientY - rect.top : rect.height / 2;
 
     const dmg = Math.floor(Math.random() * 15) + 10;
     sounds.playBossHit();

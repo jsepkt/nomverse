@@ -37,6 +37,7 @@ interface PhaserCanvasProps {
   toddlerMode?: boolean;
   waddleSignal?: { direction: "left" | "right"; timestamp: number } | null;
   isFullWindow?: boolean;
+  expandedMode?: boolean;
 }
 
 export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
@@ -65,6 +66,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   toddlerMode = false,
   waddleSignal,
   isFullWindow = false,
+  expandedMode = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<PhaserType.Game | null>(null);
@@ -319,6 +321,8 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
       className={`relative mx-auto overflow-hidden rounded-2xl border-2 border-solana-green/40 bg-[#060a14] shadow-[inset_0_0_25px_rgba(0,0,0,0.9),0_0_35px_rgba(20,241,149,0.18)] flex items-center justify-center group ${
         isFullWindow
           ? "w-full h-full max-h-[min(78vh,680px)] aspect-[440/520] max-w-full"
+          : expandedMode
+          ? "w-full max-w-[540px] aspect-[440/520]"
           : "w-full max-w-[440px] aspect-[440/520]"
       }`}
     >

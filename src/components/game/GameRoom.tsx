@@ -50,7 +50,9 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      if (mobile && initialMode !== "half") {
+      if (mobile) {
+        setScreenSize("full");
+      } else if (initialMode === "full") {
         setScreenSize("full");
       }
     };
@@ -84,7 +86,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#050914] text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#050914] text-slate-100 flex flex-col pb-24 lg:pb-12">
       {/* Game Room Top Navigation Deck */}
       <div className="sticky top-0 z-40 bg-slate-950/90 border-b border-slate-800/80 backdrop-blur-xl px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3 shadow-md">
         {/* Left: Breadcrumb & Title */}
@@ -207,7 +209,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
           <div className="flex flex-col items-center justify-start gap-8 w-full">
             {/* Centered Expanded Arcade Cabinet */}
             <div className="w-full flex justify-center">
-              <GameContainer />
+              <GameContainer expandedMode={true} />
             </div>
 
             {/* Full Size Bottom Companion Deck */}

@@ -26,8 +26,21 @@ const TARGET_SOL_MIGRATION = 85; // ~85 SOL to graduate to Raydium (~$69K market
 export const MissionControl: React.FC = () => {
   // Calculator state
   const [solInput, setSolInput] = useState<number>(1);
-  const [currentSolCollected, setCurrentSolCollected] = useState<number>(32.5); // Current simulated progress on curve
+  const [currentSolCollected, setCurrentSolCollected] = useState<number>(3.5); // Starts from ~4.1%
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Sync with live on-chain token stats
+  useEffect(() => {
+    fetch("/api/token-stats")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.bondingProgressPercent === "number") {
+          const realSol = (data.bondingProgressPercent / 100) * TARGET_SOL_MIGRATION;
+          setCurrentSolCollected(parseFloat(realSol.toFixed(2)));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Compute exact bonding curve math
   const currentSol = VIRTUAL_SOL_RESERVES + currentSolCollected;
@@ -272,6 +285,28 @@ export const MissionControl: React.FC = () => {
                 className="h-full bg-gradient-to-r from-emerald-500 to-solana-green transition-all duration-300 shadow-[0_0_12px_rgba(20,241,149,0.4)]"
                 style={{ width: `${graduationProgressPercent}%` }}
               />
+            </div>
+          </div>
+
+          {/* Interactive Curve Simulation Slider */}
+          <div className="pt-2 border-t border-slate-800/80 space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span>Simulate Orbit Trajectory:</span>
+              <span className="text-solana-green font-bold">{currentSolCollected.toFixed(1)} SOL ({graduationProgressPercent}%)</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max={TARGET_SOL_MIGRATION}
+              step="0.5"
+              value={currentSolCollected}
+              onChange={(e) => setCurrentSolCollected(parseFloat(e.target.value))}
+              className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none"
+            />
+            <div className="flex justify-between text-[9px] font-mono text-slate-500">
+              <span>0 SOL (Genesis)</span>
+              <span>42.5 SOL (50%)</span>
+              <span>85 SOL (Raydium 🚀)</span>
             </div>
           </div>
         </div>

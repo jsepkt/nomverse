@@ -362,6 +362,12 @@ export class MainScene extends Phaser.Scene {
             }
           };
           img.src = dataUrl;
+        } else if (!dataUrl && this.nomster && this.nomster.active) {
+          if (this.textures && this.textures.exists("custom_pixel_skin")) {
+            this.textures.remove("custom_pixel_skin");
+          }
+          this.nomster.setTexture("nomster");
+          this.nomster.setDisplaySize(110, 110);
         }
       });
 

@@ -52,7 +52,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Create",
-    href: "#create",
+    href: "/#create",
     icon: Palette,
     color: "text-amber-400",
     glowColor: "group-hover:text-amber-300",
@@ -60,7 +60,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Lore",
-    href: "#lore",
+    href: "/#lore",
     icon: BookOpen,
     color: "text-purple-400",
     glowColor: "group-hover:text-purple-300",
@@ -68,7 +68,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Wall",
-    href: "#wall",
+    href: "/#wall",
     icon: MessageSquare,
     color: "text-teal-400",
     glowColor: "group-hover:text-teal-300",
@@ -77,7 +77,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Build",
-    href: "#toolkit",
+    href: "/#toolkit",
     icon: Code2,
     color: "text-yellow-400",
     glowColor: "group-hover:text-yellow-300",
@@ -85,7 +85,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "$NOM",
-    href: "#tokenomics",
+    href: "/#tokenomics",
     icon: Flame,
     color: "text-rose-400",
     glowColor: "group-hover:text-rose-300",
@@ -426,16 +426,16 @@ export const Navbar: React.FC = () => {
         aria-label="Mobile Bottom Navigation"
         className="lg:hidden fixed bottom-3 inset-x-4 z-40 max-w-sm mx-auto rounded-2xl bg-slate-950/85 backdrop-blur-2xl border border-slate-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.8)] p-1.5 flex items-center justify-around transition-all select-none"
       >
-        <a
-          href="#arcade"
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-emerald-400 hover:bg-emerald-500/10 active:scale-90 transition-all"
+        <button
+          onClick={handlePlayClick}
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-emerald-400 hover:bg-emerald-500/10 active:scale-90 transition-all cursor-pointer"
         >
           <Gamepad2 className="w-4 h-4 mb-0.5 text-emerald-400" />
           <span>Play</span>
-        </a>
+        </button>
 
         <a
-          href="#create"
+          href="/#create"
           className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-amber-300 hover:bg-amber-500/10 active:scale-90 transition-all"
         >
           <Palette className="w-4 h-4 mb-0.5 text-amber-400" />
@@ -443,7 +443,7 @@ export const Navbar: React.FC = () => {
         </a>
 
         <a
-          href="#lore"
+          href="/#lore"
           className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-purple-300 hover:bg-purple-500/10 active:scale-90 transition-all"
         >
           <BookOpen className="w-4 h-4 mb-0.5 text-purple-400" />
@@ -451,7 +451,7 @@ export const Navbar: React.FC = () => {
         </a>
 
         <a
-          href="#wall"
+          href="/#wall"
           className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-teal-300 hover:bg-teal-500/10 active:scale-90 transition-all"
         >
           <MessageSquare className="w-4 h-4 mb-0.5 text-teal-400" />
@@ -459,7 +459,7 @@ export const Navbar: React.FC = () => {
         </a>
 
         <a
-          href="#tokenomics"
+          href="/#tokenomics"
           className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 active:scale-90 transition-all"
         >
           <Flame className="w-4 h-4 mb-0.5 text-rose-400" />

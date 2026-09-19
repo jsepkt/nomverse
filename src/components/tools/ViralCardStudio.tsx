@@ -27,6 +27,7 @@ export const ViralCardStudio: React.FC = () => {
   const [maxStreak, setMaxStreak] = useState<number>(0);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [holoAngle, setHoloAngle] = useState<number>(45);
+  const mascotImgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     try {
@@ -37,6 +38,13 @@ export const ViralCardStudio: React.FC = () => {
     } catch {
       // ignore
     }
+
+    const img = new Image();
+    img.src = "/mascot.svg";
+    img.onload = () => {
+      mascotImgRef.current = img;
+      renderCard();
+    };
   }, []);
 
   const userId = user?.id || "guest";
@@ -163,9 +171,13 @@ export const ViralCardStudio: React.FC = () => {
     ctx.arc(820, 230, 160, 0, Math.PI * 2);
     ctx.fill();
 
-    // Nomster Mascot Emoji / Figure
-    ctx.font = "140px serif";
-    ctx.fillText("🦆", 750, 280);
+    // Nomster Mascot Illustration
+    if (mascotImgRef.current && mascotImgRef.current.complete) {
+      ctx.drawImage(mascotImgRef.current, 720, 130, 200, 200);
+    } else {
+      ctx.font = "140px serif";
+      ctx.fillText("🦆", 750, 280);
+    }
 
     // 8. Footer Telemetry & Legal CC0 Assurance
     ctx.strokeStyle = "#1E293B";
