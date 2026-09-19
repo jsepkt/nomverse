@@ -170,7 +170,9 @@ Your story begins here...`;
       </div>
 
       {/* In-Browser Chapter 3 Lore Studio Modal */}
-      <LoreStudioModal isOpen={isStudioOpen} onClose={() => setIsStudioOpen(false)} />
+      {isStudioOpen && (
+        <LoreStudioModal isOpen={isStudioOpen} onClose={() => setIsStudioOpen(false)} />
+      )}
     </section>
   );
 };

@@ -18,8 +18,6 @@ import {
 import { TOKEN_CONFIG } from "@/config/token";
 import { setStoredHolderState, HOLDER_TIERS } from "@/lib/holderTiers";
 
-const SOLANA_MAINNET_RPC = "https://api.mainnet-beta.solana.com";
-
 interface SolanaNetworkStats {
   slot: number;
   epoch: number;
@@ -50,65 +48,26 @@ export const SolanaRpcTelemetry: React.FC = () => {
 
   const addressInputId = useId();
 
-  // Fetch real on-chain Solana metrics via official JSON-RPC 2.0
+  // Fetch real on-chain Solana metrics via server-side RPC proxy
   const fetchSolanaRpc = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    const start = performance.now();
 
     try {
-      // 1. Fetch current slot and recent performance samples for real TPS
-      const [slotRes, epochRes, perfRes] = await Promise.all([
-        fetch(SOLANA_MAINNET_RPC, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "getSlot" }),
-        }),
-        fetch(SOLANA_MAINNET_RPC, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jsonrpc: "2.0", id: 2, method: "getEpochInfo" }),
-        }),
-        fetch(SOLANA_MAINNET_RPC, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 3,
-            method: "getRecentPerformanceSamples",
-            params: [2],
-          }),
-        }),
-      ]);
+      const res = await fetch("/api/solana-telemetry");
+      const data = await res.json();
 
-      const latencyMs = Math.round(performance.now() - start);
-
-      const slotData = await slotRes.json();
-      const epochData = await epochRes.json();
-      const perfData = await perfRes.json();
-
-      const slot = slotData.result || 0;
-      const epoch = epochData.result?.epoch || 0;
-      const slotIndex = epochData.result?.slotIndex || 0;
-      const slotsInEpoch = epochData.result?.slotsInEpoch || 432000;
-      const epochProgressPercent = Math.min(100, Math.round((slotIndex / slotsInEpoch) * 100));
-
-      // Calculate real TPS from the most recent sample
-      let tps = 2400; // fallback standard Solana TPS
-      if (perfData.result && perfData.result[0]) {
-        const sample = perfData.result[0];
-        const numTx = sample.numTransactions || 0;
-        const period = sample.samplePeriodSecs || 60;
-        tps = Math.round(numTx / period);
+      if (!data.success) {
+        throw new Error(data.error || "Failed to query Solana network telemetry");
       }
 
       setNetworkStats({
-        slot,
-        epoch,
-        epochProgressPercent,
-        tps,
-        latencyMs,
-        lastUpdated: Date.now(),
+        slot: data.slot,
+        epoch: data.epoch,
+        epochProgressPercent: data.epochProgressPercent,
+        tps: data.tps,
+        latencyMs: data.latencyMs,
+        lastUpdated: data.lastUpdated,
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to connect to Solana RPC";
@@ -193,7 +152,7 @@ export const SolanaRpcTelemetry: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400 font-mono mt-0.5">
-              Endpoint: <span className="text-slate-300">{SOLANA_MAINNET_RPC}</span>
+              Endpoint: <span className="text-slate-300">api.mainnet-beta.solana.com</span>
             </p>
           </div>
         </div>
