@@ -286,7 +286,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
 
   // Handle mobile waddle signals
   useEffect(() => {
-    if (!waddleSignal || !sceneRef.current) return;
+    if (!waddleSignal || !sceneRef.current || !sceneRef.current.isReady) return;
     if (waddleSignal.direction === "left") {
       sceneRef.current.waddleLeft();
     } else if (waddleSignal.direction === "right") {

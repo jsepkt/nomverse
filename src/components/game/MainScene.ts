@@ -162,6 +162,10 @@ export class MainScene extends Phaser.Scene {
     super({ key: "MainScene" });
   }
 
+  public get isReady(): boolean {
+    return Boolean(this.nomster);
+  }
+
   public init(data: {
     callbacks?: SceneCallbacks;
     initialLives?: number;
@@ -1667,12 +1671,12 @@ export class MainScene extends Phaser.Scene {
 
   // Mobile Paddle waddle handlers
   public waddleLeft(): void {
-    if (this.lives <= 0) return;
+    if (!this.nomster || this.lives <= 0) return;
     this.waddleNomsterTo(this.nomster.x - 75);
   }
 
   public waddleRight(): void {
-    if (this.lives <= 0) return;
+    if (!this.nomster || this.lives <= 0) return;
     this.waddleNomsterTo(this.nomster.x + 75);
   }
 
@@ -1713,10 +1717,12 @@ export class MainScene extends Phaser.Scene {
         this.candy && this.candy.active
           ? Phaser.Math.Distance.Between(pointer.x, pointer.y, this.candy.x, this.candy.y)
           : 999;
-      const distToNomster = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.nomster.x, this.nomster.y);
+      const distToNomster = this.nomster
+        ? Phaser.Math.Distance.Between(pointer.x, pointer.y, this.nomster.x, this.nomster.y)
+        : 999;
 
       // Mascot Petting / Tickling interaction (toddler friendly joy)
-      if (distToNomster < 52) {
+      if (this.nomster && distToNomster < 52) {
         this.petNomster();
         this.isMovingNomster = true;
         this.waddleNomsterTo(pointer.x);
@@ -1725,7 +1731,7 @@ export class MainScene extends Phaser.Scene {
 
       if (distToCandy < 65) {
         this.isDraggingCandy = true;
-      } else if (distToNomster < 80 || pointer.y > this.nomster.y - 60) {
+      } else if (this.nomster && (distToNomster < 80 || pointer.y > this.nomster.y - 60)) {
         this.isMovingNomster = true;
         this.waddleNomsterTo(pointer.x);
       } else {
@@ -1811,6 +1817,7 @@ export class MainScene extends Phaser.Scene {
 
   // Mascot Mood Wake-up handler
   public wakeNomster(): void {
+    if (!this.nomster) return;
     this.lastInputTime = this.time.now;
     if (this.isNapping) {
       this.isNapping = false;
@@ -1961,6 +1968,7 @@ export class MainScene extends Phaser.Scene {
 
   // Mascot Petting / Tickle: Joyful giggle, squish bounce, and heart emojis
   public petNomster(): void {
+    if (!this.nomster) return;
     sounds.playGiggle();
 
     // Squish & bounce
@@ -2007,6 +2015,7 @@ export class MainScene extends Phaser.Scene {
   }
 
   private waddleNomsterTo(targetX: number): void {
+    if (!this.nomster) return;
     const { width } = this.cameras.main;
     const clampedX = Phaser.Math.Clamp(targetX, 60, width - 60);
     const diff = clampedX - this.nomster.x;
@@ -2019,6 +2028,7 @@ export class MainScene extends Phaser.Scene {
       duration: 120,
       ease: "Power1",
       onComplete: () => {
+        if (!this.nomster) return;
         this.tweens.add({
           targets: this.nomster,
           angle: 0,
@@ -2796,7 +2806,7 @@ export class MainScene extends Phaser.Scene {
   }
 
   private handleEatCandy(): void {
-    if (this.isEating || this.lives <= 0) return;
+    if (!this.nomster || !this.mouthCollider || this.isEating || this.lives <= 0) return;
     this.isEating = true;
     this.wakeNomster();
 
@@ -3553,7 +3563,7 @@ export class MainScene extends Phaser.Scene {
   }
 
   private updateNomsterMood(): void {
-    if (this.lives <= 0) return;
+    if (!this.nomster || this.lives <= 0) return;
 
     if (this.idleTween) {
       this.idleTween.stop();
@@ -3641,6 +3651,7 @@ export class MainScene extends Phaser.Scene {
   // Sonic Super Dash Execution
   public performSuperDash(): boolean {
     if (
+      !this.nomster ||
       !this.isDashReady ||
       this.lives <= 0 ||
       (this.playState !== "playing" && this.playState !== "countdown")
@@ -3722,6 +3733,7 @@ export class MainScene extends Phaser.Scene {
   // Air Juggle & Deflection
   public performAirJuggle(): boolean {
     if (
+      !this.nomster ||
       !this.candy ||
       !this.candy.active ||
       this.lives <= 0 ||
@@ -3806,7 +3818,7 @@ export class MainScene extends Phaser.Scene {
 
   // Activates 8-second Fever Overdrive
   public activateFeverOverdrive(): void {
-    if (this.isFeverOverdrive) return;
+    if (this.isFeverOverdrive || !this.nomster) return;
     this.isFeverOverdrive = true;
     sounds.playFeverActive();
     this.cameras.main.shake(300, 0.015);
@@ -4148,10 +4160,12 @@ export class MainScene extends Phaser.Scene {
       this.spawnBoss();
     }
 
-    this.nomster.setAngle(0);
-    this.nomster.setScale(1.0);
-    this.nomster.setAlpha(1);
-    this.updateNomsterMood();
+    if (this.nomster) {
+      this.nomster.setAngle(0);
+      this.nomster.setScale(1.0);
+      this.nomster.setAlpha(1);
+      this.updateNomsterMood();
+    }
     this.updateStageEnvironment(this.currentEpisodeConfig ? this.currentEpisodeConfig.stageEnvironment : "meadow");
 
     if (this.rival) {
