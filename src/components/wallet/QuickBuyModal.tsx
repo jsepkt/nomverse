@@ -57,7 +57,7 @@ export const QuickBuyModal: React.FC<QuickBuyModalProps> = ({ isOpen, onClose })
           const pNative = parseFloat(data.priceNative) || 0.000000018;
           setTokenPriceUsd(pUsd);
           setTokenPriceNative(pNative);
-          setBondingProgress(data.bondingProgress || 4.1);
+          setBondingProgress(data.bondingProgressPercent ?? data.bondingProgress ?? 1.28);
         }
       })
       .catch(() => {});
@@ -210,7 +210,16 @@ export const QuickBuyModal: React.FC<QuickBuyModalProps> = ({ isOpen, onClose })
           href={TOKEN_CONFIG.pumpFunUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-mono font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(20,241,149,0.35)] transition-all"
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(
+                new CustomEvent("NOM_CANDY_FRENZY", {
+                  detail: { duration: 25, sponsor: "Quick Buyer" },
+                })
+              );
+            }
+          }}
+          className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-mono font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(20,241,149,0.35)] transition-all cursor-pointer"
         >
           <span>BUY ON PUMP.FUN NOW</span>
           <ExternalLink className="w-4 h-4" />

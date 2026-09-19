@@ -21,6 +21,7 @@ import {
   Wallet,
   Coins,
   Rocket,
+  Users,
 } from "lucide-react";
 import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";
@@ -34,6 +35,10 @@ interface GameOverModalProps {
   cooldownUntil: number | null;
   onRequestSOS: () => Promise<boolean>;
   onLifeRestored: () => void;
+  raidDamageDealt?: number;
+  isWhaleMultiplier?: boolean;
+  onOpenReferral?: () => void;
+  onOpenDailyLootbox?: () => void;
 }
 
 export const GameOverModal: React.FC<GameOverModalProps> = ({
@@ -43,6 +48,10 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   cooldownUntil,
   onRequestSOS,
   onLifeRestored,
+  raidDamageDealt,
+  isWhaleMultiplier,
+  onOpenReferral,
+  onOpenDailyLootbox,
 }) => {
   const { user, openAuthModal } = useAuth();
   const [timeLeft, setTimeLeft] = useState<string>("03:00:00");
@@ -217,6 +226,43 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             Nomster is starving after eating <strong>{score}</strong> candies!
           </p>
         </div>
+
+        {/* Raid Boss Hit Notification */}
+        {raidDamageDealt !== undefined && raidDamageDealt > 0 && (
+          <div className="p-2.5 rounded-xl bg-gradient-to-r from-rose-950/80 to-purple-950/80 border border-rose-500/40 text-xs font-mono text-rose-200 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-1.5">
+              <Swords className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+              <span>World Boss Hit:</span>
+            </div>
+            <span className="font-bold text-amber-400">
+              -{raidDamageDealt} HP {isWhaleMultiplier ? "🐋 (2x WHALE CRIT!)" : "💥"}
+            </span>
+          </div>
+        )}
+
+        {/* Viral Retention Shortcuts */}
+        {(onOpenDailyLootbox || onOpenReferral) && (
+          <div className="grid grid-cols-2 gap-2">
+            {onOpenDailyLootbox && (
+              <button
+                onClick={onOpenDailyLootbox}
+                className="py-2 px-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Gift className="w-3.5 h-3.5 text-amber-400" />
+                <span>Daily Crate</span>
+              </button>
+            )}
+            {onOpenReferral && (
+              <button
+                onClick={onOpenReferral}
+                className="py-2 px-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Users className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Invite Squad</span>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Guest Conversion Banner: Prompt to Save High Score */}
         {!user && (

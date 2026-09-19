@@ -53,8 +53,17 @@ import {
   Zap,
   Gamepad2,
   Bot,
+  Gift,
+  Users,
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import { DailyLootboxModal } from "./DailyLootboxModal";
+import { ViralReferralModal } from "./ViralReferralModal";
+import { canClaimToday } from "@/lib/dailyRewards";
+import {
+  processIncomingReferral,
+  recordFriendPlayCommission,
+} from "@/lib/referralSystem";
 
 const PhaserCanvasDynamic = dynamic(
   () => import("./PhaserCanvas").then((mod) => mod.PhaserCanvas),
@@ -146,6 +155,13 @@ export const GameContainer: React.FC<GameContainerProps> = ({
   const [rescueBeaconId, setRescueBeaconId] = useState<string | null>(null);
   const [rescueBeaconCompleted, setRescueBeaconCompleted] = useState<boolean>(false);
   const [rescueAlert, setRescueAlert] = useState<string | null>(null);
+
+  // Daily Mystery Lootbox & Viral Squad Referral State
+  const [isDailyLootboxOpen, setIsDailyLootboxOpen] = useState<boolean>(false);
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState<boolean>(false);
+  const [lastRaidDamage, setLastRaidDamage] = useState<number>(0);
+  const [welcomeRefMessage, setWelcomeRefMessage] = useState<string | null>(null);
+  const [canClaimCrate, setCanClaimCrate] = useState<boolean>(false);
 
   const handleCycleDeepNom = () => {
     setDeepNomMode((prev) => {
@@ -283,6 +299,20 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           tg.setHeaderColor("#050914");
           tg.setBackgroundColor("#050914");
         }
+
+        // Check Daily Mystery Lootbox status
+        setCanClaimCrate(canClaimToday().canClaim);
+
+        // Process Viral Squad Referral Link (?ref=...)
+        const refParam = params.get("ref");
+        if (refParam) {
+          const { isNewReferee, referrerCode } = processIncomingReferral(refParam);
+          if (isNewReferee) {
+            setLives((prev) => Math.min(10, prev + 3));
+            setWelcomeRefMessage(`🎁 Squad Invite! Claimed +3 Bonus Lives via ${referrerCode}!`);
+            sounds.playPowerUpCollect();
+          }
+        }
       } catch {
         // ignore
       }
@@ -292,6 +322,15 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         const perks = getTierForBalance(savedHolder.balance);
         setHolderPerks(perks);
       }
+
+      const handleFrenzyEvent = () => {
+        setFrenzySignal(Date.now());
+        sounds.playGoldenChime();
+      };
+      window.addEventListener("NOM_CANDY_FRENZY", handleFrenzyEvent);
+      return () => {
+        window.removeEventListener("NOM_CANDY_FRENZY", handleFrenzyEvent);
+      };
     }
   }, []);
 
@@ -435,6 +474,20 @@ export const GameContainer: React.FC<GameContainerProps> = ({
     if (user) {
       triggerHighScoreWallCelebration(finalScore, streak);
     }
+
+    // Inflict scaled damage on the World Raid Boss Lord Mega-FUD
+    const scaledDmg = Math.max(1, Math.floor(finalScore / 35)) * (holderPerks?.raidMultiplier || 1);
+    setLastRaidDamage(scaledDmg);
+
+    // Record viral friend play commission
+    recordFriendPlayCommission(finalScore);
+
+    const attackerName = user?.name || "Anon Nommer";
+    fetch("/api/raid", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ damage: scaledDmg, authorName: attackerName }),
+    }).catch(() => {});
   };
 
   const handleNomNom = () => {
@@ -476,15 +529,6 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           }
         })
         .catch(() => {});
-    }
-
-    // Inflict 1 damage on the World Raid Boss Lord Mega-FUD
-    if (user) {
-      fetch("/api/raid", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ damage: 1, authorName: user.name }),
-      }).catch(() => {});
     }
   };
 
@@ -686,6 +730,22 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         </div>
       )}
 
+      {/* Welcome Referral Gift Banner */}
+      {welcomeRefMessage && (
+        <div className="w-full mb-3 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/20 border border-emerald-500/60 text-emerald-300 text-xs font-mono font-bold flex items-center justify-between gap-2 shadow-[0_0_25px_rgba(20,241,149,0.3)] animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🎁</span>
+            <span>{welcomeRefMessage}</span>
+          </div>
+          <button
+            onClick={() => setWelcomeRefMessage(null)}
+            className="text-slate-400 hover:text-white text-xs font-mono ml-2 cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Live Rescue Mission Banner (Viral P2P Referral Arrival) */}
       {rescueBeaconId && !rescueBeaconCompleted && (
         <div className="w-full mb-3 px-4 py-3 rounded-xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-pink-500/20 border border-pink-500/60 text-pink-300 text-xs font-mono font-bold flex items-center justify-between gap-2 shadow-[0_0_25px_rgba(244,63,94,0.3)] animate-pulse">
@@ -837,6 +897,31 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               className="p-1.5 sm:p-2 rounded-xl text-xs font-mono transition-all border bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 flex items-center justify-center hover:scale-105 active:scale-95 shrink-0"
             >
               <Shirt className="w-3.5 h-3.5 text-purple-400" />
+            </button>
+
+            {/* Daily Mystery Lootbox Button */}
+            <button
+              onClick={() => setIsDailyLootboxOpen(true)}
+              aria-label="Daily Mystery Lootbox"
+              title="Open Daily Mystery Lootbox (Free Lives & Candies)"
+              className="relative p-1.5 sm:px-2 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-amber-500/15 hover:bg-amber-500/25 border-amber-500/40 text-amber-300 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+            >
+              <Gift className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline text-[10px]">CRATE</span>
+              {canClaimCrate && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />
+              )}
+            </button>
+
+            {/* Viral Squad Invite & Referral Button */}
+            <button
+              onClick={() => setIsReferralModalOpen(true)}
+              aria-label="Invite Squad"
+              title="Invite Friends: They get +3 Lives, You get 10% Candy Commission"
+              className="p-1.5 sm:px-2 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-500/40 text-emerald-300 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+            >
+              <Users className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden sm:inline text-[10px]">SQUAD</span>
             </button>
 
             {/* Toddler / Kid Mode (Age 3-5) Toggle */}
@@ -1096,6 +1181,10 @@ export const GameContainer: React.FC<GameContainerProps> = ({
             cooldownUntil={cooldownUntil}
             onRequestSOS={handleRequestSOS}
             onLifeRestored={handleLifeRestored}
+            raidDamageDealt={lastRaidDamage}
+            isWhaleMultiplier={holderPerks.raidMultiplier > 1}
+            onOpenReferral={() => setIsReferralModalOpen(true)}
+            onOpenDailyLootbox={() => setIsDailyLootboxOpen(true)}
           />
         )}
 
@@ -1259,6 +1348,27 @@ export const GameContainer: React.FC<GameContainerProps> = ({
       {/* Live Whale Alert Toasts & In-Game Golden Frenzy Trigger */}
       <WhaleAlertToast
         onTriggerFrenzy={() => setFrenzySignal(Date.now())}
+      />
+
+      {/* Daily Mystery Lootbox Modal */}
+      <DailyLootboxModal
+        isOpen={isDailyLootboxOpen}
+        onClose={() => setIsDailyLootboxOpen(false)}
+        onClaimLives={(extraLives) => {
+          setLives((prev) => Math.min(10, prev + extraLives));
+          setCanClaimCrate(false);
+        }}
+        onClaimCandies={(candies) => {
+          setScore((prev) => prev + candies);
+          setCanClaimCrate(false);
+        }}
+      />
+
+      {/* Viral Squad Invite & Referral Modal */}
+      <ViralReferralModal
+        isOpen={isReferralModalOpen}
+        onClose={() => setIsReferralModalOpen(false)}
+        userHighScore={highScore}
       />
 
       {/* Ambient Arcade Chiptune Jukebox */}

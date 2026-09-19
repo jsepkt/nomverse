@@ -304,6 +304,18 @@ export const InstantBuyTerminal: React.FC = () => {
             href={TOKEN_CONFIG.pumpFunUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(
+                  new CustomEvent("NOM_CANDY_FRENZY", {
+                    detail: {
+                      duration: 30,
+                      sponsor: `${tokensReceived.toLocaleString()} $NOM Ape`,
+                    },
+                  })
+                );
+              }
+            }}
             className="w-full py-4 rounded-2xl font-black font-mono text-sm sm:text-base text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.35)] hover:shadow-[0_0_40px_rgba(20,241,149,0.6)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
           >
             <Rocket className="w-5 h-5" />
