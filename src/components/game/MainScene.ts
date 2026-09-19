@@ -255,9 +255,10 @@ export class MainScene extends Phaser.Scene {
     this.aimGraphics = this.add.graphics();
     this.landingGuideGraphics = this.add.graphics();
 
-    // Floor Sensor Line (Bottom Out of Bounds)
+    // Floor Sensor Line (Bottom Out of Bounds pit between corner trampolines)
     const floorY = height - 12;
-    this.groundSensor = this.add.rectangle(width / 2, floorY, width, 24, 0xef4444, 0);
+    const pitWidth = Math.max(100, width - 150);
+    this.groundSensor = this.add.rectangle(width / 2, floorY, pitWidth, 24, 0xef4444, 0);
     this.physics.add.existing(this.groundSensor, true);
 
     // Bouncy Marshmallow Corner Trampolines (Second Chance Saves!)
@@ -964,6 +965,20 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
+  // Safe cross-browser canvas rounded rect helper (polyfilled for all engines)
+  private drawRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
+    if (typeof ctx.roundRect === "function") {
+      ctx.roundRect(x, y, w, h, r);
+    } else {
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+  }
+
   // Generates 2D canvas textures for skins, shield, and pupils
   private createProceduralTextures(): void {
     // 0. Expressive Pupil with Specular Highlights
@@ -1463,7 +1478,7 @@ export class MainScene extends Phaser.Scene {
         ctx.fillStyle = grad;
 
         ctx.beginPath();
-        ctx.roundRect(4, 4, 56, 24, 12);
+        this.drawRoundRect(ctx, 4, 4, 56, 24, 12);
         ctx.fill();
 
         // Spring rim outline
@@ -1537,7 +1552,7 @@ export class MainScene extends Phaser.Scene {
         ctx.arc(28, 28, 14, 0, Math.PI * 2);
         ctx.arc(48, 20, 18, 0, Math.PI * 2);
         ctx.arc(68, 26, 14, 0, Math.PI * 2);
-        ctx.roundRect(16, 26, 64, 14, 7);
+        this.drawRoundRect(ctx, 16, 26, 64, 14, 7);
         ctx.fill();
         canvas.refresh();
       }
@@ -2676,25 +2691,26 @@ export class MainScene extends Phaser.Scene {
       this.candy.setAngularVelocity(Phaser.Math.Between(-140, 140));
 
       const targetScale = this.isChonkyGummy ? 1.15 : 1.0;
+      this.tweens.killTweensOf(this.candy);
       this.tweens.add({
         targets: this.candy,
         scale: targetScale,
         duration: 250,
         ease: "Back.easeOut",
+        onComplete: () => {
+          if (this.isChonkyGummy && this.candy && this.candy.active) {
+            this.tweens.add({
+              targets: this.candy,
+              scaleX: 1.25,
+              scaleY: 1.05,
+              duration: 380,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut",
+            });
+          }
+        },
       });
-
-      if (this.isChonkyGummy) {
-        // Playful squish wiggle tween for gummy bear
-        this.tweens.add({
-          targets: this.candy,
-          scaleX: 1.25,
-          scaleY: 1.05,
-          duration: 380,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut",
-        });
-      }
     }
 
     // Soap Bubble visual envelope
@@ -3262,6 +3278,9 @@ export class MainScene extends Phaser.Scene {
   // Floor Miss Penalty with Shield Absorption
   private handleMissCandy(): void {
     if (this.isEating || this.lives <= 0) return;
+    // If candy was just bounced upward by a trampoline or saved, ignore floor sensor
+    if (this.candy && this.candy.body && this.candy.body.velocity.y < -50) return;
+
     this.isEating = true;
     this.wakeNomster();
 

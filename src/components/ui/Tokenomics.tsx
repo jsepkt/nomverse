@@ -4,13 +4,14 @@ import React, { useState } from "react";
 import { Flame, Rocket, Copy, CheckCircle2, ShieldAlert, Sparkles, Coins, ArrowUpRight } from "lucide-react";
 import { BondingCurveSimulator } from "../tokenomics/BondingCurveSimulator";
 import { TOKEN_CONFIG } from "@/config/token";
+import { copyToClipboard } from "@/lib/clipboard";
 
 export const Tokenomics: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const contractAddress = TOKEN_CONFIG.mintAddress;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(contractAddress);
+  const handleCopy = async () => {
+    await copyToClipboard(contractAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

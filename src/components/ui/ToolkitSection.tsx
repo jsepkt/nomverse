@@ -5,12 +5,13 @@ import Image from "next/image";
 import { GitFork, Code2, Rocket, Download, Copy, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { MemeStudio } from "../tools/MemeStudio";
 import { ChiptuneStudio } from "../audio/ChiptuneStudio";
+import { copyToClipboard as safeCopy } from "@/lib/clipboard";
 
 export const ToolkitSection: React.FC = () => {
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
 
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
+  const copyToClipboard = async (text: string, id: string) => {
+    await safeCopy(text);
     setCopiedCmd(id);
     setTimeout(() => setCopiedCmd(null), 2000);
   };

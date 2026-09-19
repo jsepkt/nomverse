@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { StoryChapter } from "@/lib/stories";
 import { BookOpen, GitPullRequest, Calendar, User, Tag, ChevronRight, CheckCircle2, Copy } from "lucide-react";
 import { LoreStudioModal } from "./LoreStudioModal";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface StoryReaderProps {
   stories: StoryChapter[];
@@ -16,7 +17,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({ stories }) => {
 
   const currentStory = stories[activeChapterIndex] || stories[0];
 
-  const handleCopyPrTemplate = () => {
+  const handleCopyPrTemplate = async () => {
     const template = `---
 title: "The Great Candy Halving"
 chapter: 3
@@ -30,7 +31,7 @@ summary: "Nomster encounters the legendary cryptographic halving and discovers h
 
 Your story begins here...`;
 
-    navigator.clipboard.writeText(template);
+    await copyToClipboard(template);
     setCopiedPrTemplate(true);
     setTimeout(() => setCopiedPrTemplate(false), 2000);
   };

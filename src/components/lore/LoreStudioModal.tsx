@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Portal } from "../ui/Portal";
 import { X, GitPullRequest, Sparkles, Copy, CheckCircle2, Eye, Edit3, ExternalLink } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface LoreStudioModalProps {
   isOpen: boolean;
@@ -54,8 +55,8 @@ tags: [${tags
 ${content}
 `;
 
-  const handleCopyMarkdown = () => {
-    navigator.clipboard.writeText(fullMarkdown);
+  const handleCopyMarkdown = async () => {
+    await copyToClipboard(fullMarkdown);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

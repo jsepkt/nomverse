@@ -22,6 +22,7 @@ import {
 import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";
 import { ShareableScoreCard } from "./ShareableScoreCard";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface GameOverModalProps {
   score: number;
@@ -89,20 +90,20 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
     }
   };
 
-  const handleCopyGiftLink = () => {
+  const handleCopyGiftLink = async () => {
     if (!user) return;
     const url = `${window.location.origin}/#wall`;
-    navigator.clipboard.writeText(url);
+    await copyToClipboard(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  const handleCopyChallengeLink = () => {
+  const handleCopyChallengeLink = async () => {
     const challengerName = user?.name || "ArcadeChampion";
     const url = `${window.location.origin}/?rivalScore=${score}&challenger=${encodeURIComponent(
       challengerName
     )}`;
-    navigator.clipboard.writeText(url);
+    await copyToClipboard(url);
     setCopiedChallenge(true);
     sounds.playGoldenChime();
     setTimeout(() => setCopiedChallenge(false), 2500);

@@ -7,6 +7,8 @@ import {
   getClientLifeState,
   decrementClientLife,
   replenishClientLives,
+  saveClientLifeState,
+  COOLDOWN_DURATION_MS,
   MAX_LIVES,
 } from "@/lib/lifeSystem";
 import { SkinId, getEquippedSkin, setEquippedSkin } from "@/lib/skins";
@@ -297,8 +299,15 @@ export const GameContainer: React.FC = () => {
   const handleLivesUpdate = (newLives: number) => {
     setLives(newLives);
     if (user) {
-      const updated = decrementClientLife(user.id);
-      setCooldownUntil(updated.cooldownUntil);
+      const current = getClientLifeState(user.id);
+      current.lives = newLives;
+      if (newLives <= 0 && !current.cooldownUntil) {
+        current.cooldownUntil = Date.now() + COOLDOWN_DURATION_MS;
+      } else if (newLives > 0) {
+        current.cooldownUntil = null;
+      }
+      saveClientLifeState(current);
+      setCooldownUntil(current.cooldownUntil);
     }
   };
 

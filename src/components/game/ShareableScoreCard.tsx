@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import React, { useRef, useEffect, useState } from "react";
 import { Download, Copy, CheckCircle2, Share2, Sparkles, Trophy } from "lucide-react";
 import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface ShareableScoreCardProps {
   score: number;
@@ -233,7 +234,7 @@ export const ShareableScoreCard: React.FC<ShareableScoreCardProps> = ({
           setTimeout(() => setCopied(false), 2500);
         } catch {
           // Fallback to link copy
-          navigator.clipboard.writeText(
+          await copyToClipboard(
             `I fed Nomster ${score} candies on NomVerse! Can you beat my score? Trade $NOM on pump.fun: ${TOKEN_CONFIG.pumpFunUrl}`
           );
           setCopied(true);

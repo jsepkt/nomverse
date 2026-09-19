@@ -18,6 +18,7 @@ import {
   Copy,
 } from "lucide-react";
 import { sounds } from "../audio/soundEffects";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface QuickBuyModalProps {
   isOpen: boolean;
@@ -70,8 +71,8 @@ export const QuickBuyModal: React.FC<QuickBuyModalProps> = ({ isOpen, onClose })
   const estimatedTokens = tokenPriceNative > 0 ? Math.floor(activeSol / tokenPriceNative) : 0;
   const targetPerks = getTierForBalance(estimatedTokens);
 
-  const handleCopyMint = () => {
-    navigator.clipboard.writeText(TOKEN_CONFIG.mintAddress);
+  const handleCopyMint = async () => {
+    await copyToClipboard(TOKEN_CONFIG.mintAddress);
     setCopiedContract(true);
     sounds.playGoldenChime();
     setTimeout(() => setCopiedContract(false), 2000);
