@@ -43,6 +43,29 @@ export class MainScene extends Phaser.Scene {
   private pointerDownTime: number = 0;
   private pointerDownPos: { x: number; y: number } = { x: 0, y: 0 };
 
+  // Living Parallax Scenery & Atmosphere
+  private clouds: { sprite: Phaser.GameObjects.Sprite; speed: number }[] = [];
+  private fireflies: { arc: Phaser.GameObjects.Arc; baseX: number; baseY: number; phase: number; speed: number }[] = [];
+  private sceneryGraphics?: Phaser.GameObjects.Graphics;
+  private celestialMoon?: Phaser.GameObjects.Sprite;
+  private cyberSkyline?: Phaser.GameObjects.Sprite;
+  private warpLines: { line: Phaser.GameObjects.Line; speed: number; angle: number; dist: number }[] = [];
+
+  // Bouncy Marshmallow Corner Trampolines (Second Chance Saves)
+  private trampolineLeft?: Phaser.Types.Physics.Arcade.SpriteWithStaticBody;
+  private trampolineRight?: Phaser.Types.Physics.Arcade.SpriteWithStaticBody;
+
+  // Special Candy Variations
+  private isChonkyGummy: boolean = false;
+  private isSoapBubble: boolean = false;
+  private bubbleSprite?: Phaser.GameObjects.Sprite;
+
+  // Living Mascot Moods & Idle Napping
+  private lastInputTime: number = 0;
+  private isNapping: boolean = false;
+  private nextZzzTime: number = 0;
+  private sleepingEyes?: Phaser.GameObjects.Graphics;
+
   // Visual Polish: Cosmic Starfield, Eye Tracking & Mouth Anticipation
   private stars: { circle: Phaser.GameObjects.Arc; speed: number }[] = [];
   private leftPupil?: Phaser.GameObjects.Sprite;
@@ -223,7 +246,10 @@ export class MainScene extends Phaser.Scene {
     // Background Gradient with Cyber Grid & Starfield
     this.bgGraphics = this.add.graphics();
     this.gridGraphics = this.add.graphics();
+    this.sceneryGraphics = this.add.graphics();
+    this.sceneryGraphics.setDepth(2);
     this.initStarfield();
+    this.initScenery();
     this.updateStageEnvironment("meadow");
 
     this.aimGraphics = this.add.graphics();
@@ -234,6 +260,26 @@ export class MainScene extends Phaser.Scene {
     this.groundSensor = this.add.rectangle(width / 2, floorY, width, 24, 0xef4444, 0);
     this.physics.add.existing(this.groundSensor, true);
 
+    // Bouncy Marshmallow Corner Trampolines (Second Chance Saves!)
+    const trampY = height - 26;
+    this.trampolineLeft = this.physics.add.staticSprite(46, trampY, "marshmallow_pad");
+    this.trampolineLeft.setDepth(11);
+    this.trampolineLeft.refreshBody();
+
+    this.trampolineRight = this.physics.add.staticSprite(width - 46, trampY, "marshmallow_pad");
+    this.trampolineRight.setDepth(11);
+    this.trampolineRight.refreshBody();
+
+    this.tweens.add({
+      targets: [this.trampolineLeft, this.trampolineRight],
+      scaleY: 1.05,
+      scaleX: 0.95,
+      duration: 1100,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
     // Nomster Setup at Bottom Center
     const nomsterY = height - 76;
     this.nomster = this.add.sprite(width / 2, nomsterY, "nomster");
@@ -241,6 +287,11 @@ export class MainScene extends Phaser.Scene {
     this.nomster.setScale(1.0);
     this.nomster.setDepth(10);
     this.nomster.setInteractive({ cursor: "grab" });
+
+    // Mascot Sleeping Eyes
+    this.sleepingEyes = this.add.graphics();
+    this.sleepingEyes.setDepth(14);
+    this.sleepingEyes.setVisible(false);
 
     // Nomster Playful Tongue Sprite (Cute 3+ Kid Interaction)
     this.tongueSprite = this.add.sprite(width / 2, nomsterY - 24, "nomster_tongue");
@@ -340,6 +391,18 @@ export class MainScene extends Phaser.Scene {
       this.handleEatCandy();
     });
 
+    // Bouncy Marshmallow Corner Trampoline Overlaps
+    if (this.trampolineLeft) {
+      this.physics.add.overlap(this.candy, this.trampolineLeft, () => {
+        this.handleTrampolineBounce(this.trampolineLeft!, true);
+      });
+    }
+    if (this.trampolineRight) {
+      this.physics.add.overlap(this.candy, this.trampolineRight, () => {
+        this.handleTrampolineBounce(this.trampolineRight!, false);
+      });
+    }
+
     this.physics.add.overlap(this.candy, this.groundSensor, () => {
       this.handleMissCandy();
     });
@@ -379,6 +442,7 @@ export class MainScene extends Phaser.Scene {
         if (this.cursors.right.isDown || this.keyD.isDown) moveDir += 1;
 
         if (moveDir !== 0) {
+          this.wakeNomster();
           this.nomsterVelocityX = Phaser.Math.Clamp(
             this.nomsterVelocityX + moveDir * this.nomsterAccel * dt,
             -this.maxNomsterSpeed,
@@ -410,6 +474,7 @@ export class MainScene extends Phaser.Scene {
           Phaser.Input.Keyboard.JustDown(this.keySpace) ||
           Phaser.Input.Keyboard.JustDown(this.keyShift)
         ) {
+          this.wakeNomster();
           this.performSuperDash();
         }
 
@@ -418,6 +483,7 @@ export class MainScene extends Phaser.Scene {
           Phaser.Input.Keyboard.JustDown(this.cursors.up) ||
           Phaser.Input.Keyboard.JustDown(this.keyW)
         ) {
+          this.wakeNomster();
           this.performAirJuggle();
         }
       }
@@ -431,6 +497,44 @@ export class MainScene extends Phaser.Scene {
           star.circle.y = camHeight + 5;
           star.circle.x = Phaser.Math.Between(0, camWidth);
         }
+      }
+    }
+
+    // 1b. Living Parallax Scenery Updates (Clouds, Fireflies, Moon, Warp)
+    if (this.currentStageId === "meadow" && this.clouds && this.clouds.length > 0) {
+      for (const cloud of this.clouds) {
+        cloud.sprite.x += cloud.speed * dt;
+        if (cloud.sprite.x > camWidth + 60) {
+          cloud.sprite.x = -60;
+        }
+      }
+    }
+
+    if (this.currentStageId === "meadow" && this.fireflies && this.fireflies.length > 0) {
+      for (const f of this.fireflies) {
+        f.arc.x = f.baseX + Math.sin(f.phase + time * 0.0015 * f.speed) * 16;
+        f.arc.y = f.baseY + Math.cos(f.phase + time * 0.002 * f.speed) * 10;
+      }
+    }
+
+    if (this.currentStageId === "moon" && this.celestialMoon && this.celestialMoon.visible) {
+      this.celestialMoon.y = 85 + Math.sin(time * 0.0012) * 5;
+    }
+
+    if (this.currentStageId === "hyperdrive" && this.warpLines && this.warpLines.length > 0) {
+      const centerX = camWidth / 2;
+      const centerY = camHeight * 0.35;
+      for (const w of this.warpLines) {
+        w.dist += w.speed * dt;
+        if (w.dist > 260) {
+          w.dist = 20;
+        }
+        const x1 = centerX + Math.cos(w.angle) * w.dist;
+        const y1 = centerY + Math.sin(w.angle) * w.dist;
+        const len = 12 + (w.dist / 260) * 24;
+        const x2 = centerX + Math.cos(w.angle) * (w.dist + len);
+        const y2 = centerY + Math.sin(w.angle) * (w.dist + len);
+        w.line.setTo(x1, y1, x2, y2);
       }
     }
 
@@ -474,13 +578,15 @@ export class MainScene extends Phaser.Scene {
     const pupilRX = baseRX + (rdx / rdist) * Math.min(maxPupilOffset, rdist * 0.05);
     const pupilRY = baseRY + (rdy / rdist) * Math.min(maxPupilOffset, rdist * 0.05);
 
-    if (this.leftPupil) {
-      this.leftPupil.setPosition(pupilLX, pupilLY);
-      this.leftPupil.setAngle(this.nomster.angle);
-    }
-    if (this.rightPupil) {
-      this.rightPupil.setPosition(pupilRX, pupilRY);
-      this.rightPupil.setAngle(this.nomster.angle);
+    if (!this.isNapping) {
+      if (this.leftPupil) {
+        this.leftPupil.setPosition(pupilLX, pupilLY);
+        this.leftPupil.setAngle(this.nomster.angle);
+      }
+      if (this.rightPupil) {
+        this.rightPupil.setPosition(pupilRX, pupilRY);
+        this.rightPupil.setAngle(this.nomster.angle);
+      }
     }
 
     // 3. Mouth Anticipation Stretch when candy descends close overhead
@@ -701,6 +807,82 @@ export class MainScene extends Phaser.Scene {
         }
       }
     }
+
+    // Sync Soap Bubble position with Candy
+    if (this.bubbleSprite && this.bubbleSprite.visible && this.candy && this.candy.active) {
+      this.bubbleSprite.setPosition(this.candy.x, this.candy.y);
+      this.bubbleSprite.setAngle(this.candy.angle);
+    }
+
+    // 5. Living Mascot Moods & Idle Napping
+    if (
+      this.playState !== "gameover" &&
+      this.lives > 0 &&
+      time - this.lastInputTime > 9000
+    ) {
+      if (!this.isNapping) {
+        this.isNapping = true;
+        if (this.leftPupil) this.leftPupil.setVisible(false);
+        if (this.rightPupil) this.rightPupil.setVisible(false);
+        if (this.tongueSprite) this.tongueSprite.setVisible(false);
+      }
+
+      // Draw sleeping curved closed eyes: (⌒ ⌒)
+      if (this.sleepingEyes) {
+        this.sleepingEyes.setVisible(true);
+        this.sleepingEyes.clear();
+        this.sleepingEyes.lineStyle(2.5, 0x090d16, 0.9);
+
+        const sRad = Phaser.Math.DegToRad(this.nomster.angle);
+        const sCos = Math.cos(sRad);
+        const sSin = Math.sin(sRad);
+
+        const leftEyeX = this.nomster.x + (-18.5 * sCos - -60 * sSin);
+        const leftEyeY = this.nomster.y + (-18.5 * sSin + -60 * sCos);
+        const rightEyeX = this.nomster.x + (18.5 * sCos - -60 * sSin);
+        const rightEyeY = this.nomster.y + (18.5 * sSin + -60 * sCos);
+
+        this.sleepingEyes.beginPath();
+        this.sleepingEyes.arc(leftEyeX, leftEyeY + 3, 6, Math.PI * 1.15, Math.PI * 1.85);
+        this.sleepingEyes.stroke();
+
+        this.sleepingEyes.beginPath();
+        this.sleepingEyes.arc(rightEyeX, rightEyeY + 3, 6, Math.PI * 1.15, Math.PI * 1.85);
+        this.sleepingEyes.stroke();
+      }
+
+      // Float gentle "Zzz" sleep bubble every 1.8s
+      if (time > this.nextZzzTime) {
+        this.nextZzzTime = time + 1800;
+        const zzzText = this.add.text(
+          this.nomster.x + Phaser.Math.Between(12, 24),
+          this.nomster.y - 70,
+          "Zzz...",
+          {
+            fontFamily: "monospace",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#c084fc",
+            stroke: "#050914",
+            strokeThickness: 3,
+          }
+        );
+        zzzText.setOrigin(0.5);
+        zzzText.setDepth(28);
+        this.tweens.add({
+          targets: zzzText,
+          y: zzzText.y - 45,
+          x: zzzText.x + Phaser.Math.Between(10, 25),
+          alpha: 0,
+          scale: 1.25,
+          duration: 1500,
+          ease: "Sine.easeOut",
+          onComplete: () => zzzText.destroy(),
+        });
+      }
+    } else if (this.isNapping) {
+      this.wakeNomster();
+    }
   }
 
   // Spawns drifting cosmic stardust particles with parallax speeds
@@ -716,6 +898,69 @@ export class MainScene extends Phaser.Scene {
       const circle = this.add.circle(x, y, radius, 0x14f195, alpha);
       circle.setDepth(1);
       this.stars.push({ circle, speed });
+    }
+  }
+
+  // Initializes dynamic living scenery: clouds, fireflies, moon, skyline, and warp streaks
+  private initScenery(): void {
+    const { width, height } = this.cameras.main;
+
+    // 1. Drifting Clouds (Stage 1 Meadow)
+    this.clouds = [];
+    const cloudYs = [42, 88, 134];
+    const cloudSpeeds = [7, 12, 17];
+    for (let i = 0; i < 3; i++) {
+      const cloud = this.add.sprite(
+        Phaser.Math.Between(0, width),
+        cloudYs[i],
+        "cloud_puff"
+      );
+      cloud.setDepth(2);
+      cloud.setAlpha(0.65);
+      cloud.setScale(Phaser.Math.FloatBetween(0.85, 1.15));
+      this.clouds.push({ sprite: cloud, speed: cloudSpeeds[i] });
+    }
+
+    // 2. Ambient Bioluminescent Fireflies (Stage 1 Meadow)
+    this.fireflies = [];
+    for (let i = 0; i < 9; i++) {
+      const bx = Phaser.Math.Between(24, width - 24);
+      const by = Phaser.Math.Between(height * 0.42, height - 60);
+      const arc = this.add.circle(bx, by, Phaser.Math.FloatBetween(2, 3.5), 0xbef264, 0.75);
+      arc.setDepth(3);
+      arc.setBlendMode(Phaser.BlendModes.ADD);
+      this.fireflies.push({
+        arc,
+        baseX: bx,
+        baseY: by,
+        phase: Math.random() * Math.PI * 2,
+        speed: Phaser.Math.FloatBetween(0.8, 2.0),
+      });
+    }
+
+    // 3. Giant Celestial Solana Moon Orb (Stage 2 Moon)
+    this.celestialMoon = this.add.sprite(width * 0.76, 85, "celestial_moon");
+    this.celestialMoon.setDepth(2);
+    this.celestialMoon.setVisible(false);
+
+    // 4. Cyber Skyline (Stage 3 Matrix)
+    this.cyberSkyline = this.add.sprite(width / 2, height - 105, "cyber_skyline");
+    this.cyberSkyline.setDepth(2);
+    this.cyberSkyline.setVisible(false);
+
+    // 5. Warp Streaks (Stage 4 Hyper-Drive)
+    this.warpLines = [];
+    for (let i = 0; i < 20; i++) {
+      const angle = (i * Math.PI * 2) / 20;
+      const line = this.add.line(width / 2, height * 0.35, 0, 0, 16, 0, 0xf59e0b, 0.6);
+      line.setDepth(2);
+      line.setVisible(false);
+      this.warpLines.push({
+        line,
+        speed: Phaser.Math.FloatBetween(130, 260),
+        angle,
+        dist: Phaser.Math.FloatBetween(20, 180),
+      });
     }
   }
 
@@ -1139,6 +1384,233 @@ export class MainScene extends Phaser.Scene {
         canvas.refresh();
       }
     }
+
+    // 12. Mega Chonky Gummy Bear (+5 Candy Treat)
+    if (!this.textures.exists("mega_chonky_gummy")) {
+      const canvas = this.textures.createCanvas("mega_chonky_gummy", 58, 58);
+      if (canvas) {
+        const ctx = canvas.context;
+        const grad = ctx.createRadialGradient(29, 29, 5, 29, 29, 28);
+        grad.addColorStop(0, "#fef08a");
+        grad.addColorStop(0.4, "#f59e0b");
+        grad.addColorStop(1, "#d97706");
+        ctx.fillStyle = grad;
+
+        // Left ear
+        ctx.beginPath();
+        ctx.arc(17, 14, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fbbf24";
+        ctx.beginPath();
+        ctx.arc(17, 14, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Right ear
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(41, 14, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fbbf24";
+        ctx.beginPath();
+        ctx.arc(41, 14, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Chubby Head
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(29, 24, 17, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Chubby Round Belly
+        ctx.beginPath();
+        ctx.ellipse(29, 41, 21, 16, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cute smiling face
+        ctx.fillStyle = "#451a03";
+        ctx.beginPath();
+        ctx.arc(23, 23, 2.5, 0, Math.PI * 2);
+        ctx.arc(35, 23, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Little nose
+        ctx.beginPath();
+        ctx.arc(29, 27, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Specular jelly shine curves
+        ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+        ctx.beginPath();
+        ctx.ellipse(22, 18, 4, 2, -0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(24, 36, 5, 2.5, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
+
+    // 13. Bouncy Marshmallow Corner Trampoline Pad
+    if (!this.textures.exists("marshmallow_pad")) {
+      const canvas = this.textures.createCanvas("marshmallow_pad", 64, 32);
+      if (canvas) {
+        const ctx = canvas.context;
+        const grad = ctx.createLinearGradient(0, 4, 0, 30);
+        grad.addColorStop(0, "#ffffff");
+        grad.addColorStop(0.6, "#fce7f3");
+        grad.addColorStop(1, "#f472b6");
+        ctx.fillStyle = grad;
+
+        ctx.beginPath();
+        ctx.roundRect(4, 4, 56, 24, 12);
+        ctx.fill();
+
+        // Spring rim outline
+        ctx.strokeStyle = "#fb7185";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Happy closed-eye smile (^ _ ^)
+        ctx.strokeStyle = "#9d174d";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(24, 15, 3.5, Math.PI, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(40, 15, 3.5, Math.PI, 0);
+        ctx.stroke();
+
+        // Rosy pink blush cheeks
+        ctx.fillStyle = "rgba(244, 63, 94, 0.4)";
+        ctx.beginPath();
+        ctx.ellipse(17, 18, 3.5, 2, 0, 0, Math.PI * 2);
+        ctx.ellipse(47, 18, 3.5, 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
+
+    // 14. Iridescent Soap Bubble
+    if (!this.textures.exists("soap_bubble")) {
+      const canvas = this.textures.createCanvas("soap_bubble", 48, 48);
+      if (canvas) {
+        const ctx = canvas.context;
+        const grad = ctx.createRadialGradient(22, 20, 4, 24, 24, 23);
+        grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+        grad.addColorStop(0.7, "rgba(56, 189, 248, 0.25)");
+        grad.addColorStop(0.9, "rgba(236, 72, 153, 0.4)");
+        grad.addColorStop(1, "rgba(168, 85, 247, 0.65)");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(24, 24, 22, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(168, 85, 247, 0.75)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Specular crescent shine highlight
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(24, 24, 17, -Math.PI * 0.75, -Math.PI * 0.35);
+        ctx.stroke();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(33, 33, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
+
+    // 15. Procedural Cartoon Cloud
+    if (!this.textures.exists("cloud_puff")) {
+      const canvas = this.textures.createCanvas("cloud_puff", 96, 44);
+      if (canvas) {
+        const ctx = canvas.context;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+        ctx.beginPath();
+        ctx.arc(28, 28, 14, 0, Math.PI * 2);
+        ctx.arc(48, 20, 18, 0, Math.PI * 2);
+        ctx.arc(68, 26, 14, 0, Math.PI * 2);
+        ctx.roundRect(16, 26, 64, 14, 7);
+        ctx.fill();
+        canvas.refresh();
+      }
+    }
+
+    // 16. Giant Celestial Solana Moon Orb (Stage 2)
+    if (!this.textures.exists("celestial_moon")) {
+      const canvas = this.textures.createCanvas("celestial_moon", 90, 90);
+      if (canvas) {
+        const ctx = canvas.context;
+        const grad = ctx.createRadialGradient(40, 38, 8, 45, 45, 42);
+        grad.addColorStop(0, "#f3e8ff");
+        grad.addColorStop(0.5, "#c084fc");
+        grad.addColorStop(0.85, "#7e22ce");
+        grad.addColorStop(1, "rgba(88, 28, 135, 0.95)");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(45, 45, 40, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "rgba(107, 33, 168, 0.35)";
+        ctx.beginPath();
+        ctx.arc(32, 30, 8, 0, Math.PI * 2);
+        ctx.arc(58, 42, 11, 0, Math.PI * 2);
+        ctx.arc(38, 60, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(192, 132, 252, 0.6)";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(45, 45, 41, 0, Math.PI * 2);
+        ctx.stroke();
+
+        canvas.refresh();
+      }
+    }
+
+    // 17. Cyberpunk Skyline Silhouette (Stage 3)
+    if (!this.textures.exists("cyber_skyline")) {
+      const canvas = this.textures.createCanvas("cyber_skyline", 180, 65);
+      if (canvas) {
+        const ctx = canvas.context;
+        ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+        ctx.fillRect(8, 20, 26, 45);
+        ctx.fillRect(36, 10, 32, 55);
+        ctx.fillRect(72, 28, 24, 37);
+        ctx.fillRect(98, 4, 34, 61);
+        ctx.fillRect(134, 18, 38, 47);
+
+        ctx.fillStyle = "rgba(20, 241, 149, 0.65)";
+        for (let y = 16; y < 60; y += 8) {
+          ctx.fillRect(42, y, 4, 4);
+          ctx.fillRect(52, y, 4, 4);
+          ctx.fillRect(104, y, 4, 4);
+          ctx.fillRect(116, y, 4, 4);
+        }
+        ctx.fillStyle = "rgba(239, 68, 68, 0.65)";
+        for (let y = 26; y < 60; y += 8) {
+          ctx.fillRect(14, y, 4, 4);
+          ctx.fillRect(78, y, 4, 4);
+          ctx.fillRect(144, y, 4, 4);
+          ctx.fillRect(156, y, 4, 4);
+        }
+
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.arc(52, 6, 2, 0, Math.PI * 2);
+        ctx.arc(115, 2, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
   }
 
   // Live Skin Setter called from React SkinSelector
@@ -1191,6 +1663,7 @@ export class MainScene extends Phaser.Scene {
 
   private setupInteractivity(): void {
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      this.wakeNomster();
       if (this.lives <= 0) return;
 
       if (!this.isGameStarted || this.playState === "idle") {
@@ -1246,6 +1719,7 @@ export class MainScene extends Phaser.Scene {
     });
 
     this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
+      this.wakeNomster();
       if (this.lives <= 0) return;
 
       if (this.isMovingNomster) {
@@ -1317,6 +1791,131 @@ export class MainScene extends Phaser.Scene {
       } else {
         this.isDraggingCandy = false;
       }
+    });
+  }
+
+  // Mascot Mood Wake-up handler
+  public wakeNomster(): void {
+    this.lastInputTime = this.time.now;
+    if (this.isNapping) {
+      this.isNapping = false;
+      if (this.sleepingEyes) {
+        this.sleepingEyes.setVisible(false);
+      }
+      if (this.leftPupil) {
+        this.leftPupil.setVisible(true);
+      }
+      if (this.rightPupil) {
+        this.rightPupil.setVisible(true);
+      }
+      sounds.playWakeup();
+
+      // Cheerful wake-up hop
+      this.tweens.add({
+        targets: this.nomster,
+        scaleY: 1.18,
+        scaleX: 0.88,
+        duration: 110,
+        yoyo: true,
+        ease: "Back.easeOut",
+        onComplete: () => {
+          this.updateNomsterMood();
+        },
+      });
+
+      // Cheerful exclamation "!?" text
+      const wakeTxt = this.add.text(this.nomster.x, this.nomster.y - 80, "✨ !? ✨", {
+        fontFamily: "monospace",
+        fontSize: "18px",
+        fontStyle: "bold",
+        color: "#14f195",
+        stroke: "#000000",
+        strokeThickness: 3,
+      });
+      wakeTxt.setOrigin(0.5);
+      wakeTxt.setDepth(26);
+      this.tweens.add({
+        targets: wakeTxt,
+        y: wakeTxt.y - 35,
+        alpha: 0,
+        scale: 1.3,
+        duration: 600,
+        ease: "Cubic.easeOut",
+        onComplete: () => wakeTxt.destroy(),
+      });
+    }
+  }
+
+  // Marshmallow Trampoline Bounce (Second Chance Save)
+  private handleTrampolineBounce(pad: Phaser.GameObjects.Sprite, isLeft: boolean): void {
+    if (!this.candy || !this.candy.active || this.isEating || this.lives <= 0) return;
+
+    // Prevent rapid multiple bounces in the same frame
+    const currentVy = this.candy.body?.velocity.y || 0;
+    if (currentVy < 0) return; // already traveling upwards
+
+    sounds.playBoing();
+
+    // Elastic squish tween on pad
+    this.tweens.killTweensOf(pad);
+    this.tweens.add({
+      targets: pad,
+      scaleY: 0.55,
+      scaleX: 1.35,
+      duration: 100,
+      yoyo: true,
+      ease: "Quad.easeOut",
+      onComplete: () => {
+        pad.setScale(1.0);
+      },
+    });
+
+    // Launch candy upward and inward towards center
+    const vx = isLeft ? Phaser.Math.Between(140, 220) : Phaser.Math.Between(-220, -140);
+    const vy = Phaser.Math.Between(-540, -480);
+    this.candy.setVelocity(vx, vy);
+    this.candy.setAngularVelocity(isLeft ? 280 : -280);
+
+    // Marshmallow bounce sparks
+    const colors = [0xf472b6, 0xfce7f3, 0xffffff, 0xfb7185];
+    for (let i = 0; i < 8; i++) {
+      const spark = this.add.circle(
+        pad.x + Phaser.Math.Between(-15, 15),
+        pad.y - 12,
+        Phaser.Math.Between(2, 4),
+        Phaser.Utils.Array.GetRandom(colors)
+      );
+      spark.setDepth(12);
+      this.tweens.add({
+        targets: spark,
+        x: spark.x + Phaser.Math.Between(-30, 30),
+        y: spark.y - Phaser.Math.Between(20, 50),
+        alpha: 0,
+        scale: 0.2,
+        duration: 400,
+        onComplete: () => spark.destroy(),
+      });
+    }
+
+    // Floating celebratory "BOING! SAVED!" text
+    const boingText = this.add.text(pad.x, pad.y - 32, "🌸 BOING! SAVED! 🌸", {
+      fontFamily: "monospace",
+      fontSize: "13px",
+      fontStyle: "bold",
+      color: "#f472b6",
+      stroke: "#000000",
+      strokeThickness: 3,
+    });
+    boingText.setOrigin(0.5);
+    boingText.setDepth(25);
+    this.tweens.add({
+      targets: boingText,
+      y: boingText.y - 45,
+      alpha: 0,
+      scale: 1.2,
+      duration: 750,
+      ease: "Back.easeOut",
+      onComplete: () => boingText.destroy(),
     });
   }
 
@@ -1762,6 +2361,78 @@ export class MainScene extends Phaser.Scene {
       }
     }
 
+    // Dynamic Stage Scenery Management
+    if (this.sceneryGraphics) {
+      this.sceneryGraphics.clear();
+    }
+
+    if (stageId === "meadow") {
+      this.clouds.forEach((c) => c.sprite.setVisible(true));
+      this.fireflies.forEach((f) => f.arc.setVisible(true));
+      if (this.celestialMoon) this.celestialMoon.setVisible(false);
+      if (this.cyberSkyline) this.cyberSkyline.setVisible(false);
+      this.warpLines.forEach((w) => w.line.setVisible(false));
+
+      // Rolling Cyber Green Candle Meadow Hills
+      if (this.sceneryGraphics) {
+        this.sceneryGraphics.fillStyle(0x064e3b, 0.4);
+        this.sceneryGraphics.beginPath();
+        this.sceneryGraphics.moveTo(0, height - 70);
+        for (let x = 0; x <= width; x += 16) {
+          const y = (height - 75) + Math.sin((x / width) * Math.PI * 2) * 18;
+          this.sceneryGraphics.lineTo(x, y);
+        }
+        this.sceneryGraphics.lineTo(width, height);
+        this.sceneryGraphics.lineTo(0, height);
+        this.sceneryGraphics.closePath();
+        this.sceneryGraphics.fill();
+
+        this.sceneryGraphics.lineStyle(1.5, 0x14f195, 0.45);
+        this.sceneryGraphics.beginPath();
+        this.sceneryGraphics.moveTo(0, height - 70);
+        for (let x = 0; x <= width; x += 16) {
+          const y = (height - 75) + Math.sin((x / width) * Math.PI * 2) * 18;
+          this.sceneryGraphics.lineTo(x, y);
+        }
+        this.sceneryGraphics.stroke();
+      }
+    } else if (stageId === "moon") {
+      this.clouds.forEach((c) => c.sprite.setVisible(false));
+      this.fireflies.forEach((f) => f.arc.setVisible(false));
+      if (this.celestialMoon) {
+        this.celestialMoon.setVisible(true);
+      }
+      if (this.cyberSkyline) this.cyberSkyline.setVisible(false);
+      this.warpLines.forEach((w) => w.line.setVisible(false));
+
+      // Lunar horizon
+      if (this.sceneryGraphics) {
+        this.sceneryGraphics.fillStyle(0x2e1065, 0.45);
+        this.sceneryGraphics.beginPath();
+        this.sceneryGraphics.moveTo(0, height - 60);
+        for (let x = 0; x <= width; x += 16) {
+          const y = (height - 70) + Math.sin((x / width) * Math.PI) * -24;
+          this.sceneryGraphics.lineTo(x, y);
+        }
+        this.sceneryGraphics.lineTo(width, height);
+        this.sceneryGraphics.lineTo(0, height);
+        this.sceneryGraphics.closePath();
+        this.sceneryGraphics.fill();
+      }
+    } else if (stageId === "matrix") {
+      this.clouds.forEach((c) => c.sprite.setVisible(false));
+      this.fireflies.forEach((f) => f.arc.setVisible(false));
+      if (this.celestialMoon) this.celestialMoon.setVisible(false);
+      if (this.cyberSkyline) this.cyberSkyline.setVisible(true);
+      this.warpLines.forEach((w) => w.line.setVisible(false));
+    } else if (stageId === "hyperdrive") {
+      this.clouds.forEach((c) => c.sprite.setVisible(false));
+      this.fireflies.forEach((f) => f.arc.setVisible(false));
+      if (this.celestialMoon) this.celestialMoon.setVisible(false);
+      if (this.cyberSkyline) this.cyberSkyline.setVisible(false);
+      this.warpLines.forEach((w) => w.line.setVisible(true));
+    }
+
     if (this.candy && this.candy.active) {
       this.candy.setGravityY(this.activePowerUps.slowmo ? 180 : this.getStageGravity());
     }
@@ -1957,19 +2628,44 @@ export class MainScene extends Phaser.Scene {
     const spawnX = x || Phaser.Math.Between(width * 0.2, width * 0.8);
     const spawnY = y || 45;
 
+    // Reset special varieties
+    this.isChonkyGummy = false;
+    this.isSoapBubble = false;
+    if (this.bubbleSprite) {
+      this.bubbleSprite.setVisible(false);
+    }
+
     // Roll for special power-up candy
     this.currentPowerUpType = rollForPowerUp(this.score);
 
-    const baseGravity = this.activePowerUps.slowmo ? 180 : this.getStageGravity();
+    // If no power-up, roll 15% for Mega Chonky Gummy Bear and 15% for Soap Bubble Candy
+    if (!this.currentPowerUpType) {
+      const roll = Math.random();
+      if (roll < 0.15) {
+        this.isChonkyGummy = true;
+      } else if (roll < 0.30) {
+        this.isSoapBubble = true;
+      }
+    }
+
+    let baseGravity = this.activePowerUps.slowmo ? 180 : this.getStageGravity();
+    if (this.isChonkyGummy) {
+      baseGravity *= 0.88; // Slightly floatier chubby gummy
+    } else if (this.isSoapBubble) {
+      baseGravity *= 0.68; // Very floaty soap bubble
+    }
+
+    const textureKey = this.isChonkyGummy ? "mega_chonky_gummy" : "candy";
 
     if (!this.candy) {
-      this.candy = this.physics.add.sprite(spawnX, spawnY, "candy");
+      this.candy = this.physics.add.sprite(spawnX, spawnY, textureKey);
       this.candy.setCollideWorldBounds(true);
       this.candy.setBounce(0.65, 0.65);
       this.candy.setGravityY(baseGravity);
       this.candy.setDrag(15, 10);
       this.candy.setCircle(20, 2, 2);
     } else {
+      this.candy.setTexture(textureKey);
       this.candy.enableBody(true, spawnX, spawnY, true, true);
       this.candy.setScale(0);
       this.candy.setAlpha(1);
@@ -1979,15 +2675,48 @@ export class MainScene extends Phaser.Scene {
       this.candy.setVelocity(vx, Phaser.Math.Between(-30, 20));
       this.candy.setAngularVelocity(Phaser.Math.Between(-140, 140));
 
+      const targetScale = this.isChonkyGummy ? 1.15 : 1.0;
       this.tweens.add({
         targets: this.candy,
-        scale: 1,
+        scale: targetScale,
         duration: 250,
         ease: "Back.easeOut",
       });
+
+      if (this.isChonkyGummy) {
+        // Playful squish wiggle tween for gummy bear
+        this.tweens.add({
+          targets: this.candy,
+          scaleX: 1.25,
+          scaleY: 1.05,
+          duration: 380,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut",
+        });
+      }
     }
 
-    // Apply Power-Up Visual Dressing
+    // Soap Bubble visual envelope
+    if (this.isSoapBubble) {
+      if (!this.bubbleSprite) {
+        this.bubbleSprite = this.add.sprite(spawnX, spawnY, "soap_bubble");
+        this.bubbleSprite.setDepth(8);
+      }
+      this.bubbleSprite.setPosition(spawnX, spawnY);
+      this.bubbleSprite.setVisible(true);
+      this.bubbleSprite.setAlpha(0.88);
+      this.tweens.add({
+        targets: this.bubbleSprite,
+        scale: 1.18,
+        duration: 550,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.easeInOut",
+      });
+    }
+
+    // Apply Power-Up or Special Candy Visual Dressing
     if (this.currentPowerUpType) {
       const pConfig = POWER_UPS[this.currentPowerUpType];
       this.candy.setTint(pConfig.hexColor);
@@ -2006,6 +2735,40 @@ export class MainScene extends Phaser.Scene {
         this.candyLabel.setColor(pConfig.color);
         this.candyLabel.setVisible(true);
       }
+    } else if (this.isChonkyGummy) {
+      this.candy.clearTint();
+      if (!this.candyLabel) {
+        this.candyLabel = this.add.text(spawnX, spawnY - 25, "🐻 CHONKY! (+5)", {
+          fontFamily: "monospace",
+          fontSize: "11px",
+          fontStyle: "bold",
+          color: "#f59e0b",
+          stroke: "#000000",
+          strokeThickness: 3,
+        });
+        this.candyLabel.setOrigin(0.5);
+      } else {
+        this.candyLabel.setText("🐻 CHONKY! (+5)");
+        this.candyLabel.setColor("#f59e0b");
+        this.candyLabel.setVisible(true);
+      }
+    } else if (this.isSoapBubble) {
+      this.candy.clearTint();
+      if (!this.candyLabel) {
+        this.candyLabel = this.add.text(spawnX, spawnY - 25, "🫧 BUBBLE CANDY", {
+          fontFamily: "monospace",
+          fontSize: "11px",
+          fontStyle: "bold",
+          color: "#38bdf8",
+          stroke: "#000000",
+          strokeThickness: 3,
+        });
+        this.candyLabel.setOrigin(0.5);
+      } else {
+        this.candyLabel.setText("🫧 BUBBLE CANDY");
+        this.candyLabel.setColor("#38bdf8");
+        this.candyLabel.setVisible(true);
+      }
     } else {
       this.candy.clearTint();
       if (this.candyLabel) {
@@ -2019,6 +2782,7 @@ export class MainScene extends Phaser.Scene {
   private handleEatCandy(): void {
     if (this.isEating || this.lives <= 0) return;
     this.isEating = true;
+    this.wakeNomster();
 
     if (this.candyLabel) {
       this.candyLabel.setVisible(false);
@@ -2030,6 +2794,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     let pointsEarned = 1;
+    if (this.isChonkyGummy) {
+      pointsEarned = 5; // +5 points for Mega Chonky Gummy!
+    }
+
     if (this.isFeverOverdrive) {
       pointsEarned *= 3;
     } else if (this.isFrenzy) {
@@ -2047,6 +2815,68 @@ export class MainScene extends Phaser.Scene {
 
     this.score += pointsEarned;
     this.streak++;
+
+    // Pentatonic Xylophone Music-Box Combo
+    sounds.playXylophoneCombo(this.streak);
+
+    if (this.isChonkyGummy) {
+      sounds.playChonkyNom();
+      // Floating banner
+      const chonkyBanner = this.add.text(
+        this.mouthCollider.x,
+        this.mouthCollider.y - 40,
+        "🐻 CHONKY NOM! +5 🐻",
+        {
+          fontFamily: "monospace",
+          fontSize: "14px",
+          fontStyle: "bold",
+          color: "#f59e0b",
+          stroke: "#000000",
+          strokeThickness: 3,
+        }
+      );
+      chonkyBanner.setOrigin(0.5);
+      chonkyBanner.setDepth(33);
+      this.tweens.add({
+        targets: chonkyBanner,
+        y: chonkyBanner.y - 50,
+        scale: 1.25,
+        alpha: 0,
+        duration: 850,
+        ease: "Back.easeOut",
+        onComplete: () => chonkyBanner.destroy(),
+      });
+    } else if (this.isSoapBubble) {
+      sounds.playBubblePop();
+      if (this.bubbleSprite) {
+        this.bubbleSprite.setVisible(false);
+      }
+      // Iridescent bubble pop particles
+      const bubbleColors = [0x38bdf8, 0xa855f7, 0xf472b6, 0xffffff];
+      for (let i = 0; i < 10; i++) {
+        const bp = this.add.circle(
+          this.mouthCollider.x + Phaser.Math.Between(-10, 10),
+          this.mouthCollider.y - 20 + Phaser.Math.Between(-10, 10),
+          Phaser.Math.Between(3, 5),
+          Phaser.Utils.Array.GetRandom(bubbleColors),
+          0.8
+        );
+        bp.setDepth(15);
+        const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+        const spd = Phaser.Math.Between(40, 120);
+        this.tweens.add({
+          targets: bp,
+          x: bp.x + Math.cos(angle) * spd,
+          y: bp.y + Math.sin(angle) * spd,
+          scale: 0.1,
+          alpha: 0,
+          duration: 350,
+          onComplete: () => bp.destroy(),
+        });
+      }
+    } else {
+      sounds.playNom();
+    }
 
     // Increment NOM-RAGE Fever Meter
     this.addFeverPoints(7);
@@ -2079,6 +2909,23 @@ export class MainScene extends Phaser.Scene {
       this.activateFrenzyMode();
     }
 
+    // Victory Wiggle Dance on 10 streaks!
+    if (this.streak % 10 === 0 && this.streak > 0) {
+      this.tweens.add({
+        targets: this.nomster,
+        angle: { from: -14, to: 14 },
+        scaleY: 1.15,
+        duration: 90,
+        yoyo: true,
+        repeat: 3,
+        ease: "Sine.easeInOut",
+        onComplete: () => {
+          this.nomster.angle = 0;
+          this.updateNomsterMood();
+        },
+      });
+    }
+
     if (this.isAnticipating) {
       this.isAnticipating = false;
       if (this.mouthGlow) {
@@ -2098,7 +2945,6 @@ export class MainScene extends Phaser.Scene {
       });
     }
 
-    sounds.playNom();
     if (this.tongueSprite && this.tongueSprite.visible) {
       sounds.playTongueSlurp();
     }
@@ -2417,6 +3263,11 @@ export class MainScene extends Phaser.Scene {
   private handleMissCandy(): void {
     if (this.isEating || this.lives <= 0) return;
     this.isEating = true;
+    this.wakeNomster();
+
+    if (this.bubbleSprite) {
+      this.bubbleSprite.setVisible(false);
+    }
 
     if (this.candyLabel) {
       this.candyLabel.setVisible(false);
@@ -2532,6 +3383,11 @@ export class MainScene extends Phaser.Scene {
   private handleHitFUD(): void {
     if (this.isEating || this.lives <= 0) return;
     this.isEating = true;
+    this.wakeNomster();
+
+    if (this.bubbleSprite) {
+      this.bubbleSprite.setVisible(false);
+    }
 
     if (this.candyLabel) {
       this.candyLabel.setVisible(false);
@@ -3243,6 +4099,12 @@ export class MainScene extends Phaser.Scene {
     this.lives = Math.min(this.maxCapLives, livesCount);
     this.isEating = false;
     this.isAnticipating = false;
+    this.isChonkyGummy = false;
+    this.isSoapBubble = false;
+    if (this.bubbleSprite) {
+      this.bubbleSprite.setVisible(false);
+    }
+    this.wakeNomster();
     if (this.mouthGlow) {
       this.tweens.killTweensOf(this.mouthGlow);
       this.mouthGlow.setVisible(false);
