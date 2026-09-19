@@ -66,7 +66,7 @@ const NAV_ITEMS: NavItem[] = [
     description: "Read community stories & submit canonical PRs",
   },
   {
-    label: "Community",
+    label: "Wall",
     href: "#wall",
     icon: MessageSquare,
     color: "text-teal-400",
@@ -152,70 +152,65 @@ export const Navbar: React.FC = () => {
               </div>
             </Link>
 
-            {/* CC0 Public Domain Badge (Desktop XL) */}
+            {/* CC0 Public Domain Badge (Only on ultra-wide 2XL to prevent squeezing menu items) */}
             <Link
               href="#license"
-              className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all"
+              className="hidden 2xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all shrink-0"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>CC0 1.0 Public Domain</span>
+              <span>CC0 1.0</span>
             </Link>
 
             {/* Live Global Candies Ticker */}
-            <div className="hidden 2xl:block">
+            <div className="hidden 2xl:block shrink-0">
               <GlobalCandiesTicker />
             </div>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          {/* Desktop Navigation Links (Compact, Zero-Overflow) */}
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1.5 shrink-0">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               return (
                 <a
                   key={item.label}
                   href={item.href}
-                  className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs xl:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/70 border border-transparent hover:border-slate-700/60 transition-all duration-150"
+                  className="group relative flex items-center gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-xl text-xs xl:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/70 border border-transparent hover:border-slate-700/60 transition-all duration-150 shrink-0"
                 >
                   <Icon
-                    className={`w-4 h-4 ${item.color} ${item.glowColor} transition-transform group-hover:scale-110`}
+                    className={`w-4 h-4 ${item.color} ${item.glowColor} transition-transform group-hover:scale-110 shrink-0`}
                   />
                   <span>{item.label}</span>
-                  {item.badge && (
-                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                      {item.badge}
-                    </span>
-                  )}
                 </a>
               );
             })}
           </nav>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Primary PLAY NOW CTA Button (Desktop & Mobile) */}
             <a
               href="#arcade"
-              className="relative group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.65)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              className="relative group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.65)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
             >
-              <Gamepad2 className="w-3.5 h-3.5 fill-slate-950 text-slate-950 group-hover:animate-bounce" />
+              <Gamepad2 className="w-3.5 h-3.5 fill-slate-950 text-slate-950 group-hover:animate-bounce shrink-0" />
               <span>PLAY NOW</span>
             </a>
 
             {/* Quick Buy SOL Button (Tablet & Desktop) */}
             <button
               onClick={() => setIsQuickBuyOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-mono font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:border-amber-500/50 transition-all hover:scale-105"
+              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 sm:py-2 rounded-xl text-xs font-mono font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:border-amber-500/50 transition-all hover:scale-105 shrink-0"
               title="Simulate 1-Click SOL Swap"
             >
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden md:inline">Quick Buy</span>
+              <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="hidden xl:inline">Quick Buy</span>
             </button>
 
             {/* User Auth Pill / Sign In */}
             {user ? (
-              <div className="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-sm">
-                <div className="flex items-center gap-1 text-xs font-bold text-white max-w-[85px] sm:max-w-[120px]">
+              <div className="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-sm shrink-0">
+                <div className="flex items-center gap-1 text-xs font-bold text-white max-w-[85px] sm:max-w-[110px]">
                   <span className="truncate">{user.name}</span>
                   <UserBadge provider={user.provider} showText={false} />
                 </div>
@@ -230,42 +225,42 @@ export const Navbar: React.FC = () => {
             ) : (
               <button
                 onClick={openAuthModal}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-all cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-all cursor-pointer shrink-0"
               >
-                <Wallet className="w-3.5 h-3.5" />
+                <Wallet className="w-3.5 h-3.5 shrink-0" />
                 <span>Sign In</span>
               </button>
             )}
 
-            {/* GitHub Repo Link (Desktop) */}
-            <a
-              href="https://github.com/jsepkt/nomverse"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700/80 hover:border-slate-500 transition-all"
-              title="Fork on GitHub"
-            >
-              <GithubIcon className="w-3.5 h-3.5 text-slate-300" />
-              <span>GitHub</span>
-            </a>
-
-            {/* pump.fun Button (Desktop) */}
+            {/* pump.fun Compact Icon Button (Desktop) */}
             <a
               href={TOKEN_CONFIG.pumpFunUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 hover:border-slate-600 transition-all"
+              className="hidden lg:inline-flex items-center justify-center p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 hover:border-emerald-500/60 transition-all hover:scale-105 active:scale-95 shrink-0"
               title="Trade on pump.fun"
+              aria-label="pump.fun Launch"
             >
-              <Rocket className="w-3.5 h-3.5 text-emerald-400" />
-              <span>pump.fun</span>
+              <Rocket className="w-4 h-4 text-emerald-400" />
+            </a>
+
+            {/* GitHub Repo Compact Icon Button (Desktop) */}
+            <a
+              href="https://github.com/jsepkt/nomverse"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden lg:inline-flex items-center justify-center p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 hover:border-slate-500 transition-all hover:scale-105 active:scale-95 shrink-0"
+              title="Fork on GitHub"
+              aria-label="GitHub Repository"
+            >
+              <GithubIcon className="w-4 h-4 text-slate-300" />
             </a>
 
             {/* Mobile Hamburger Menu Toggle Button (Mobile & Tablet) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              className="lg:hidden p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white hover:bg-slate-800 transition-all active:scale-95"
+              className="lg:hidden p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white hover:bg-slate-800 transition-all active:scale-95 shrink-0"
             >
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5 text-rose-400 animate-in spin-in-90 duration-150" />

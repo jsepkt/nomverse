@@ -121,7 +121,7 @@ export const TokenTickerBar: React.FC = () => {
           <span className="font-bold text-solana-green text-[11px]">
             {stats.bondingProgressPercent}%
           </span>
-          <span className="text-[10px] text-slate-500">
+          <span className="hidden lg:inline text-[10px] text-slate-500">
             (MCap: ${stats.marketCapUsd.toLocaleString()} / $69k)
           </span>
         </div>

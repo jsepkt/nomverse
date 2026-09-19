@@ -665,7 +665,7 @@ export const GameContainer: React.FC = () => {
         </div>
 
         {/* Tier 2: Ergonomic Control Actions Dock */}
-        <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-slate-800/80 overflow-x-auto no-scrollbar">
+        <div className="flex items-center justify-between gap-1 sm:gap-1.5 pt-2 border-t border-slate-800/80 w-full overflow-hidden">
           {/* Game Modes & Customization Cluster */}
           <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             {/* Episodes Campaign Button */}
@@ -673,13 +673,13 @@ export const GameContainer: React.FC = () => {
               onClick={() => setIsEpisodeModalOpen(true)}
               aria-label="Story Episodes"
               title="Play Story Episodes & Boss Battles"
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95 ${
+              className={`px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 shrink-0 ${
                 currentEpisodeId
                   ? "bg-amber-500/20 border-amber-500/50 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)] font-bold"
                   : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700/80 text-slate-300 hover:text-white"
               }`}
             >
-              <Film className="w-3.5 h-3.5 text-amber-400" />
+              <Film className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span className="font-bold">
                 {currentEpisodeId
                   ? `EP 0${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
@@ -692,16 +692,16 @@ export const GameContainer: React.FC = () => {
               onClick={() => setIsHolderModalOpen(true)}
               aria-label="Proof of Bag - Holder Perks"
               title={`Proof of Bag: ${holderPerks.label}`}
-              className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95"
+              className="px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 shrink-0"
               style={{
                 backgroundColor: `${holderPerks.accentColor}18`,
                 borderColor: `${holderPerks.accentColor}50`,
                 color: holderPerks.accentColor,
               }}
             >
-              <Coins className="w-3.5 h-3.5" />
+              <Coins className="w-3.5 h-3.5 shrink-0" />
               <span className="font-bold">{holderPerks.badge}</span>
-              {holderPerks.hasCrown && <Crown className="w-3 h-3 text-amber-400" />}
+              {holderPerks.hasCrown && <Crown className="w-3 h-3 text-amber-400 shrink-0" />}
             </button>
 
             {/* CC0 Closet Button */}
@@ -709,10 +709,9 @@ export const GameContainer: React.FC = () => {
               onClick={() => setIsSkinModalOpen(true)}
               aria-label="Nomster CC0 Closet"
               title="Nomster CC0 Closet & Accessories"
-              className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 flex items-center gap-1.5 hover:scale-105 active:scale-95"
+              className="p-1.5 sm:p-2 rounded-xl text-xs font-mono transition-all border bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 flex items-center justify-center hover:scale-105 active:scale-95 shrink-0"
             >
               <Shirt className="w-3.5 h-3.5 text-purple-400" />
-              <span className="hidden sm:inline font-bold">Closet</span>
             </button>
 
             {/* Toddler / Kid Mode (Age 3-5) Toggle */}
@@ -724,15 +723,15 @@ export const GameContainer: React.FC = () => {
                   ? "Kid Mode Active: Floaty Candies, Auto-Waddle & Magic Vacuum ON"
                   : "Kid Mode (Age 3-5): Floaty Candies, Auto-Waddle & Magic Vacuum for Toddlers"
               }
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95 cursor-pointer ${
+              className={`px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 cursor-pointer shrink-0 ${
                 toddlerMode
                   ? "bg-amber-500/25 border-amber-400 text-amber-300 font-bold shadow-[0_0_12px_rgba(245,158,11,0.45)]"
                   : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700/80 text-slate-400 hover:text-slate-200"
               }`}
             >
               <span className="text-sm leading-none">🧸</span>
-              <span className="font-bold">
-                {toddlerMode ? "Kid: ON" : "Kid Mode"}
+              <span className="font-bold text-[10px] sm:text-[11px]">
+                {toddlerMode ? "ON" : "Kid"}
               </span>
             </button>
           </div>
@@ -744,7 +743,7 @@ export const GameContainer: React.FC = () => {
               onClick={handleToggleMute}
               aria-label={isMuted ? "Unmute audio" : "Mute audio"}
               title={isMuted ? "Unmute Sound" : "Mute Sound"}
-              className={`p-2 rounded-xl text-xs font-mono transition-all border hover:scale-105 active:scale-95 ${
+              className={`p-1.5 sm:p-2 rounded-xl text-xs font-mono transition-all border hover:scale-105 active:scale-95 shrink-0 ${
                 isMuted
                   ? "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
                   : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
@@ -759,20 +758,19 @@ export const GameContainer: React.FC = () => {
                 onClick={toggleFullWindow}
                 aria-label="Exit Fullscreen"
                 title="Exit Fullscreen (Esc)"
-                className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border bg-rose-500/20 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 flex items-center gap-1 font-bold shadow-lg hover:scale-105 active:scale-95"
+                className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-rose-500/20 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 flex items-center gap-1 font-bold shadow-lg hover:scale-105 active:scale-95 shrink-0"
               >
                 <Minimize2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">EXIT</span>
+                <span className="hidden sm:inline text-[11px]">EXIT</span>
               </button>
             ) : (
               <button
                 onClick={toggleFullWindow}
                 aria-label="Full Size Window"
                 title="Play in Full Size Window (Distraction-Free)"
-                className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 flex items-center gap-1.5 hover:scale-105 active:scale-95"
+                className="p-1.5 sm:p-2 rounded-xl text-xs font-mono transition-all border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 flex items-center justify-center hover:scale-105 active:scale-95 shrink-0"
               >
                 <Maximize2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline font-bold">Full</span>
               </button>
             )}
 
@@ -782,7 +780,7 @@ export const GameContainer: React.FC = () => {
               disabled={lives <= 0}
               aria-label="Restart drop"
               title="Restart Drop"
-              className="p-2 rounded-xl text-xs font-mono bg-slate-800 hover:bg-slate-700 disabled:opacity-40 border border-slate-700 text-slate-300 transition-all hover:scale-105 active:scale-95"
+              className="p-1.5 sm:p-2 rounded-xl text-xs font-mono bg-slate-800 hover:bg-slate-700 disabled:opacity-40 border border-slate-700 text-slate-300 transition-all hover:scale-105 active:scale-95 shrink-0"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
