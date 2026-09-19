@@ -65,23 +65,23 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.08]">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
             The Hungry <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green bg-clip-text text-transparent">Open-Source</span> Mascot of Web3
           </h1>
 
           {/* Subtitle */}
-          <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
+          <p className="text-slate-300 text-sm sm:text-lg leading-relaxed">
             Meet <strong>Nomster</strong>: an unpermissioned, zero-copyright mascot designed for decentralized culture. Play the retro physics arcade, remix CC0 vector graphics, compose 8-bit chiptunes, and hold <strong>$NOM</strong> to unlock immortal daily revives and Whale perks.
           </p>
 
           {/* 1-Click Verified Mint Address Pill */}
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-3 text-left">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-solana-green/15 border border-solana-green/30 flex items-center justify-center text-solana-green shrink-0">
-                <Coins className="w-4 h-4" />
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2.5 text-left">
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-solana-green/15 border border-solana-green/30 flex items-center justify-center text-solana-green shrink-0">
+                <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div className="min-w-0">
-                <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
+                <div className="text-[9px] sm:text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
                   Contract Address (Token-2022)
                 </div>
                 <div className="text-xs sm:text-sm font-mono text-slate-200 truncate select-all">
@@ -92,7 +92,7 @@ export const HeroSection: React.FC = () => {
 
             <button
               onClick={handleCopyMint}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-emerald-500/50 transition-all shrink-0 active:scale-95"
+              className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-emerald-500/50 transition-all shrink-0 active:scale-95"
             >
               {copied ? (
                 <>
@@ -108,31 +108,31 @@ export const HeroSection: React.FC = () => {
             </button>
           </div>
 
-          {/* Primary CTA Action Row */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-1">
+          {/* Primary CTA Action Row - Mobile Responsive Grid */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-3.5 pt-1">
             <Link
               href="/play"
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl font-black text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 active:scale-95 transition-all cursor-pointer text-center"
             >
-              <Gamepad2 className="w-5 h-5 text-slate-950" />
-              <span>Enter Game Room</span>
+              <Gamepad2 className="w-4 h-4 sm:w-5 sm:h-5 text-slate-950 shrink-0" />
+              <span>Enter Arcade</span>
             </Link>
 
             <a
               href="#tokenomics"
-              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/50 hover:scale-105 transition-all"
+              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 hover:border-emerald-500/60 hover:scale-105 transition-all text-center"
             >
-              <Flame className="w-4 h-4 text-emerald-400" />
-              <span>Instant Buy $NOM</span>
+              <Flame className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Buy $NOM</span>
             </a>
 
             <a
               href={TOKEN_CONFIG.pumpFunUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 transition-all"
+              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 transition-all text-center"
             >
-              <Rocket className="w-4 h-4 text-slate-400" />
+              <Rocket className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>pump.fun</span>
             </a>
 
@@ -140,9 +140,9 @@ export const HeroSection: React.FC = () => {
               href="https://github.com/jsepkt/nomverse"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-3.5 rounded-2xl font-bold text-sm text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-slate-800 transition-all"
+              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-slate-800 transition-all text-center"
             >
-              <GithubIcon className="w-4 h-4" />
+              <GithubIcon className="w-3.5 h-3.5 shrink-0" />
               <span>GitHub</span>
             </a>
           </div>

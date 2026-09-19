@@ -30,7 +30,7 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
     onWaddle(dir);
     intervalRef.current = setInterval(() => {
       onWaddle(dir);
-    }, 90);
+    }, 60);
   };
 
   const endHold = () => {
@@ -53,7 +53,8 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
   };
 
   return (
-    <div className="w-full max-w-[440px] flex items-center justify-between gap-2.5 px-2 pt-2 sm:hidden select-none touch-none">
+    <div className="w-full max-w-[440px] flex flex-col items-center gap-1.5 px-2 pt-2 sm:hidden select-none touch-none">
+      <div className="flex items-center justify-between w-full gap-2">
       {/* Waddle Left Paddle */}
       <button
         type="button"
@@ -96,6 +97,10 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
         <span>RIGHT</span>
         <ChevronRight className="w-5 h-5 text-solana-green" />
       </button>
+      </div>
+      <span className="text-[10px] font-mono text-slate-500">
+        💡 Tip: Drag finger directly across game screen to steer Nomster
+      </span>
     </div>
   );
 };

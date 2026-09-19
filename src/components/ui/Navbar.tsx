@@ -19,6 +19,7 @@ import {
   Zap,
   Menu,
   X,
+  Coins,
   ChevronRight,
   ExternalLink,
 } from "lucide-react";
@@ -421,49 +422,51 @@ export const Navbar: React.FC = () => {
         )}
       </header>
 
-      {/* Floating App-Like Bottom Dock on Mobile (Thumb-Friendly Navigation) */}
+      {/* Floating App-Like Bottom Dock on Mobile (Thumb-Friendly Native Experience) */}
       <nav
         aria-label="Mobile Bottom Navigation"
-        className="lg:hidden fixed bottom-3 inset-x-4 z-40 max-w-sm mx-auto rounded-2xl bg-slate-950/85 backdrop-blur-2xl border border-slate-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.8)] p-1.5 flex items-center justify-around transition-all select-none"
+        className="lg:hidden fixed bottom-3 inset-x-3 z-40 max-w-sm mx-auto rounded-3xl bg-slate-950/90 backdrop-blur-2xl border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.85)] px-2 py-1.5 flex items-center justify-around transition-all select-none"
       >
         <button
           onClick={handlePlayClick}
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-emerald-400 hover:bg-emerald-500/10 active:scale-90 transition-all cursor-pointer"
+          className="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-emerald-400 active:scale-90 transition-all cursor-pointer"
         >
-          <Gamepad2 className="w-4 h-4 mb-0.5 text-emerald-400" />
+          <Gamepad2 className="w-5 h-5 mb-0.5 text-emerald-400" />
           <span>Play</span>
         </button>
 
         <a
-          href="/#create"
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-amber-300 hover:bg-amber-500/10 active:scale-90 transition-all"
+          href="/#wall"
+          className="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-teal-300 active:scale-90 transition-all"
         >
-          <Palette className="w-4 h-4 mb-0.5 text-amber-400" />
-          <span>Create</span>
+          <MessageSquare className="w-5 h-5 mb-0.5 text-teal-400" />
+          <span>Quests</span>
+        </a>
+
+        {/* Center Glow HERO Action Button: Instant 1-Tap Buy $NOM */}
+        <button
+          onClick={() => setIsQuickBuyOpen(true)}
+          className="relative -top-3.5 flex flex-col items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-300 to-solana-green text-slate-950 font-black shadow-[0_0_25px_rgba(20,241,149,0.7)] hover:scale-110 active:scale-90 transition-all border-2 border-slate-950 cursor-pointer"
+          title="Instant Buy $NOM on pump.fun"
+        >
+          <Flame className="w-6 h-6 fill-slate-950 text-slate-950 animate-bounce" />
+          <span className="text-[8px] tracking-tighter leading-none mt-0.5 font-mono">BUY</span>
+        </button>
+
+        <a
+          href="/#tokenomics"
+          className="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-amber-300 active:scale-90 transition-all"
+        >
+          <Coins className="w-5 h-5 mb-0.5 text-amber-400" />
+          <span>Stats</span>
         </a>
 
         <a
           href="/#lore"
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-purple-300 hover:bg-purple-500/10 active:scale-90 transition-all"
+          className="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-purple-300 active:scale-90 transition-all"
         >
-          <BookOpen className="w-4 h-4 mb-0.5 text-purple-400" />
+          <BookOpen className="w-5 h-5 mb-0.5 text-purple-400" />
           <span>Lore</span>
-        </a>
-
-        <a
-          href="/#wall"
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-teal-300 hover:bg-teal-500/10 active:scale-90 transition-all"
-        >
-          <MessageSquare className="w-4 h-4 mb-0.5 text-teal-400" />
-          <span>Wall</span>
-        </a>
-
-        <a
-          href="/#tokenomics"
-          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 active:scale-90 transition-all"
-        >
-          <Flame className="w-4 h-4 mb-0.5 text-rose-400" />
-          <span>$NOM</span>
         </a>
       </nav>
 

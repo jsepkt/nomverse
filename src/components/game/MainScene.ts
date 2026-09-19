@@ -2258,13 +2258,11 @@ export class MainScene extends Phaser.Scene {
         return;
       }
 
-      if (distToCandy < 65) {
+      if (distToCandy < 55) {
         this.isDraggingCandy = true;
-      } else if (this.nomster && (distToNomster < 80 || pointer.y > this.nomster.y - 60)) {
+      } else {
         this.isMovingNomster = true;
         this.waddleNomsterTo(pointer.x);
-      } else {
-        this.nudgeCandyTowardsNomster(pointer.x, pointer.y);
       }
     });
 
@@ -2272,7 +2270,8 @@ export class MainScene extends Phaser.Scene {
       this.wakeNomster();
       if (this.lives <= 0) return;
 
-      if (this.isMovingNomster) {
+      if (pointer.isDown && !this.isDraggingCandy) {
+        this.isMovingNomster = true;
         this.waddleNomsterTo(pointer.x);
       }
 
@@ -2557,19 +2556,17 @@ export class MainScene extends Phaser.Scene {
     const diff = clampedX - this.nomster.x;
     const tilt = Phaser.Math.Clamp(diff * 0.08, -8, 8);
 
+    this.tweens.killTweensOf(this.nomster);
+
     this.tweens.add({
       targets: [this.nomster],
       x: clampedX,
       angle: tilt,
-      duration: 120,
+      duration: 70,
       ease: "Power1",
       onComplete: () => {
         if (!this.nomster) return;
-        this.tweens.add({
-          targets: this.nomster,
-          angle: 0,
-          duration: 100,
-        });
+        this.nomster.angle = 0;
       },
     });
   }

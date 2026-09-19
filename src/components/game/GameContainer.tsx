@@ -724,7 +724,14 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           {/* Left: Hearts & Heart Drop Countdown */}
           <div className="flex items-center gap-2">
             <div className="flex flex-col gap-0.5" title={`${lives}/10 Lives Remaining`}>
-              <div className="flex items-center gap-0.5 sm:gap-1">
+              {/* Mobile Compact Life Counter */}
+              <div className="sm:hidden flex items-center gap-1 px-2 py-1 rounded-xl bg-rose-500/15 border border-rose-500/30">
+                <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 animate-pulse" />
+                <span className="font-mono font-black text-xs text-rose-300">{lives}</span>
+              </div>
+
+              {/* Desktop Full 10 Hearts Display */}
+              <div className="hidden sm:flex items-center gap-0.5 sm:gap-1">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((heartIndex) => {
                   const hasLife = lives >= heartIndex;
                   const isBonus = heartIndex > 5;
@@ -747,18 +754,18 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               </div>
               {gameState === "playing" && (
                 <div className="flex items-center gap-1 text-[9px] font-mono text-pink-400/90 font-bold">
-                  <span>❤️ Drop in {Math.floor(nextHeartCountdown / 60)}:{(nextHeartCountdown % 60).toString().padStart(2, "0")}</span>
+                  <span>❤️ Drop {Math.floor(nextHeartCountdown / 60)}:{(nextHeartCountdown % 60).toString().padStart(2, "0")}</span>
                 </div>
               )}
             </div>
           </div>
 
           {/* Center: Candies Score & Streak */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl bg-slate-950/70 border border-slate-800">
               <span className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-slate-400">Score:</span>
               <span
-                className={`text-xl sm:text-2xl font-black font-mono tracking-tight transition-transform ${
+                className={`text-lg sm:text-2xl font-black font-mono tracking-tight transition-transform ${
                   recentNom ? "scale-125 text-candy-gold" : "text-emerald-400"
                 }`}
               >
@@ -776,14 +783,14 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           </div>
 
           {/* Right: Best High Score */}
-          <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] sm:text-xs font-mono text-amber-400/90">
+          <div className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-xl bg-slate-950/70 border border-slate-800 text-[10px] sm:text-xs font-mono text-amber-400/90">
             <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <span className="font-bold"><span className="hidden sm:inline">Best: </span>{highScore}</span>
           </div>
         </div>
 
         {/* Tier 2: Ergonomic Control Actions Dock */}
-        <div className="flex items-center justify-between gap-1 sm:gap-1.5 pt-2 border-t border-slate-800/80 w-full overflow-hidden">
+        <div className="flex items-center justify-between gap-1 sm:gap-1.5 pt-2 border-t border-slate-800/80 w-full overflow-x-auto no-scrollbar select-none">
           {/* Game Modes & Customization Cluster */}
           <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             {/* Episodes Campaign Button */}
@@ -798,7 +805,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               }`}
             >
               <Film className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="font-bold">
+              <span className="font-bold hidden sm:inline">
                 {currentEpisodeId
                   ? `EP 0${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
                   : "Story"}
@@ -818,7 +825,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               }}
             >
               <Coins className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-bold">{holderPerks.badge}</span>
+              <span className="font-bold hidden sm:inline">{holderPerks.badge}</span>
               {holderPerks.hasCrown && <Crown className="w-3 h-3 text-amber-400 shrink-0" />}
             </button>
 
@@ -848,7 +855,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               }`}
             >
               <span className="text-sm leading-none">🧸</span>
-              <span className="font-bold text-[10px] sm:text-[11px]">
+              <span className="font-bold text-[10px] sm:text-[11px] hidden sm:inline">
                 {toddlerMode ? "ON" : "Kid"}
               </span>
             </button>
@@ -876,7 +883,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
                 deepNomMode === "autopilot" ? "text-cyan-400" :
                 deepNomMode === "duel" ? "text-pink-400 animate-pulse" : "text-slate-400"
               }`} />
-              <span className="font-bold text-[10px] sm:text-[11px]">
+              <span className="font-bold text-[10px] sm:text-[11px] hidden sm:inline">
                 {deepNomMode === "off" ? "AI" : deepNomMode === "autopilot" ? "AUTO" : "DUEL"}
               </span>
             </button>
