@@ -47,7 +47,7 @@ export const Footer: React.FC = () => {
           </a>
           <span className="text-slate-700">•</span>
           <a
-            href="https://github.com"
+            href="https://github.com/jsepkt/nomverse"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-solana-green transition-colors flex items-center gap-1.5"

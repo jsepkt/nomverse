@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Portal } from "../ui/Portal";
-import { X, GitPullRequest, Sparkles, Copy, CheckCircle2, Eye, Edit3, ExternalLink } from "lucide-react";
+import { X, GitPullRequest, Sparkles, Copy, CheckCircle2, Eye, Edit3, ExternalLink, MessageSquare } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { copyToClipboard } from "@/lib/clipboard";
 
@@ -12,7 +12,7 @@ interface LoreStudioModalProps {
 }
 
 export const LoreStudioModal: React.FC<LoreStudioModalProps> = ({ isOpen, onClose }) => {
-  const { user } = useAuth();
+  const { user, openAuthModal } = useAuth();
   const [title, setTitle] = useState<string>("The Great Solana Candy Halving");
   const [chapterNum, setChapterNum] = useState<number>(3);
   const [author, setAuthor] = useState<string>(user?.name || "Anonymous Builder");
@@ -61,11 +61,42 @@ ${content}
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const [isPostingWall, setIsPostingWall] = useState<boolean>(false);
+  const [wallPosted, setWallPosted] = useState<boolean>(false);
+
   const handleOpenGitHubPR = () => {
     // Generate GitHub file creation link with encoded content
     const encodedContent = encodeURIComponent(fullMarkdown);
-    const githubUrl = `https://github.com/nomverse/nomverse/new/main?filename=src/content/stories/chapter-0${chapterNum}.md&value=${encodedContent}`;
+    const githubUrl = `https://github.com/jsepkt/nomverse/new/main?filename=src/content/stories/chapter-0${chapterNum}.md&value=${encodedContent}`;
     window.open(githubUrl, "_blank", "noopener,noreferrer");
+  };
+
+  const handlePostToWall = async () => {
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+    setIsPostingWall(true);
+    try {
+      await fetch("/api/wall", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          authorId: user.id,
+          authorName: user.name,
+          authorProvider: user.provider,
+          title: `📖 [LORE PROPOSAL] Chapter ${chapterNum}: ${title}`,
+          content: `${content}\n\n*Tags: ${tags}*\n*Author: ${author}*`,
+          category: "lore",
+        }),
+      });
+      setWallPosted(true);
+      setTimeout(() => setWallPosted(false), 3500);
+    } catch (err) {
+      console.error("Failed to post lore to wall:", err);
+    } finally {
+      setIsPostingWall(false);
+    }
   };
 
   return (
@@ -186,14 +217,34 @@ ${content}
             )}
           </button>
 
-          <button
-            onClick={handleOpenGitHubPR}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-900/30 transition-all hover:scale-105"
-          >
-            <GitPullRequest className="w-4 h-4 text-pink-300" />
-            <span>Open GitHub PR (1-Click)</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePostToWall}
+              disabled={isPostingWall || wallPosted}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition-all disabled:opacity-60"
+            >
+              {wallPosted ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Posted to NomWall!</span>
+                </>
+              ) : (
+                <>
+                  <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{isPostingWall ? "Posting..." : "Share to NomWall"}</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleOpenGitHubPR}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-900/30 transition-all hover:scale-105"
+            >
+              <GitPullRequest className="w-4 h-4 text-pink-300" />
+              <span>Open GitHub PR (1-Click)</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -18,6 +18,7 @@ import {
   RotateCcw,
   Swords,
   ExternalLink,
+  Wallet,
 } from "lucide-react";
 import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";
@@ -41,7 +42,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   onRequestSOS,
   onLifeRestored,
 }) => {
-  const { user } = useAuth();
+  const { user, openAuthModal } = useAuth();
   const [timeLeft, setTimeLeft] = useState<string>("03:00:00");
   const [isRequestingSOS, setIsRequestingSOS] = useState<boolean>(false);
   const [sosSent, setSosSent] = useState<boolean>(false);
@@ -82,6 +83,10 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   }, [cooldownUntil, onLifeRestored]);
 
   const handleBroadcastSOS = async () => {
+    if (!user) {
+      openAuthModal();
+      return;
+    }
     setIsRequestingSOS(true);
     const success = await onRequestSOS();
     setIsRequestingSOS(false);
@@ -91,7 +96,6 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   };
 
   const handleCopyGiftLink = async () => {
-    if (!user) return;
     const url = `${window.location.origin}/#wall`;
     await copyToClipboard(url);
     setCopiedLink(true);
@@ -110,11 +114,18 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   };
 
   const handleTriviaAnswer = (index: number) => {
-    if (!user) return;
     setTriviaSelected(index);
 
     // Option 1 (index 1) is correct: CC0 1.0 Universal
     if (index === 1) {
+      if (!user) {
+        sounds.playGiftReceived();
+        setTriviaResult("🎉 CORRECT! +1 CC0 Emergency Heart awarded! Nomster is back!");
+        setTimeout(() => {
+          onLifeRestored();
+        }, 1200);
+        return;
+      }
       const res = claimTriviaEmergencyLife(user.id);
       if (res.success) {
         sounds.playGiftReceived();
@@ -156,6 +167,36 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             Nomster is starving after eating <strong>{score}</strong> candies!
           </p>
         </div>
+
+        {/* Guest Conversion Banner: Prompt to Save High Score */}
+        {!user && (
+          <div className="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-solana-green/15 border border-emerald-500/30 text-center space-y-2">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-mono font-bold text-emerald-300">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>SAVE YOUR {score} NOM RECORD!</span>
+            </div>
+            <p className="text-[11px] text-slate-300 leading-tight">
+              Sign in with Phantom, MetaMask, or Google to save to the Global Leaderboard &amp; NomWall!
+            </p>
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={openAuthModal}
+                className="flex-1 py-2 px-3 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-400 to-solana-green text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Wallet className="w-3.5 h-3.5 text-slate-950" />
+                <span>Save Record</span>
+              </button>
+              <button
+                onClick={onLifeRestored}
+                className="py-2 px-3 rounded-xl font-mono text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                title="Play another round as guest"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Play Again</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 3-Hour Countdown Clock Display */}
         <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">

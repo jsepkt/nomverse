@@ -81,7 +81,7 @@ export const BountyTab: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <a
-            href="https://github.com"
+            href="https://github.com/jsepkt/nomverse/issues"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition-colors"
@@ -247,7 +247,7 @@ export const BountyTab: React.FC = () => {
                   required
                   value={prUrlInput}
                   onChange={(e) => setPrUrlInput(e.target.value)}
-                  placeholder="https://github.com/nomverse/nomverse/pull/..."
+                  placeholder="https://github.com/jsepkt/nomverse/pull/..."
                   className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono focus:border-emerald-400 focus:outline-none"
                 />
               </div>

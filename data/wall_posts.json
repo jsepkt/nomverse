@@ -1,78 +1,174 @@
 [
   {
-    "id": "post_1789595294488_5zoou",
-    "authorId": "metamask_0x8523ae19edc01fd66e84a33ccb287372971e52e3",
-    "authorName": "0x8523...52e3.eth",
-    "authorProvider": "metamask",
-    "title": "🚨 [LIFE SOS] Nomster is starving! Can someone send a Life Gift?",
-    "content": "I lost all 3 lives after reaching a score of 1 candies! 😢 My 3-hour cooldown is active. Could a fellow builder click below to gift a life? You will receive the permanent ❤️ Lifesaver badge and +10 Karma on The NomWall!",
-    "category": "game",
-    "createdAt": "2026-09-16T21:48:14.488Z",
-    "likes": [],
-    "dislikes": [],
-    "neutrals": [],
-    "reports": [],
-    "replies": []
-  },
-  {
-    "id": "post_1789595207854_uyw6j",
-    "authorId": "phantom_3bZ8eZLM3ZQad399YDrhGJMXXLZaFMWAfLgkA3FPaHdf",
-    "authorName": "3bZ8...aHdf.sol",
+    "id": "post_quest_01",
+    "authorId": "phantom_nomster_core",
+    "authorName": "NomsterCore.sol",
     "authorProvider": "phantom",
-    "title": "🚨 [LIFE SOS] Nomster is starving! Can someone send a Life Gift?",
-    "content": "I lost all 3 lives after reaching a score of 0 candies! 😢 My 3-hour cooldown is active. Could a fellow builder click below to gift a life? You will receive the permanent ❤️ Lifesaver badge and +10 Karma on The NomWall!",
+    "title": "🎮 [COMMUNITY QUEST #01] Design Nomster's Next Enemy: The Glitch Worm",
+    "content": "Calling all pixel artists & game builders! Chapter 3 introduced the Glitch Worm lurking in the mempool voids. Propose sprite designs, attack patterns, or submit a PR in src/components/game/. The winning submission will be merged into the official Phaser arcade engine! 👾\n\n**Reward:** +500 Karma + Verified CC0 Champion Badge.",
     "category": "game",
-    "createdAt": "2026-09-16T21:46:47.854Z",
-    "likes": [],
+    "createdAt": "2026-09-17T18:00:00.000Z",
+    "likes": [
+      "phantom_player99",
+      "google_gamer1",
+      "metamask_dev"
+    ],
     "dislikes": [],
     "neutrals": [],
     "reports": [],
     "replies": [
       {
-        "id": "reply_1789595303093_a631",
-        "postId": "post_1789595207854_uyw6j",
-        "authorId": "metamask_0x8523ae19edc01fd66e84a33ccb287372971e52e3",
-        "authorName": "0x8523...52e3.eth",
-        "authorProvider": "metamask",
-        "content": "🎁 Sent a +1 Life Gift to 3bZ8...aHdf.sol! Nomster has been revived. Enjoy the game! ❤️",
-        "createdAt": "2026-09-16T21:48:23.093Z"
+        "id": "reply_q1_01",
+        "postId": "post_quest_01",
+        "authorId": "phantom_artist44",
+        "authorName": "PixelNommer.sol",
+        "authorProvider": "phantom",
+        "content": "Drafted an 8-bit segment worm sprite with neon magenta glitches! Opening PR shortly.",
+        "createdAt": "2026-09-17T18:42:00.000Z"
       },
       {
-        "id": "reply_1789595303117_ft5u",
-        "postId": "post_1789595207854_uyw6j",
-        "authorId": "metamask_0x8523ae19edc01fd66e84a33ccb287372971e52e3",
-        "authorName": "0x8523...52e3.eth",
-        "authorProvider": "metamask",
-        "content": "🎁 Sent a +1 Life Gift to 3bZ8...aHdf.sol! Nomster has been revived. Enjoy the game! ❤️",
-        "createdAt": "2026-09-16T21:48:23.117Z"
+        "id": "reply_q1_02",
+        "postId": "post_quest_01",
+        "authorId": "google_builder",
+        "authorName": "GlitchHunter",
+        "authorProvider": "google",
+        "content": "Attack pattern should make it slither horizontally across the middle lane to block candies!",
+        "createdAt": "2026-09-17T19:15:00.000Z"
       }
     ]
   },
   {
-    "id": "post_1789594482241_betft",
-    "authorId": "phantom_3bZ8eZLM3ZQad399YDrhGJMXXLZaFMWAfLgkA3FPaHdf",
-    "authorName": "3bZ8...aHdf.sol",
+    "id": "post_quest_02",
+    "authorId": "phantom_chiptune",
+    "authorName": "ChiptuneWizard",
     "authorProvider": "phantom",
-    "title": "hi",
-    "content": "cool",
+    "title": "🎵 [COMMUNITY QUEST #02] Compose the Boss Theme on NomBeats",
+    "content": "Use the built-in 8-bit NomBeats synthesizer below to sequence a 140 BPM boss rush chiptune track! Export your preset JSON and share it here. Community voted track becomes the official Level 3 theme!",
     "category": "ideas",
-    "createdAt": "2026-09-16T21:34:42.241Z",
-    "likes": [],
+    "createdAt": "2026-09-17T16:30:00.000Z",
+    "likes": [
+      "google_gamer1",
+      "phantom_fan"
+    ],
+    "dislikes": [],
+    "neutrals": [],
+    "reports": [],
+    "replies": [
+      {
+        "id": "reply_q2_01",
+        "postId": "post_quest_02",
+        "authorId": "google_synth",
+        "authorName": "SoundNommer",
+        "authorProvider": "google",
+        "content": "Working on a square-wave arpeggio bassline that drops right when FEAST MODE activates!",
+        "createdAt": "2026-09-17T17:10:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "post_lore_01",
+    "authorId": "metamask_lorekeeper",
+    "authorName": "LoreKeeper.eth",
+    "authorProvider": "metamask",
+    "title": "📜 [LORE PROPOSAL] Chapter 04: The Secret of the Golden Sugar Core",
+    "content": "Deep beneath the Raydium liquidity pool, Nomster stumbles upon a crystalline Sugar Core pulsing with Solana energy. How should Nomster harness this power? Does eating golden sugar trigger a permanent Frenzy state? Read and vote on the storyline in Lore Studio!",
+    "category": "lore",
+    "createdAt": "2026-09-17T14:10:00.000Z",
+    "likes": [
+      "phantom_player99",
+      "metamask_0x8523"
+    ],
+    "dislikes": [],
+    "neutrals": [],
+    "reports": [],
+    "replies": [
+      {
+        "id": "reply_l1_01",
+        "postId": "post_lore_01",
+        "authorId": "google_gamer1",
+        "authorName": "StarNommer",
+        "authorProvider": "google",
+        "content": "A 10x Golden Sugar Frenzy mode when hitting a 20+ streak would be insane!",
+        "createdAt": "2026-09-17T15:00:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "post_meme_01",
+    "authorId": "phantom_memelord",
+    "authorName": "MemeLord.sol",
+    "authorProvider": "phantom",
+    "title": "🎨 [CC0 MEME] When the 100x Golden Sugar Drop Lands",
+    "content": "Made with the in-browser Nomster Meme Studio! Nomster with Laser Eyes and Diamond Hands staring down a red FUD spike. 100% CC0 public domain — remix, print, or share freely! 🚀💎",
+    "category": "ideas",
+    "createdAt": "2026-09-17T12:00:00.000Z",
+    "likes": [
+      "phantom_player99",
+      "google_gamer1"
+    ],
     "dislikes": [],
     "neutrals": [],
     "reports": [],
     "replies": []
   },
   {
-    "id": "post_1789594370160_m1efa",
-    "authorId": "phantom_3bZ8eZLM3ZQad399YDrhGJMXXLZaFMWAfLgkA3FPaHdf",
-    "authorName": "3bZ8...aHdf.sol",
+    "id": "post_game_01",
+    "authorId": "phantom_speedrun",
+    "authorName": "ArcadeSpeedrunner",
     "authorProvider": "phantom",
-    "title": "🚨 [LIFE SOS] Nomster is starving! Can someone send a Life Gift?",
-    "content": "I lost all 3 lives after reaching a score of 3 candies! 😢 My 3-hour cooldown is active. Could a fellow builder click below to gift a life? You will receive the permanent ❤️ Lifesaver badge and +10 Karma on The NomWall!",
+    "title": "💡 [FEATURE SUGGESTION] Speed Dash Trails & Magnetic Pulse Power-Up",
+    "content": "What if collecting 3 consecutive green candies grants Nomster a brief magnetic pulse that pulls in nearby treats? Would reward combo streaks and make high-score chasing even more kinetic.",
     "category": "game",
-    "createdAt": "2026-09-16T21:32:50.160Z",
-    "likes": [],
+    "createdAt": "2026-09-17T10:30:00.000Z",
+    "likes": [
+      "phantom_player99"
+    ],
+    "dislikes": [],
+    "neutrals": [],
+    "reports": [],
+    "replies": [
+      {
+        "id": "reply_g1_01",
+        "postId": "post_game_01",
+        "authorId": "metamask_nomdev",
+        "authorName": "NomDev.eth",
+        "authorProvider": "metamask",
+        "content": "Love this idea! We could add a neon cyan magnet aura around Nomster's head.",
+        "createdAt": "2026-09-17T11:05:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "post_token_01",
+    "authorId": "phantom_solana_maxi",
+    "authorName": "SolanaMaxi.sol",
+    "authorProvider": "phantom",
+    "title": "📊 [TOKENOMICS] 100% Fair Launch, Zero Dev Allocation, 100% CC0",
+    "content": "The cleanest launch model on Solana. 85 SOL bonding threshold on pump.fun -> automatic LP migration to Raydium with burned LP forever. The brand is owned by the internet, code is on GitHub, and the mascot belongs to everyone.",
+    "category": "tokenomics",
+    "createdAt": "2026-09-16T22:00:00.000Z",
+    "likes": [
+      "phantom_player99",
+      "google_gamer1",
+      "metamask_dev"
+    ],
+    "dislikes": [],
+    "neutrals": [],
+    "reports": [],
+    "replies": []
+  },
+  {
+    "id": "post_tech_01",
+    "authorId": "google_dev",
+    "authorName": "MobileDevNommer",
+    "authorProvider": "google",
+    "title": "🛠️ [OPEN SOURCE] Contributing Mobile Tilt Controls PR",
+    "content": "I'm working on a PR to enable accelerometer tilt controls for mobile players so you can tilt your phone to steer Nomster! Check out src/components/game/PhaserCanvas.tsx on GitHub if you want to test.",
+    "category": "general",
+    "createdAt": "2026-09-16T20:15:00.000Z",
+    "likes": [
+      "phantom_player99"
+    ],
     "dislikes": [],
     "neutrals": [],
     "reports": [],
@@ -87,134 +183,11 @@
     "content": "🔥 Nomster is on a cryptographic tear! I just reached a new personal record of 24 candies devoured with an incredible combo streak of x7 in FEAST MODE! 🚀 Can anyone beat this on the arcade?",
     "category": "game",
     "createdAt": "2026-09-16T21:30:48.140Z",
-    "likes": [],
+    "likes": [
+      "phantom_player99"
+    ],
     "dislikes": [],
     "neutrals": [],
-    "reports": [],
-    "replies": []
-  },
-  {
-    "id": "post_1789594199529_fjj0l",
-    "authorId": "phantom_player99",
-    "authorName": "ArcadeFan.sol",
-    "authorProvider": "phantom",
-    "title": "🚨 [LIFE SOS] Nomster is starving! Can someone send a Life Gift?",
-    "content": "I lost all 3 lives after reaching a score of 7 candies! 😢 My 3-hour cooldown is active. Could a fellow builder click below to gift a life? You will receive the permanent ❤️ Lifesaver badge and +10 Karma on The NomWall!",
-    "category": "game",
-    "createdAt": "2026-09-16T21:29:59.529Z",
-    "likes": [],
-    "dislikes": [],
-    "neutrals": [],
-    "reports": [],
-    "replies": [
-      {
-        "id": "reply_1789594238274_90dq",
-        "postId": "post_1789594199529_fjj0l",
-        "authorId": "metamask_donor1",
-        "authorName": "KindBuilder.eth",
-        "authorProvider": "metamask",
-        "content": "🎁 Sent a +1 Life Gift to ArcadeFan.sol! Nomster has been revived. Enjoy the game! ❤️",
-        "createdAt": "2026-09-16T21:30:38.274Z"
-      }
-    ]
-  },
-  {
-    "id": "post_welcome_001",
-    "authorId": "phantom_4NomSter888SolanaNommerCommunityVerified999",
-    "authorName": "NomVerse Core.sol",
-    "authorProvider": "phantom",
-    "title": "Welcome to The NomWall — The Decentralized Community Hub",
-    "content": "We built NomVerse without external social media dependencies (no X, no Facebook). All discussions, technical proposals, game ideas, and lore happen right here on this public wall. Connect your Phantom, MetaMask, or Google account to participate. Remember: sensitive contents are strictly forbidden to keep this a safe, family-friendly builder commons!",
-    "category": "general",
-    "createdAt": "2026-09-16T15:30:00.000Z",
-    "likes": [
-      "user_1",
-      "user_2",
-      "user_3",
-      "user_4",
-      "user_5"
-    ],
-    "dislikes": [],
-    "neutrals": [
-      "user_6",
-      "phantom_fan1"
-    ],
-    "reports": [
-      {
-        "userId": "user_reporting_1",
-        "reason": "Sensitive content test",
-        "reportedAt": "2026-09-16T21:03:05.385Z"
-      }
-    ],
-    "replies": [
-      {
-        "id": "reply_001",
-        "postId": "post_welcome_001",
-        "authorId": "metamask_0xNom...c0de",
-        "authorName": "evm_buidler.eth",
-        "authorProvider": "metamask",
-        "content": "Love the direct on-site discussion. No algorithmic timelines or account bans, just open CC0 collaboration.",
-        "createdAt": "2026-09-16T15:35:00.000Z"
-      },
-      {
-        "id": "reply_1789592578922_0koo",
-        "postId": "post_welcome_001",
-        "authorId": "google_test@gmail.com",
-        "authorName": "GoogleDev",
-        "authorProvider": "google",
-        "content": "Testing verified Google reply on the wall!",
-        "createdAt": "2026-09-16T21:02:58.922Z"
-      }
-    ]
-  },
-  {
-    "id": "post_game_002",
-    "authorId": "phantom_7XwF8q9XoX6x2N7YyQ5hV6k8B9v2Z1a3M4c5D6e7F8g9",
-    "authorName": "physics_wizard.sol",
-    "authorProvider": "phantom",
-    "title": "Idea: Adding Rainbow Candies for 2x Score Multiplier",
-    "content": "The current golden candy drop physics feel super crisp! What if we add an occasional rare 'Rainbow Solana Candy' that drops with hyper-bouncing physics and awards +2 points? I can submit a PR editing MainScene.ts if the community agrees.",
-    "category": "game",
-    "createdAt": "2026-09-16T15:42:00.000Z",
-    "likes": [
-      "user_1",
-      "user_2",
-      "user_7"
-    ],
-    "dislikes": [],
-    "neutrals": [
-      "user_8"
-    ],
-    "reports": [],
-    "replies": [
-      {
-        "id": "reply_002",
-        "postId": "post_game_002",
-        "authorId": "google_alex.dev@gmail.com",
-        "authorName": "Alex B.",
-        "authorProvider": "google",
-        "content": "Huge yes! Maybe also give Nomster a rainbow glowing tween when he eats it.",
-        "createdAt": "2026-09-16T15:45:00.000Z"
-      }
-    ]
-  },
-  {
-    "id": "post_lore_003",
-    "authorId": "metamask_0x71C...b29c",
-    "authorName": "0xLoreWeaver.eth",
-    "authorProvider": "metamask",
-    "title": "Drafting Chapter 3: The Great Candy Halving",
-    "content": "I am working on chapter-03.md for the living lore hub. The premise is that the Solana network experiences a mystical 'Candy Halving' where the candies become twice as concentrated in flavor, forcing Nomster to level up his munching techniques. Opening a PR tomorrow!",
-    "category": "lore",
-    "createdAt": "2026-09-16T15:50:00.000Z",
-    "likes": [
-      "user_3",
-      "user_9"
-    ],
-    "dislikes": [],
-    "neutrals": [
-      "user_2"
-    ],
     "reports": [],
     "replies": []
   }

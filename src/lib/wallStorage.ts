@@ -33,16 +33,179 @@ export interface WallPost {
 const DATA_DIR = path.join(process.cwd(), "data");
 const DATA_FILE = path.join(DATA_DIR, "wall_posts.json");
 
+export const DEFAULT_WALL_POSTS: WallPost[] = [
+  {
+    id: "post_quest_01",
+    authorId: "phantom_nomster_core",
+    authorName: "NomsterCore.sol",
+    authorProvider: "phantom",
+    title: "🎮 [COMMUNITY QUEST #01] Design Nomster's Next Enemy: The Glitch Worm",
+    content: "Calling all pixel artists & game builders! Chapter 3 introduced the Glitch Worm lurking in the mempool voids. Propose sprite designs, attack patterns, or submit a PR in src/components/game/. The winning submission will be merged into the official Phaser arcade engine! 👾\n\n**Reward:** +500 Karma + Verified CC0 Champion Badge.",
+    category: "game",
+    createdAt: "2026-09-17T18:00:00.000Z",
+    likes: ["phantom_player99", "google_gamer1", "metamask_dev"],
+    dislikes: [],
+    neutrals: [],
+    reports: [],
+    replies: [
+      {
+        id: "reply_q1_01",
+        postId: "post_quest_01",
+        authorId: "phantom_artist44",
+        authorName: "PixelNommer.sol",
+        authorProvider: "phantom",
+        content: "Drafted an 8-bit segment worm sprite with neon magenta glitches! Opening PR shortly.",
+        createdAt: "2026-09-17T18:42:00.000Z",
+      },
+      {
+        id: "reply_q1_02",
+        postId: "post_quest_01",
+        authorId: "google_builder",
+        authorName: "GlitchHunter",
+        authorProvider: "google",
+        content: "Attack pattern should make it slither horizontally across the middle lane to block candies!",
+        createdAt: "2026-09-17T19:15:00.000Z",
+      },
+    ],
+  },
+  {
+    id: "post_quest_02",
+    authorId: "phantom_chiptune",
+    authorName: "ChiptuneWizard",
+    authorProvider: "phantom",
+    title: "🎵 [COMMUNITY QUEST #02] Compose the Boss Theme on NomBeats",
+    content: "Use the built-in 8-bit NomBeats synthesizer below to sequence a 140 BPM boss rush chiptune track! Export your preset JSON and share it here. Community voted track becomes the official Level 3 theme!",
+    category: "ideas",
+    createdAt: "2026-09-17T16:30:00.000Z",
+    likes: ["google_gamer1", "phantom_fan"],
+    dislikes: [],
+    neutrals: [],
+    reports: [],
+    replies: [
+      {
+        id: "reply_q2_01",
+        postId: "post_quest_02",
+        authorId: "google_synth",
+        authorName: "SoundNommer",
+        authorProvider: "google",
+        content: "Working on a square-wave arpeggio bassline that drops right when FEAST MODE activates!",
+        createdAt: "2026-09-17T17:10:00.000Z",
+      },
+    ],
+  },
+  {
+    id: "post_lore_01",
+    authorId: "metamask_lorekeeper",
+    authorName: "LoreKeeper.eth",
+    authorProvider: "metamask",
+    title: "📜 [LORE PROPOSAL] Chapter 04: The Secret of the Golden Sugar Core",
+    content: "Deep beneath the Raydium liquidity pool, Nomster stumbles upon a crystalline Sugar Core pulsing with Solana energy. How should Nomster harness this power? Does eating golden sugar trigger a permanent Frenzy state? Read and vote on the storyline in Lore Studio!",
+    category: "lore",
+    createdAt: "2026-09-17T14:10:00.000Z",
+    likes: ["phantom_player99", "metamask_0x8523"],
+    dislikes: [],
+    neutrals: [],
+    reports: [],
+    replies: [
+      {
+        id: "reply_l1_01",
+        postId: "post_lore_01",
+        authorId: "google_gamer1",
+        authorName: "StarNommer",
+        authorProvider: "google",
+        content: "A 10x Golden Sugar Frenzy mode when hitting a 20+ streak would be insane!",
+        createdAt: "2026-09-17T15:00:00.000Z",
+      },
+    ],
+  },
+  {
+    id: "post_meme_01",
+    authorId: "phantom_memelord",
+    authorName: "MemeLord.sol",
+    authorProvider: "phantom",
+    title: "🎨 [CC0 MEME] When the 100x Golden Sugar Drop Lands",
+    content: "Made with the in-browser Nomster Meme Studio! Nomster with Laser Eyes and Diamond Hands staring down a red FUD spike. 100% CC0 public domain — remix, print, or share freely! 🚀💎",
+    category: "ideas",
+    createdAt: "2026-09-17T12:00:00.000Z",
+    likes: ["phantom_player99", "google_gamer1"],
+    dislikes: [],
+    neutrals: [],
+    reports: [],
+    replies: [],
+  },
+  {
+    id: "post_game_01",
+    authorId: "phantom_speedrun",
+    authorName: "ArcadeSpeedrunner",
+    authorProvider: "phantom",
+    title: "💡 [FEATURE SUGGESTION] Speed Dash Trails & Magnetic Pulse Power-Up",
+    content: "What if collecting 3 consecutive green candies grants Nomster a brief magnetic pulse that pulls in nearby treats? Would reward combo streaks and make high-score chasing even more kinetic.",
+    category: "game",
+    createdAt: "2026-09-17T10:30:00.000Z",
+    likes: ["phantom_player99"],
+    dislikes: [],
+    neutrals: [],
+    reports: [],
+    replies: [
+      {
+        id: "reply_g1_01",
+        postId: "post_game_01",
+        authorId: "metamask_nomdev",
+        authorName: "NomDev.eth",
+        authorProvider: "metamask",
+        content: "Love this idea! We could add a neon cyan magnet aura around Nomster's head.",
+        createdAt: "2026-09-17T11:05:00.000Z",
+      },
+    ],
+  },
+  {
+    id: "post_token_01",
+    authorId: "phantom_solana_maxi",
+    authorName: "SolanaMaxi.sol",
+    authorProvider: "phantom",
+    title: "📊 [TOKENOMICS] 100% Fair Launch, Zero Dev Allocation, 100% CC0",
+    content: "The cleanest launch model on Solana. 85 SOL bonding threshold on pump.fun -> automatic LP migration to Raydium with burned LP forever. The brand is owned by the internet, code is on GitHub, and the mascot belongs to everyone.",
+    category: "tokenomics",
+    createdAt: "2026-09-16T22:00:00.000Z",
+    likes: ["phantom_player99", "google_gamer1", "metamask_dev"],
+    dislikes: [],
+    neutrals: [],
+    reports: [],
+    replies: [],
+  },
+  {
+    id: "post_tech_01",
+    authorId: "google_dev",
+    authorName: "MobileDevNommer",
+    authorProvider: "google",
+    title: "🛠️ [OPEN SOURCE] Contributing Mobile Tilt Controls PR",
+    content: "I'm working on a PR to enable accelerometer tilt controls for mobile players so you can tilt your phone to steer Nomster! Check out src/components/game/PhaserCanvas.tsx on GitHub if you want to test.",
+    category: "general",
+    createdAt: "2026-09-16T20:15:00.000Z",
+    likes: ["phantom_player99"],
+    dislikes: [],
+    neutrals: [],
+    reports: [],
+    replies: [],
+  },
+];
+
 export function getWallPosts(): WallPost[] {
   try {
     if (!fs.existsSync(DATA_FILE)) {
-      return [];
+      saveWallPosts(DEFAULT_WALL_POSTS);
+      return DEFAULT_WALL_POSTS;
     }
     const raw = fs.readFileSync(DATA_FILE, "utf8");
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      saveWallPosts(DEFAULT_WALL_POSTS);
+      return DEFAULT_WALL_POSTS;
+    }
+    return parsed;
   } catch (err) {
     console.error("Error reading wall_posts.json:", err);
-    return [];
+    return DEFAULT_WALL_POSTS;
   }
 }
 

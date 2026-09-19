@@ -49,9 +49,9 @@ export const ToolkitSection: React.FC = () => {
             </div>
 
             <div className="relative mt-2 p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-slate-300">
-              <code>git clone https://github.com/nomverse/nomverse.git<br/>cd nomverse &amp;&amp; npm i<br/>npm run dev</code>
+              <code>git clone https://github.com/jsepkt/nomverse.git<br/>cd nomverse &amp;&amp; npm i<br/>npm run dev</code>
               <button
-                onClick={() => copyToClipboard("git clone https://github.com/nomverse/nomverse.git\ncd nomverse && npm i\nnpm run dev", "clone")}
+                onClick={() => copyToClipboard("git clone https://github.com/jsepkt/nomverse.git\ncd nomverse && npm i\nnpm run dev", "clone")}
                 className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
                 title="Copy commands"
               >
@@ -104,7 +104,7 @@ export const ToolkitSection: React.FC = () => {
         </div>
 
         {/* In-Browser CC0 Nomster PFP & Meme Maker Studio */}
-        <div className="mb-14">
+        <div id="create" className="scroll-mt-24 mb-14">
           <MemeStudio />
         </div>
 

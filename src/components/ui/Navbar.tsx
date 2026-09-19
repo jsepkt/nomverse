@@ -61,43 +61,59 @@ export const Navbar: React.FC = () => {
         <nav className="hidden lg:flex items-center gap-5 text-xs sm:text-sm font-medium text-slate-300">
           <a
             href="#arcade"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors"
+            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-bold text-white"
           >
             <Sparkles className="w-4 h-4 text-emerald-400" />
-            Arcade
+            <span>Play</span>
+          </a>
+          <a
+            href="#create"
+            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-medium text-slate-300"
+          >
+            <Sparkles className="w-4 h-4 text-candy-gold" />
+            <span>Create</span>
+          </a>
+          <a
+            href="#lore"
+            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-medium text-slate-300"
+          >
+            <BookOpen className="w-4 h-4 text-solana-purple" />
+            <span>Lore</span>
           </a>
           <a
             href="#wall"
             className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-semibold text-emerald-300"
           >
             <MessageSquare className="w-4 h-4 text-emerald-400" />
-            NomWall
-          </a>
-          <a
-            href="#lore"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors"
-          >
-            <BookOpen className="w-4 h-4 text-solana-purple" />
-            Lore Hub
+            <span>Community</span>
           </a>
           <a
             href="#toolkit"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors"
+            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-medium text-slate-300"
           >
             <Wrench className="w-4 h-4 text-candy-gold" />
-            Toolkit
+            <span>Build</span>
           </a>
           <a
             href="#tokenomics"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors"
+            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-medium text-slate-300"
           >
             <Flame className="w-4 h-4 text-rose-400" />
-            pump.fun
+            <span>$NOM</span>
           </a>
         </nav>
 
         {/* Action Buttons & Auth */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Prominent Play Now Button */}
+          <a
+            href="#arcade"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.65)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 fill-slate-950" />
+            <span>PLAY NOW</span>
+          </a>
+
           {/* User Auth Pill / Button */}
           {user ? (
             <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80">
@@ -128,7 +144,7 @@ export const Navbar: React.FC = () => {
             href="https://github.com/jsepkt/nomverse"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all hover:border-slate-500"
+            className="hidden xl:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all hover:border-slate-500"
           >
             <GithubIcon className="w-4 h-4" />
             <span>GitHub</span>
@@ -137,7 +153,7 @@ export const Navbar: React.FC = () => {
           {/* Quick Buy Modal Trigger */}
           <button
             onClick={() => setIsQuickBuyOpen(true)}
-            className="relative group inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-all hover:scale-105"
+            className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-all hover:scale-105"
           >
             <Zap className="w-3.5 h-3.5 text-amber-400" />
             <span>Quick Buy</span>
@@ -148,9 +164,9 @@ export const Navbar: React.FC = () => {
             href={TOKEN_CONFIG.pumpFunUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative group inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-emerald-500 via-teal-400 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.6)] hover:scale-105 transition-all"
+            className="relative group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 hover:border-slate-600 transition-all"
           >
-            <Rocket className="w-3.5 h-3.5 text-slate-950" />
+            <Rocket className="w-3.5 h-3.5 text-emerald-400" />
             <span>pump.fun</span>
           </a>
         </div>

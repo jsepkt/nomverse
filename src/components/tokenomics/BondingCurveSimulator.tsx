@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   Lock,
+  ShieldAlert,
 } from "lucide-react";
 import { TOKEN_CONFIG } from "@/config/token";
 
@@ -18,14 +19,15 @@ export const BondingCurveSimulator: React.FC = () => {
   const [solAmount, setSolAmount] = useState<number>(2.5);
 
   const TOTAL_SUPPLY = 1_000_000_000; // 1 Billion NOM tokens
+  const SOL_PRICE_USD = 180; // Live reference baseline
   const BONDING_GOAL_SOL = 85; // Standard pump.fun threshold
-  const SOL_PRICE_USD = 180; // Estimated SOL price
+  const PUMP_CURVE_SOL_CAP = 85; // Solana pump.fun migration cap
 
-  // Bonding curve formula approximation (exponential curve on pump.fun)
-  // At 0 SOL, price is very low; as SOL accumulates, tokens per SOL decrease slightly
-  const bondingProgress = Math.min(100, (solAmount / BONDING_GOAL_SOL) * 100);
-  const estimatedTokens = Math.round(
-    ((solAmount * 11_500_000) / (1 + (solAmount / BONDING_GOAL_SOL) * 0.4))
+  // Approximate bonding curve price calculation (virtual reserves model)
+  const bondingProgress = Math.min(100, (solAmount / PUMP_CURVE_SOL_CAP) * 100);
+  const estimatedTokens = Math.min(
+    TOTAL_SUPPLY * (solAmount / (solAmount + 30)),
+    TOTAL_SUPPLY * 0.2
   );
   const percentSupply = ((estimatedTokens / TOTAL_SUPPLY) * 100).toFixed(3);
   const estimatedCandies = Math.round(estimatedTokens / 1000);
@@ -39,13 +41,13 @@ export const BondingCurveSimulator: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-2">
             <Calculator className="w-3.5 h-3.5" />
-            <span>PUMP.FUN FAIR LAUNCH ENGINE</span>
+            <span>ILLUSTRATIVE BONDING-CURVE SIMULATION</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-white">
-            Bonding Curve &amp; Candy Calculator
+            Illustrative Bonding-Curve Simulation
           </h3>
           <p className="text-xs sm:text-sm text-slate-400">
-            Simulate your NOM token allocation, bonding curve impact, and equivalent candies in the treasury.
+            Simulate your hypothetical NOM token allocation and equivalent candies in the treasury.
           </p>
         </div>
 
@@ -259,6 +261,14 @@ export const BondingCurveSimulator: React.FC = () => {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Illustrative Simulation Disclaimer Banner */}
+      <div className="mt-4 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start gap-2.5 text-xs text-slate-400">
+        <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+        <p className="leading-relaxed">
+          <strong className="text-slate-200">Simulation Disclaimer:</strong> Estimates are hypothetical mathematical models for illustrative simulation purposes only. They do not represent guaranteed execution price, slippage, liquidity depth, or future token value. Not financial advice.
+        </p>
       </div>
     </div>
   );

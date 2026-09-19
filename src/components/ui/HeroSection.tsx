@@ -41,11 +41,35 @@ export const HeroSection: React.FC = () => {
 
           {/* Subtitle */}
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            Meet <strong>Nomster</strong>: an unpermissioned, zero-copyright mascot built for the next generation of decentralized culture. Feed him Solana candies in the browser mini-game below, remix his vector SVGs, and submit new chapters to the living lore hub via GitHub PRs.
+            Meet <strong>Nomster</strong>: an unpermissioned, zero-copyright mascot built for the next generation of decentralized culture. Feed him crypto candies in the browser mini-game, remix his CC0 vector assets, compose 8-bit beats, and shape canonical lore on GitHub.
           </p>
 
+          {/* 5 Pillars of NomVerse */}
+          <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-left grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-xs font-mono">
+            <div className="space-y-0.5">
+              <span className="text-emerald-400 font-black block">01 PLAY</span>
+              <span className="text-[11px] text-slate-400 block leading-tight">Instant browser arcade &amp; boss raids</span>
+            </div>
+            <div className="space-y-0.5">
+              <span className="text-candy-gold font-black block">02 CREATE</span>
+              <span className="text-[11px] text-slate-400 block leading-tight">Memes, music &amp; vector PFPs</span>
+            </div>
+            <div className="space-y-0.5">
+              <span className="text-solana-purple font-black block">03 EXPAND</span>
+              <span className="text-[11px] text-slate-400 block leading-tight">Living lore chapters on GitHub PRs</span>
+            </div>
+            <div className="space-y-0.5">
+              <span className="text-teal-400 font-black block">04 COMMUNITY</span>
+              <span className="text-[11px] text-slate-400 block leading-tight">Quests, bounties &amp; NomWall karma</span>
+            </div>
+            <div className="space-y-0.5 col-span-2 sm:col-span-1">
+              <span className="text-rose-400 font-black block">05 OWN</span>
+              <span className="text-[11px] text-slate-400 block leading-tight">100% CC0 public domain &amp; $NOM fair launch</span>
+            </div>
+          </div>
+
           {/* Primary CTA Buttons */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-1">
             <a
               href={TOKEN_CONFIG.pumpFunUrl}
               target="_blank"

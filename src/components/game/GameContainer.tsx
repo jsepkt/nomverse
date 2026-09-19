@@ -82,6 +82,7 @@ export const GameContainer: React.FC = () => {
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [recentNom, setRecentNom] = useState<boolean>(false);
   const [hasPostedHighScore, setHasPostedHighScore] = useState<boolean>(false);
+  const [isGuestMode, setIsGuestMode] = useState<boolean>(false);
 
   // CC0 Cosmetics & Closet State
   const [equippedSkin, setEquippedSkinState] = useState<SkinId>("default");
@@ -120,23 +121,24 @@ export const GameContainer: React.FC = () => {
   const [dashReady, setDashReady] = useState<boolean>(true);
   const [dashSignal, setDashSignal] = useState<number>(0);
   const [nextHeartCountdown, setNextHeartCountdown] = useState<number>(120);
+  const [toddlerMode, setToddlerMode] = useState<boolean>(false);
 
-  // Toddler Assist / Kid Mode (Age 3-5)
-  const [toddlerMode, setToddlerMode] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("nomverse_toddler_mode") === "true";
-    }
-    return false;
-  });
-
+  // Toddler auto-waddle intervals and audio
   const handleToggleToddlerMode = () => {
-    setToddlerMode((prev) => {
-      const next = !prev;
-      if (typeof window !== "undefined") {
-        localStorage.setItem("nomverse_toddler_mode", String(next));
-      }
-      return next;
-    });
+    const next = !toddlerMode;
+    setToddlerMode(next);
+    if (next) {
+      sounds.playGoldenChime();
+    }
+  };
+
+  const handleStartEpisode = (ep: EpisodeConfig) => {
+    setCurrentEpisodeId(ep.id);
+    setIsEpisodeModalOpen(false);
+    setVictoryData(null);
+    setResetSignal((prev) => prev + 1);
+    setStartSignal((prev) => prev + 1);
+    setGameState("playing");
   };
 
   const handleEpisodeComplete = useCallback((epId: string, finalScore: number, stars: number) => {
@@ -163,33 +165,61 @@ export const GameContainer: React.FC = () => {
     }
   }, [victoryData]);
 
-  // Synchronize life and skin state on user login
+  // Synchronize life and skin state on user login or guest session
   useEffect(() => {
-    if (!user) return;
-    const lifeState = getClientLifeState(user.id);
-    setLives(lifeState.lives);
-    setCooldownUntil(lifeState.cooldownUntil);
+    if (user) {
+      const lifeState = getClientLifeState(user.id);
+      setLives(lifeState.lives);
+      setCooldownUntil(lifeState.cooldownUntil);
 
-    const savedSkin = getEquippedSkin(user.id);
-    setEquippedSkinState(savedSkin);
+      const savedSkin = getEquippedSkin(user.id);
+      setEquippedSkinState(savedSkin);
 
-    if (lifeState.lives <= 0 && lifeState.cooldownUntil && Date.now() < lifeState.cooldownUntil) {
-      setIsGameOver(true);
+      if (lifeState.lives <= 0 && lifeState.cooldownUntil && Date.now() < lifeState.cooldownUntil) {
+        setIsGameOver(true);
+      } else {
+        setIsGameOver(false);
+      }
+
+      try {
+        const savedScore = localStorage.getItem(`nomverse_high_score_${user.id}`);
+        if (savedScore) {
+          setHighScore(parseInt(savedScore, 10) || 0);
+        }
+        const savedStreak = localStorage.getItem(`nomverse_max_streak_${user.id}`);
+        if (savedStreak) {
+          setMaxStreak(parseInt(savedStreak, 10) || 0);
+        }
+      } catch {
+        // ignore
+      }
     } else {
-      setIsGameOver(false);
-    }
-
-    try {
-      const savedScore = localStorage.getItem(`nomverse_high_score_${user.id}`);
-      if (savedScore) {
-        setHighScore(parseInt(savedScore, 10) || 0);
+      // Guest session initialization
+      try {
+        const savedGuestScore = localStorage.getItem("nomverse_guest_high_score");
+        if (savedGuestScore) {
+          setHighScore(parseInt(savedGuestScore, 10) || 0);
+        }
+        const savedGuestStreak = localStorage.getItem("nomverse_guest_max_streak");
+        if (savedGuestStreak) {
+          setMaxStreak(parseInt(savedGuestStreak, 10) || 0);
+        }
+        const savedCooldown = localStorage.getItem("nomverse_guest_cooldown");
+        if (savedCooldown) {
+          const cd = parseInt(savedCooldown, 10);
+          if (cd && Date.now() < cd) {
+            setCooldownUntil(cd);
+            setLives(0);
+            setIsGameOver(true);
+          } else {
+            setCooldownUntil(null);
+            setLives(MAX_LIVES);
+            setIsGameOver(false);
+          }
+        }
+      } catch {
+        // ignore
       }
-      const savedStreak = localStorage.getItem(`nomverse_max_streak_${user.id}`);
-      if (savedStreak) {
-        setMaxStreak(parseInt(savedStreak, 10) || 0);
-      }
-    } catch {
-      // ignore
     }
   }, [user]);
 
@@ -286,19 +316,25 @@ export const GameContainer: React.FC = () => {
 
     if (newStreak > maxStreak) {
       setMaxStreak(newStreak);
-      if (user) {
-        try {
+      try {
+        if (user) {
           localStorage.setItem(`nomverse_max_streak_${user.id}`, newStreak.toString());
-        } catch {
-          // ignore
+        } else {
+          localStorage.setItem("nomverse_guest_max_streak", newStreak.toString());
         }
+      } catch {
+        // ignore
       }
     }
 
-    if (user && newScore > highScore) {
+    if (newScore > highScore) {
       setHighScore(newScore);
       try {
-        localStorage.setItem(`nomverse_high_score_${user.id}`, newScore.toString());
+        if (user) {
+          localStorage.setItem(`nomverse_high_score_${user.id}`, newScore.toString());
+        } else {
+          localStorage.setItem("nomverse_guest_high_score", newScore.toString());
+        }
       } catch {
         // ignore
       }
@@ -326,6 +362,19 @@ export const GameContainer: React.FC = () => {
       }
       saveClientLifeState(current);
       setCooldownUntil(current.cooldownUntil);
+    } else {
+      if (newLives <= 0) {
+        const cd = Date.now() + COOLDOWN_DURATION_MS;
+        setCooldownUntil(cd);
+        try {
+          localStorage.setItem("nomverse_guest_cooldown", cd.toString());
+        } catch {}
+      } else {
+        setCooldownUntil(null);
+        try {
+          localStorage.removeItem("nomverse_guest_cooldown");
+        } catch {}
+      }
     }
   };
 
@@ -475,7 +524,21 @@ export const GameContainer: React.FC = () => {
 
   // Life restored via trivia, gift, or countdown expiry
   const handleLifeRestored = () => {
-    if (!user) return;
+    if (!user) {
+      setLives(MAX_LIVES);
+      setCooldownUntil(null);
+      setIsGameOver(false);
+      setHasPostedHighScore(false);
+      setScore(0);
+      setStreak(0);
+      setActivePowerUps([]);
+      setResetSignal((prev) => prev + 1);
+      setGameState("countdown");
+      try {
+        localStorage.removeItem("nomverse_guest_cooldown");
+      } catch {}
+      return;
+    }
     const updated = replenishClientLives(user.id, MAX_LIVES);
     setLives(updated.lives);
     setCooldownUntil(null);
@@ -794,11 +857,18 @@ export const GameContainer: React.FC = () => {
             : "relative w-full max-w-[440px] mx-auto aspect-[440/520] rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(20,241,149,0.2)]"
         }
       >
-        {/* Unauthenticated Lockscreen */}
-        {!user && <ArcadeLockscreen />}
+        {/* Unauthenticated Lockscreen: only shown if not logged in AND has not chosen Play as Guest */}
+        {!user && !isGuestMode && (
+          <ArcadeLockscreen
+            onPlayAsGuest={() => {
+              setIsGuestMode(true);
+              handleStartGame();
+            }}
+          />
+        )}
 
         {/* Game Over Modal (3-Hour Cooldown & Community Life SOS) */}
-        {user && isGameOver && (
+        {(user || isGuestMode) && isGameOver && (
           <GameOverModal
             score={score}
             streak={streak}
@@ -810,7 +880,7 @@ export const GameContainer: React.FC = () => {
         )}
 
         {/* Ready to Play Start Overlay */}
-        {user && gameState === "idle" && !isGameOver && (
+        {(user || isGuestMode) && gameState === "idle" && !isGameOver && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/75 backdrop-blur-sm p-4 text-center select-none animate-fade-in rounded-2xl">
             <div className="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-3">
               PUMP.FUN FAIR LAUNCH ARCADE

@@ -58,7 +58,7 @@ const SEED_BOUNTIES: BountyItem[] = [
     karmaReward: 300,
     status: "completed",
     claimedBy: { id: "phantom_artist44", name: "PixelNommer.sol" },
-    prUrl: "https://github.com/nomverse/nomverse/pull/14",
+    prUrl: "https://github.com/jsepkt/nomverse/pull/1",
     tags: ["Telegram", "Discord", "Stickers"],
   },
 ];
