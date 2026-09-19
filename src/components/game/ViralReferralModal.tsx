@@ -75,7 +75,7 @@ export const ViralReferralModal: React.FC<ViralReferralModalProps> = ({
   return (
     <Portal>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-        <div className="relative w-full max-w-lg rounded-3xl bg-slate-900 border border-emerald-500/40 shadow-[0_0_60px_rgba(20,241,149,0.2)] p-5 sm:p-7 overflow-hidden text-center text-white">
+        <div className="relative w-full max-w-lg rounded-3xl bg-slate-900 border border-emerald-500/40 shadow-[0_0_60px_rgba(20,241,149,0.2)] p-5 sm:p-7 max-h-[90vh] overflow-y-auto text-center text-white">
           {/* Background Ambient Glows */}
           <div className="absolute -top-24 -right-24 w-60 h-60 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-solana-purple/15 rounded-full blur-3xl pointer-events-none" />

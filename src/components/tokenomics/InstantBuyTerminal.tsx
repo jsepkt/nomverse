@@ -239,7 +239,7 @@ export const InstantBuyTerminal: React.FC = () => {
             </div>
 
             {/* Quick Preset Buttons */}
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
               {PRESETS.map((amount) => {
                 const isSelected = !customInput && solInput === amount;
                 return (
@@ -250,7 +250,7 @@ export const InstantBuyTerminal: React.FC = () => {
                       setSolInput(amount);
                       setCustomInput("");
                     }}
-                    className={`py-2.5 rounded-xl font-mono text-xs sm:text-sm font-bold border transition-all ${
+                    className={`py-2 sm:py-2.5 px-0.5 sm:px-1 rounded-xl font-mono text-[11px] sm:text-sm font-bold border transition-all touch-manipulation cursor-pointer ${
                       isSelected
                         ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(20,241,149,0.3)] scale-[1.02]"
                         : "bg-slate-900/90 text-slate-300 border-slate-800 hover:border-slate-700 hover:text-white"

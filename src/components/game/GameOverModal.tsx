@@ -201,8 +201,8 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   };
 
   return (
-    <div className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md text-center animate-fade-in select-none">
-      <div className="relative w-full max-w-sm bg-surface border border-rose-500/30 rounded-2xl p-6 shadow-[0_0_50px_rgba(244,63,94,0.2)] space-y-4">
+    <div className="absolute inset-0 z-30 flex items-center justify-center p-2 sm:p-4 bg-slate-950/90 backdrop-blur-md text-center animate-fade-in select-none overflow-y-auto">
+      <div className="relative w-full max-w-sm my-auto bg-surface border border-rose-500/30 rounded-2xl p-4 sm:p-5 shadow-[0_0_50px_rgba(244,63,94,0.2)] space-y-3 max-h-full overflow-y-auto">
         {/* Starving Nomster Avatar */}
         <div className="relative w-20 h-20 mx-auto">
           <div className="relative w-full h-full rounded-full bg-rose-500/10 border-2 border-rose-500/40 p-2 flex items-center justify-center">

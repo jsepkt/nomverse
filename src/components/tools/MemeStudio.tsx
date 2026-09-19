@@ -478,7 +478,7 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
           {/* Background Presets */}
           <div>
             <label className="text-xs font-mono text-slate-300 block mb-1.5">Background Theme</label>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5">
               {(
                 [
                   { id: "solana", label: "Solana", color: "from-purple-500 to-teal-400" },
@@ -491,7 +491,7 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
                 <button
                   key={bg.id}
                   onClick={() => setTheme(bg.id)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold border transition-all truncate ${
+                  className={`px-2 py-2 rounded-xl text-[11px] sm:text-xs font-mono font-bold border transition-all truncate touch-manipulation cursor-pointer ${
                     theme === bg.id
                       ? "border-emerald-400 bg-emerald-500/20 text-white shadow-sm"
                       : "border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white"
@@ -506,7 +506,7 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
           {/* Accessories Selection */}
           <div>
             <label className="text-xs font-mono text-slate-300 block mb-1.5">Accessories &amp; Layers</label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
               {(
                 [
                   { id: "laser_eyes", label: "Laser Eyes 🔴" },
@@ -521,7 +521,7 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
                 <button
                   key={acc.id}
                   onClick={() => setAccessory(acc.id)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-mono border transition-all truncate ${
+                  className={`px-2 py-2 rounded-xl text-[11px] sm:text-xs font-mono border transition-all truncate touch-manipulation cursor-pointer ${
                     accessory === acc.id
                       ? "border-solana-purple bg-solana-purple/20 text-purple-200 font-bold"
                       : "border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white"
@@ -536,7 +536,7 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
           {/* Mood Selector */}
           <div>
             <label className="text-xs font-mono text-slate-300 block mb-1.5">Nomster Expression</label>
-            <div className="grid grid-cols-3 gap-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
               {(
                 [
                   { id: "happy", label: "Chomp Mouth 😋" },
@@ -547,7 +547,7 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
                 <button
                   key={m.id}
                   onClick={() => setMood(m.id)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-mono border transition-all ${
+                  className={`px-2.5 py-2 rounded-xl text-[11px] sm:text-xs font-mono border transition-all touch-manipulation cursor-pointer ${
                     mood === m.id
                       ? "border-amber-400 bg-amber-500/20 text-amber-300 font-bold"
                       : "border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white"

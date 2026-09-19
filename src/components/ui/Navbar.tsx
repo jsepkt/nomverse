@@ -337,8 +337,8 @@ export const Navbar: React.FC = () => {
                 </button>
               </div>
 
-              {/* Navigation Items List */}
-              <div className="grid grid-cols-1 gap-1.5">
+              {/* Navigation Items List - 1 col on phone, 2 col on tablet */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
                 {NAV_ITEMS.map((item) => {
                   const Icon = item.icon;
                   const isPlay = item.href === "/play";
@@ -353,13 +353,13 @@ export const Navbar: React.FC = () => {
                           handleNavClick();
                         }
                       }}
-                      className="flex items-center justify-between p-3 rounded-xl bg-surface/50 hover:bg-slate-800 border border-slate-800/70 hover:border-slate-700 transition-all active:scale-[0.99] group"
+                      className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-surface/60 hover:bg-slate-800 border border-slate-800/80 hover:border-slate-700 transition-all active:scale-[0.98] group touch-manipulation"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 group-hover:border-slate-700">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 group-hover:border-slate-700">
                           <Icon className={`w-4 h-4 ${item.color}`} />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-sm text-white group-hover:text-emerald-300 transition-colors">
                               {item.label}
@@ -375,7 +375,7 @@ export const Navbar: React.FC = () => {
                           </p>
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors shrink-0" />
+                      <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors shrink-0 ml-1" />
                     </a>
                   );
                 })}
@@ -422,14 +422,14 @@ export const Navbar: React.FC = () => {
         )}
       </header>
 
-      {/* Floating App-Like Bottom Dock on Mobile (Thumb-Friendly Native Experience) */}
+      {/* Floating App-Like Bottom Dock on Mobile & Tablet (Thumb-Friendly Native Experience) */}
       <nav
         aria-label="Mobile Bottom Navigation"
-        className="lg:hidden fixed bottom-3 inset-x-3 z-40 max-w-sm mx-auto rounded-3xl bg-slate-950/90 backdrop-blur-2xl border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.85)] px-2 py-1.5 flex items-center justify-around transition-all select-none"
+        className="lg:hidden fixed bottom-3 inset-x-3 z-40 max-w-sm sm:max-w-md mx-auto rounded-3xl bg-slate-950/95 backdrop-blur-2xl border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.85)] px-3 py-1.5 flex items-center justify-around transition-all select-none touch-manipulation"
       >
         <button
           onClick={handlePlayClick}
-          className="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-emerald-400 active:scale-90 transition-all cursor-pointer"
+          className="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2.5 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-emerald-400 active:scale-90 transition-all cursor-pointer touch-manipulation"
         >
           <Gamepad2 className="w-5 h-5 mb-0.5 text-emerald-400" />
           <span>Play</span>
@@ -437,7 +437,7 @@ export const Navbar: React.FC = () => {
 
         <a
           href="/#wall"
-          className="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-teal-300 active:scale-90 transition-all"
+          className="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2.5 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-teal-300 active:scale-90 transition-all touch-manipulation"
         >
           <MessageSquare className="w-5 h-5 mb-0.5 text-teal-400" />
           <span>Quests</span>
@@ -446,7 +446,7 @@ export const Navbar: React.FC = () => {
         {/* Center Glow HERO Action Button: Instant 1-Tap Buy $NOM */}
         <button
           onClick={() => setIsQuickBuyOpen(true)}
-          className="relative -top-3.5 flex flex-col items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-300 to-solana-green text-slate-950 font-black shadow-[0_0_25px_rgba(20,241,149,0.7)] hover:scale-110 active:scale-90 transition-all border-2 border-slate-950 cursor-pointer"
+          className="relative -top-3.5 flex flex-col items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-300 to-solana-green text-slate-950 font-black shadow-[0_0_25px_rgba(20,241,149,0.7)] hover:scale-110 active:scale-90 transition-all border-2 border-slate-950 cursor-pointer touch-manipulation shrink-0"
           title="Instant Buy $NOM on pump.fun"
         >
           <Flame className="w-6 h-6 fill-slate-950 text-slate-950 animate-bounce" />
@@ -455,7 +455,7 @@ export const Navbar: React.FC = () => {
 
         <a
           href="/#tokenomics"
-          className="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-amber-300 active:scale-90 transition-all"
+          className="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2.5 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-amber-300 active:scale-90 transition-all touch-manipulation"
         >
           <Coins className="w-5 h-5 mb-0.5 text-amber-400" />
           <span>Stats</span>
@@ -463,7 +463,7 @@ export const Navbar: React.FC = () => {
 
         <a
           href="/#lore"
-          className="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-purple-300 active:scale-90 transition-all"
+          className="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2.5 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-purple-300 active:scale-90 transition-all touch-manipulation"
         >
           <BookOpen className="w-5 h-5 mb-0.5 text-purple-400" />
           <span>Lore</span>

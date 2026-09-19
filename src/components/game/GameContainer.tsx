@@ -723,7 +723,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
       ref={containerRef}
       className={
         isFullWindow
-          ? "fixed inset-0 z-[999] w-screen h-screen bg-[#050914] flex flex-col items-center justify-between p-2 sm:p-4 overflow-hidden select-none"
+          ? "fixed inset-0 z-[999] w-screen h-[100dvh] max-h-[100dvh] bg-[#050914] flex flex-col items-center justify-between p-2 sm:p-4 overflow-hidden select-none touch-manipulation"
           : expandedMode
           ? "relative w-full max-w-[560px] sm:max-w-[580px] mx-auto flex flex-col items-center"
           : "relative w-full max-w-[460px] mx-auto flex flex-col items-center"

@@ -205,6 +205,22 @@ export const PixelSkinWorkshop: React.FC = () => {
             onMouseDown={() => setIsMouseDown(true)}
             onMouseUp={() => setIsMouseDown(false)}
             onMouseLeave={() => setIsMouseDown(false)}
+            onTouchStart={() => setIsMouseDown(true)}
+            onTouchEnd={() => setIsMouseDown(false)}
+            onTouchCancel={() => setIsMouseDown(false)}
+            onTouchMove={(e) => {
+              if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+                const pos = elem?.getAttribute("data-pos");
+                if (pos) {
+                  const [r, c] = pos.split("-").map(Number);
+                  if (!isNaN(r) && !isNaN(c)) {
+                    handlePixelPaint(r, c);
+                  }
+                }
+              }
+            }}
             className="gap-[1px] p-2 rounded-2xl bg-slate-900 border-2 border-slate-800 shadow-inner select-none cursor-crosshair touch-none"
             style={{
               display: "grid",
@@ -217,7 +233,9 @@ export const PixelSkinWorkshop: React.FC = () => {
               row.map((color, c) => (
                 <div
                   key={`${r}-${c}`}
+                  data-pos={`${r}-${c}`}
                   onMouseDown={() => handlePixelPaint(r, c)}
+                  onPointerDown={() => handlePixelPaint(r, c)}
                   onMouseEnter={() => {
                     if (isMouseDown) handlePixelPaint(r, c);
                   }}

@@ -117,7 +117,7 @@ export const DailyLootboxModal: React.FC<DailyLootboxModalProps> = ({
   return (
     <Portal>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-        <div className="relative w-full max-w-lg rounded-3xl bg-slate-900 border border-amber-500/40 shadow-[0_0_60px_rgba(245,158,11,0.25)] p-5 sm:p-7 overflow-hidden text-center text-white">
+        <div className="relative w-full max-w-lg rounded-3xl bg-slate-900 border border-amber-500/40 shadow-[0_0_60px_rgba(245,158,11,0.25)] p-5 sm:p-7 max-h-[90vh] overflow-y-auto text-center text-white">
           {/* Ambient Glows */}
           <div className="absolute -top-20 -left-20 w-60 h-60 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-solana-purple/15 rounded-full blur-3xl pointer-events-none" />

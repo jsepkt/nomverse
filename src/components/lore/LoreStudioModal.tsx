@@ -165,10 +165,38 @@ ${content}
           </div>
         </div>
 
+        {/* Mobile View Mode Switcher (Edit vs Preview) */}
+        <div className="flex md:hidden items-center justify-center pt-2">
+          <div className="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800">
+            <button
+              onClick={() => setIsPreview(false)}
+              className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
+                !isPreview
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Edit3 className="w-3.5 h-3.5 inline mr-1" />
+              Editor
+            </button>
+            <button
+              onClick={() => setIsPreview(true)}
+              className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
+                isPreview
+                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5 inline mr-1" />
+              Preview
+            </button>
+          </div>
+        </div>
+
         {/* Split Screen Editor & Live Preview */}
-        <div className="flex-1 min-h-[280px] grid grid-cols-1 md:grid-cols-2 gap-4 py-4 overflow-y-auto">
+        <div className="flex-1 min-h-[260px] grid grid-cols-1 md:grid-cols-2 gap-4 py-3 overflow-y-auto">
           {/* Left: Raw Markdown Editor */}
-          <div className="flex flex-col space-y-1">
+          <div className={`flex flex-col space-y-1 ${isPreview ? "hidden md:flex" : "flex"}`}>
             <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
               <Edit3 className="w-3 h-3 text-solana-green" />
               <span>Markdown Story Editor</span>
@@ -176,17 +204,17 @@ ${content}
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="flex-1 w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 font-mono focus:outline-none focus:border-solana-green/50 resize-none leading-relaxed"
+              className="flex-1 min-h-[220px] w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 font-mono focus:outline-none focus:border-solana-green/50 resize-none leading-relaxed"
             />
           </div>
 
           {/* Right: Visual Reader Preview */}
-          <div className="flex flex-col space-y-1">
+          <div className={`flex flex-col space-y-1 ${!isPreview ? "hidden md:flex" : "flex"}`}>
             <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
               <Eye className="w-3 h-3 text-solana-purple" />
               <span>Visual Live Preview</span>
             </span>
-            <div className="flex-1 p-4 rounded-xl bg-slate-900/60 border border-slate-800 overflow-y-auto space-y-3">
+            <div className="flex-1 min-h-[220px] p-4 rounded-xl bg-slate-900/60 border border-slate-800 overflow-y-auto space-y-3">
               <h2 className="text-base font-bold text-white">
                 Chapter {chapterNum}: {title}
               </h2>
