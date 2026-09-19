@@ -595,6 +595,77 @@ class SoundManager {
     osc.stop(now + 0.4);
   }
 
+  // Cute playful mascot giggle (Petting / Tickling Nomster)
+  public playGiggle(): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const pitches = [520, 680, 820, 960, 880];
+    pitches.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.15, now + idx * 0.05 + 0.04);
+
+      gain.gain.setValueAtTime(0.18, now + idx * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.06);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.05);
+      osc.stop(now + idx * 0.05 + 0.07);
+    });
+  }
+
+  // Heartwarming fairy Life Heart collect chime (+1 Life)
+  public playHeartCollect(): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const freqs = [659.25, 830.61, 987.77, 1318.51, 1661.22]; // E Major arpeggio
+    freqs.forEach((f, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(f, now + idx * 0.05);
+
+      gain.gain.setValueAtTime(0.24, now + idx * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.35);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.05);
+      osc.stop(now + idx * 0.05 + 0.38);
+    });
+  }
+
+  // Playful cartoon tongue slurp / lick
+  public playTongueSlurp(): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(260, now);
+    osc.frequency.exponentialRampToValueAtTime(740, now + 0.12);
+
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
   // Toggle mute
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;

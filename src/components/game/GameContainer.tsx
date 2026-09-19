@@ -117,6 +117,7 @@ export const GameContainer: React.FC = () => {
   const [isFeverOverdrive, setIsFeverOverdrive] = useState<boolean>(false);
   const [dashReady, setDashReady] = useState<boolean>(true);
   const [dashSignal, setDashSignal] = useState<number>(0);
+  const [nextHeartCountdown, setNextHeartCountdown] = useState<number>(120);
 
   const handleEpisodeComplete = useCallback((epId: string, finalScore: number, stars: number) => {
     const epConfig = EPISODES.find((e) => e.id === epId);
@@ -512,21 +513,34 @@ export const GameContainer: React.FC = () => {
       <div className="w-full mb-3 flex items-center justify-between px-3 py-2 bg-surface/90 border border-slate-800/80 rounded-xl backdrop-blur-md shadow-lg">
         {/* Lives (3 Hearts) & Score */}
         <div className="flex items-center gap-3 sm:gap-4">
-          {/* Hearts Display */}
-          <div className="flex items-center gap-1" title={`${lives} Lives Remaining`}>
-            {[1, 2, 3].map((heartIndex) => {
-              const hasLife = lives >= heartIndex;
-              return (
-                <Heart
-                  key={heartIndex}
-                  className={`w-4 h-4 transition-all ${
-                    hasLife
-                      ? "text-rose-500 fill-rose-500 animate-pulse"
-                      : "text-slate-700 fill-slate-800"
-                  }`}
-                />
-              );
-            })}
+          {/* Hearts Display (5 Base Lives, Cap 10) */}
+          <div className="flex flex-col gap-0.5" title={`${lives}/10 Lives Remaining`}>
+            <div className="flex items-center gap-0.5 sm:gap-1">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((heartIndex) => {
+                const hasLife = lives >= heartIndex;
+                const isBonus = heartIndex > 5;
+                if (isBonus && lives <= 5 && heartIndex > 5) {
+                  return null;
+                }
+                return (
+                  <Heart
+                    key={heartIndex}
+                    className={`w-3.5 h-3.5 transition-all ${
+                      hasLife
+                        ? isBonus
+                          ? "text-pink-400 fill-pink-400 animate-bounce"
+                          : "text-rose-500 fill-rose-500 animate-pulse"
+                        : "text-slate-700 fill-slate-800"
+                    }`}
+                  />
+                );
+              })}
+            </div>
+            {gameState === "playing" && (
+              <div className="flex items-center gap-1 text-[9px] font-mono text-pink-400/90 font-bold">
+                <span>❤️ Drop in {Math.floor(nextHeartCountdown / 60)}:{(nextHeartCountdown % 60).toString().padStart(2, "0")}</span>
+              </div>
+            )}
           </div>
 
           {/* Candies Score */}
@@ -761,7 +775,7 @@ export const GameContainer: React.FC = () => {
               className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-sm font-mono shadow-[0_0_35px_rgba(20,241,149,0.5)] hover:shadow-[0_0_50px_rgba(20,241,149,0.8)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
             >
               <Play className="w-5 h-5 fill-slate-950" />
-              <span>START GAME (3 LIVES)</span>
+              <span>START GAME (5 LIVES)</span>
             </button>
             <span className="text-[10px] font-mono text-slate-400 mt-3">
               (Press Space or tap anywhere on canvas to start)
@@ -800,6 +814,7 @@ export const GameContainer: React.FC = () => {
           }}
           onDashCooldownUpdate={(ready) => setDashReady(ready)}
           onEpisodeComplete={handleEpisodeComplete}
+          onNextLifeDropCountdown={(sec) => setNextHeartCountdown(sec)}
           dashSignal={dashSignal}
           episodeId={currentEpisodeId}
           rival={rival || undefined}
@@ -837,7 +852,9 @@ export const GameContainer: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
-            <span className="text-rose-400 font-bold">3 Lives Rule</span>
+            <span className="text-rose-400 font-bold">5 Lives Base (Max 10)</span>
+            <span>•</span>
+            <span className="text-pink-400 font-bold">❤️ Drop Every 2 Min</span>
             <span>•</span>
             <span className="text-solana-green">Arcade 60 FPS</span>
           </div>

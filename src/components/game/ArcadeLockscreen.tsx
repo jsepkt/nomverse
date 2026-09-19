@@ -46,7 +46,7 @@ export const ArcadeLockscreen: React.FC = () => {
         <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-left space-y-2 text-[11px] text-slate-300 font-mono">
           <div className="flex items-center gap-2">
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 shrink-0" />
-            <span><strong>3 Lives:</strong> Don&apos;t let candies drop to the floor!</span>
+            <span><strong>5 Lives (Max 10):</strong> Winged heart candies drop every 2 min!</span>
           </div>
           <div className="flex items-center gap-2">
             <Flame className="w-3.5 h-3.5 text-amber-400 shrink-0" />

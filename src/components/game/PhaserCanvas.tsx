@@ -19,6 +19,7 @@ interface PhaserCanvasProps {
   onDashCooldownUpdate?: (dashReady: boolean) => void;
   onEpisodeComplete?: (episodeId: string, score: number, stars: number) => void;
   onBossHpUpdate?: (currentHp: number, maxHp: number) => void;
+  onNextLifeDropCountdown?: (secondsRemaining: number) => void;
   rival?: { score: number; challenger: string };
   holderTierPerks?: {
     extraLives: number;
@@ -50,6 +51,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   onDashCooldownUpdate,
   onEpisodeComplete,
   onBossHpUpdate,
+  onNextLifeDropCountdown,
   rival,
   holderTierPerks,
   frenzySignal,
@@ -57,7 +59,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   startSignal,
   dashSignal,
   episodeId,
-  initialLives = 3,
+  initialLives = 5,
   equippedSkin = "default",
   waddleSignal,
   isFullWindow = false,
@@ -102,6 +104,9 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
 
   const onBossHpUpdateRef = useRef(onBossHpUpdate);
   onBossHpUpdateRef.current = onBossHpUpdate;
+
+  const onNextLifeDropCountdownRef = useRef(onNextLifeDropCountdown);
+  onNextLifeDropCountdownRef.current = onNextLifeDropCountdown;
 
   useEffect(() => {
     let isMounted = true;
@@ -212,6 +217,11 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
                 onBossHpUpdateRef.current(currentHp, maxHp);
               }
             },
+            onNextLifeDropCountdown: (seconds: number) => {
+              if (onNextLifeDropCountdownRef.current) {
+                onNextLifeDropCountdownRef.current(seconds);
+              }
+            },
           },
         });
 
@@ -256,9 +266,9 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   // Handle resets triggered from parent HUD
   useEffect(() => {
     if (resetSignal && resetSignal > 0 && sceneRef.current) {
-      sceneRef.current.resetGame(3);
+      sceneRef.current.resetGame(initialLives);
     }
-  }, [resetSignal]);
+  }, [resetSignal, initialLives]);
 
   // Handle live super dash signals
   useEffect(() => {

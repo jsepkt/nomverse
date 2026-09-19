@@ -19,6 +19,7 @@ export interface SceneCallbacks {
   onDashCooldownUpdate?: (dashReady: boolean) => void;
   onEpisodeComplete?: (episodeId: string, score: number, stars: number) => void;
   onBossHpUpdate?: (currentHp: number, maxHp: number) => void;
+  onNextLifeDropCountdown?: (secondsRemaining: number) => void;
 }
 
 export class MainScene extends Phaser.Scene {
@@ -31,6 +32,16 @@ export class MainScene extends Phaser.Scene {
   private bgGraphics!: Phaser.GameObjects.Graphics;
   private gridGraphics!: Phaser.GameObjects.Graphics;
   private currentStageId: string = "meadow";
+
+  // 3+ Kid Accessibility, Petting, & Dynamic Life Drops
+  private tongueSprite?: Phaser.GameObjects.Sprite;
+  private landingGuideGraphics?: Phaser.GameObjects.Graphics;
+  private wingedLifeCandy?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private wingedHeartLabel?: Phaser.GameObjects.Text;
+  private nextLifeDropSeconds: number = 120;
+  private readonly maxCapLives: number = 10;
+  private pointerDownTime: number = 0;
+  private pointerDownPos: { x: number; y: number } = { x: 0, y: 0 };
 
   // Visual Polish: Cosmic Starfield, Eye Tracking & Mouth Anticipation
   private stars: { circle: Phaser.GameObjects.Arc; speed: number }[] = [];
@@ -147,8 +158,11 @@ export class MainScene extends Phaser.Scene {
     if (data && data.holderTierPerks) {
       this.holderTierPerks = data.holderTierPerks;
     }
-    const baseLives = (data && typeof data.initialLives === "number") ? data.initialLives : 3;
-    this.lives = baseLives + (this.holderTierPerks?.extraLives || 0);
+    const baseLives = (data && typeof data.initialLives === "number") ? data.initialLives : 5;
+    this.lives = Math.min(this.maxCapLives, baseLives + (this.holderTierPerks?.extraLives || 0));
+    this.nextLifeDropSeconds = 120;
+    this.wingedLifeCandy = undefined;
+    this.wingedHeartLabel = undefined;
 
     if (data && data.initialSkin) {
       this.currentSkin = data.initialSkin;
@@ -213,6 +227,7 @@ export class MainScene extends Phaser.Scene {
     this.updateStageEnvironment("meadow");
 
     this.aimGraphics = this.add.graphics();
+    this.landingGuideGraphics = this.add.graphics();
 
     // Floor Sensor Line (Bottom Out of Bounds)
     const floorY = height - 12;
@@ -227,6 +242,12 @@ export class MainScene extends Phaser.Scene {
     this.nomster.setDepth(10);
     this.nomster.setInteractive({ cursor: "grab" });
 
+    // Nomster Playful Tongue Sprite (Cute 3+ Kid Interaction)
+    this.tongueSprite = this.add.sprite(width / 2, nomsterY - 24, "nomster_tongue");
+    this.tongueSprite.setOrigin(0.5, 0.1);
+    this.tongueSprite.setDepth(9);
+    this.tongueSprite.setVisible(false);
+
     // Nomster Mouth Trigger Area
     this.mouthCollider = this.add.circle(width / 2, nomsterY - 34, 24, 0x000000, 0);
     this.physics.add.existing(this.mouthCollider, true);
@@ -236,6 +257,24 @@ export class MainScene extends Phaser.Scene {
     this.mouthGlow.setBlendMode(Phaser.BlendModes.ADD);
     this.mouthGlow.setDepth(11);
     this.mouthGlow.setVisible(false);
+
+    // 2-Minute Winged Life Candy Drop Interval Timer
+    this.time.addEvent({
+      delay: 1000,
+      loop: true,
+      callback: () => {
+        if (this.playState === "playing" && this.lives > 0) {
+          this.nextLifeDropSeconds--;
+          if (this.callbacks.onNextLifeDropCountdown) {
+            this.callbacks.onNextLifeDropCountdown(this.nextLifeDropSeconds);
+          }
+          if (this.nextLifeDropSeconds <= 0) {
+            this.nextLifeDropSeconds = 120;
+            this.spawnWingedLifeCandy();
+          }
+        }
+      },
+    });
 
     // Expressive Eye-Tracking Pupils
     this.leftPupil = this.add.sprite(width / 2 - 18.5, nomsterY - 60, "pupil_sparkle");
@@ -497,6 +536,48 @@ export class MainScene extends Phaser.Scene {
       const mouthX = this.nomster.x + (mouthOffsetX * cos - mouthOffsetY * sin);
       const mouthY = this.nomster.y + (mouthOffsetX * sin + mouthOffsetY * cos);
       this.mouthGlow.setPosition(mouthX, mouthY);
+    }
+
+    // Nomster Tongue Anticipation Flick
+    if (this.tongueSprite) {
+      if (this.candy && this.candy.active && !this.isEating && this.playState === "playing") {
+        const mdx = this.candy.x - this.mouthCollider.x;
+        const mdy = this.candy.y - this.mouthCollider.y;
+        const distToMouth = Math.sqrt(mdx * mdx + mdy * mdy);
+
+        if (distToMouth < 130 && mdy < 0) {
+          this.tongueSprite.setVisible(true);
+          this.tongueSprite.setPosition(this.nomster.x, this.nomster.y - 32);
+          const progress = Phaser.Math.Clamp((130 - distToMouth) / 130, 0, 1);
+          this.tongueSprite.setScale(1.0 + progress * 0.25, 0.4 + progress * 0.95);
+          const angleToCandy = Phaser.Math.RadToDeg(Math.atan2(mdy, mdx)) + 90;
+          this.tongueSprite.setAngle(Phaser.Math.Clamp(angleToCandy, -24, 24) + this.nomster.angle);
+        } else {
+          this.tongueSprite.setVisible(false);
+        }
+      } else {
+        this.tongueSprite.setVisible(false);
+      }
+    }
+
+    // Soft Landing Guide Beam & Target Shadow
+    if (this.landingGuideGraphics) {
+      this.landingGuideGraphics.clear();
+      if (this.candy && this.candy.active && this.playState === "playing" && this.candy.body) {
+        const floorY = camHeight - 12;
+        this.landingGuideGraphics.lineStyle(1.5, 0x14f195, 0.25);
+        this.landingGuideGraphics.lineBetween(this.candy.x, this.candy.y + 18, this.candy.x, floorY);
+
+        this.landingGuideGraphics.fillStyle(0x14f195, 0.2);
+        this.landingGuideGraphics.fillEllipse(this.candy.x, floorY - 3, 34, 7);
+        this.landingGuideGraphics.lineStyle(1.5, 0x14f195, 0.5);
+        this.landingGuideGraphics.strokeEllipse(this.candy.x, floorY - 3, 34, 7);
+      }
+    }
+
+    // Winged Heart Label Sync
+    if (this.wingedLifeCandy && this.wingedLifeCandy.active && this.wingedHeartLabel) {
+      this.wingedHeartLabel.setPosition(this.wingedLifeCandy.x, this.wingedLifeCandy.y - 26);
     }
 
     // 4. Glowing Candy Particle Trails
@@ -963,6 +1044,101 @@ export class MainScene extends Phaser.Scene {
         canvas.refresh();
       }
     }
+
+    // 10. Winged Heart Life Candy (Special 2-Minute Playtime Drop)
+    if (!this.textures.exists("winged_heart_candy")) {
+      const canvas = this.textures.createCanvas("winged_heart_candy", 56, 44);
+      if (canvas) {
+        const ctx = canvas.context;
+        // Golden glowing halo
+        ctx.strokeStyle = "#fbbf24";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.ellipse(28, 7, 12, 4, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Left white angel wing
+        ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(18, 22);
+        ctx.quadraticCurveTo(6, 12, 2, 8);
+        ctx.quadraticCurveTo(2, 22, 12, 28);
+        ctx.quadraticCurveTo(4, 32, 16, 30);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Right white angel wing
+        ctx.beginPath();
+        ctx.moveTo(38, 22);
+        ctx.quadraticCurveTo(50, 12, 54, 8);
+        ctx.quadraticCurveTo(54, 22, 44, 28);
+        ctx.quadraticCurveTo(52, 32, 40, 30);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Shiny Ruby Heart Core
+        const grad = ctx.createRadialGradient(28, 24, 3, 28, 24, 16);
+        grad.addColorStop(0, "#ff4b72");
+        grad.addColorStop(0.7, "#f43f5e");
+        grad.addColorStop(1, "#be123c");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(28, 38);
+        ctx.bezierCurveTo(20, 30, 14, 24, 14, 18);
+        ctx.bezierCurveTo(14, 11, 20, 10, 24, 13);
+        ctx.bezierCurveTo(26, 15, 28, 18, 28, 18);
+        ctx.bezierCurveTo(28, 18, 30, 15, 32, 13);
+        ctx.bezierCurveTo(36, 10, 42, 11, 42, 18);
+        ctx.bezierCurveTo(42, 24, 36, 30, 28, 38);
+        ctx.closePath();
+        ctx.fill();
+
+        // Specular highlight shine
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(22, 16, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
+
+    // 11. Nomster Playful Tongue Sprite
+    if (!this.textures.exists("nomster_tongue")) {
+      const canvas = this.textures.createCanvas("nomster_tongue", 24, 28);
+      if (canvas) {
+        const ctx = canvas.context;
+        // Tongue body (soft rounded cartoon tongue)
+        ctx.fillStyle = "#ff6b8b";
+        ctx.beginPath();
+        ctx.moveTo(4, 4);
+        ctx.lineTo(20, 4);
+        ctx.quadraticCurveTo(22, 22, 12, 26);
+        ctx.quadraticCurveTo(2, 22, 4, 4);
+        ctx.closePath();
+        ctx.fill();
+
+        // Midline crease
+        ctx.strokeStyle = "#e11d48";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(12, 6);
+        ctx.lineTo(12, 21);
+        ctx.stroke();
+
+        // Gloss highlight
+        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+        ctx.beginPath();
+        ctx.ellipse(8, 11, 2.5, 5, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
   }
 
   // Live Skin Setter called from React SkinSelector
@@ -1022,6 +1198,23 @@ export class MainScene extends Phaser.Scene {
         return;
       }
 
+      this.pointerDownTime = this.time.now;
+      this.pointerDownPos = { x: pointer.x, y: pointer.y };
+
+      // Check if clicking/tapping Winged Life Candy directly
+      if (this.wingedLifeCandy && this.wingedLifeCandy.active) {
+        const distToWingedHeart = Phaser.Math.Distance.Between(
+          pointer.x,
+          pointer.y,
+          this.wingedLifeCandy.x,
+          this.wingedLifeCandy.y
+        );
+        if (distToWingedHeart < 52) {
+          this.handleEatWingedHeart();
+          return;
+        }
+      }
+
       if (this.playState !== "playing") {
         // While counting down or respawning, let player position Nomster
         this.waddleNomsterTo(pointer.x);
@@ -1033,6 +1226,14 @@ export class MainScene extends Phaser.Scene {
           ? Phaser.Math.Distance.Between(pointer.x, pointer.y, this.candy.x, this.candy.y)
           : 999;
       const distToNomster = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.nomster.x, this.nomster.y);
+
+      // Mascot Petting / Tickling interaction (toddler friendly joy)
+      if (distToNomster < 52) {
+        this.petNomster();
+        this.isMovingNomster = true;
+        this.waddleNomsterTo(pointer.x);
+        return;
+      }
 
       if (distToCandy < 65) {
         this.isDraggingCandy = true;
@@ -1075,6 +1276,32 @@ export class MainScene extends Phaser.Scene {
         this.aimGraphics.clear();
       }
 
+      const tapDuration = this.time.now - this.pointerDownTime;
+      const tapDistance = Phaser.Math.Distance.Between(
+        pointer.x,
+        pointer.y,
+        this.pointerDownPos.x,
+        this.pointerDownPos.y
+      );
+
+      // Tap-to-Feed (Age 3+ Kids & Toddlers):
+      // Quick tap on or near candy immediately swooshes candy right into Nomster's mouth!
+      if (
+        tapDuration < 320 &&
+        tapDistance < 22 &&
+        this.candy &&
+        this.candy.active &&
+        !this.isEating &&
+        this.playState === "playing"
+      ) {
+        const distToCandy = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.candy.x, this.candy.y);
+        if (distToCandy < 85) {
+          this.isDraggingCandy = false;
+          this.performTapToFeed();
+          return;
+        }
+      }
+
       if (this.isDraggingCandy && this.candy && this.candy.active) {
         this.isDraggingCandy = false;
         const pullX = (this.candy.x - pointer.x) * 4.8;
@@ -1091,6 +1318,78 @@ export class MainScene extends Phaser.Scene {
         this.isDraggingCandy = false;
       }
     });
+  }
+
+  // Tap-to-Feed: Smoothly swooshes candy into Nomster's mouth with rainbow sparkles
+  private performTapToFeed(): void {
+    if (!this.candy || !this.candy.active || this.isEating) return;
+
+    sounds.playTongueSlurp();
+    this.createEatSparks(this.candy.x, this.candy.y);
+
+    if (this.candy.body) {
+      this.candy.setVelocity(0, 0);
+      (this.candy.body as Phaser.Physics.Arcade.Body).allowGravity = false;
+    }
+
+    this.tweens.add({
+      targets: this.candy,
+      x: this.mouthCollider.x,
+      y: this.mouthCollider.y,
+      scale: 0.25,
+      duration: 260,
+      ease: "Quad.easeInOut",
+      onComplete: () => {
+        this.handleEatCandy();
+      },
+    });
+  }
+
+  // Mascot Petting / Tickle: Joyful giggle, squish bounce, and heart emojis
+  public petNomster(): void {
+    sounds.playGiggle();
+
+    // Squish & bounce
+    this.tweens.killTweensOf(this.nomster);
+    this.tweens.add({
+      targets: this.nomster,
+      scaleX: 1.25,
+      scaleY: 0.82,
+      duration: 100,
+      yoyo: true,
+      repeat: 1,
+      ease: "Back.easeOut",
+      onComplete: () => {
+        this.updateNomsterMood();
+      },
+    });
+
+    // Float joyful hearts & giggles
+    const petEmojis = ["💖", "🥰", "✨", "💕", "🐾"];
+    for (let i = 0; i < 3; i++) {
+      const emoji = Phaser.Utils.Array.GetRandom(petEmojis);
+      const heartTxt = this.add.text(
+        this.nomster.x + Phaser.Math.Between(-28, 28),
+        this.nomster.y - 75 + Phaser.Math.Between(-10, 10),
+        emoji,
+        {
+          fontSize: "20px",
+        }
+      );
+      heartTxt.setOrigin(0.5);
+      heartTxt.setDepth(30);
+
+      this.tweens.add({
+        targets: heartTxt,
+        y: heartTxt.y - Phaser.Math.Between(45, 75),
+        x: heartTxt.x + Phaser.Math.Between(-20, 20),
+        alpha: 0,
+        scale: 1.3,
+        duration: 800 + i * 140,
+        ease: "Cubic.easeOut",
+        onComplete: () => heartTxt.destroy(),
+      });
+    }
   }
 
   private waddleNomsterTo(targetX: number): void {
@@ -1239,7 +1538,7 @@ export class MainScene extends Phaser.Scene {
     });
     container.add(btn);
 
-    const subtitle = this.add.text(0, 38, "3 Lives • Drag Nomster to Eat", {
+    const subtitle = this.add.text(0, 38, "5 Lives • Drag or Tap Nomster & Candies!", {
       fontFamily: "monospace",
       fontSize: "11px",
       color: "#94a3b8",
@@ -1800,6 +2099,31 @@ export class MainScene extends Phaser.Scene {
     }
 
     sounds.playNom();
+    if (this.tongueSprite && this.tongueSprite.visible) {
+      sounds.playTongueSlurp();
+    }
+
+    // Floating celebratory emoji burst for toddler & 3+ kid delight!
+    const catchEmojis = ["😋", "💖", "🍭", "🌟", "🌈", "✨", "🎉"];
+    const chosenEmoji = Phaser.Utils.Array.GetRandom(catchEmojis);
+    const emojiText = this.add.text(
+      this.mouthCollider.x + Phaser.Math.Between(-15, 15),
+      this.mouthCollider.y - 25,
+      chosenEmoji,
+      { fontSize: "22px" }
+    );
+    emojiText.setOrigin(0.5);
+    emojiText.setDepth(32);
+    this.tweens.add({
+      targets: emojiText,
+      y: emojiText.y - 50,
+      x: emojiText.x + Phaser.Math.Between(-15, 15),
+      scale: 1.3,
+      alpha: 0,
+      duration: 750,
+      ease: "Back.easeOut",
+      onComplete: () => emojiText.destroy(),
+    });
 
     // Squash & Stretch
     this.tweens.add({
@@ -1875,9 +2199,9 @@ export class MainScene extends Phaser.Scene {
     });
 
     if (type === "rainbow") {
-      // Instant +2 extra score (total +3) & +1 life restore
+      // Instant +2 extra score (total +3) & +1 life restore (capped at 10)
       this.score += 2;
-      if (this.lives < 3) {
+      if (this.lives < this.maxCapLives) {
         this.lives += 1;
         if (this.callbacks.onLivesUpdate) {
           this.callbacks.onLivesUpdate(this.lives);
@@ -1934,6 +2258,157 @@ export class MainScene extends Phaser.Scene {
         if (this.callbacks.onPowerUpExpired) {
           this.callbacks.onPowerUpExpired("slowmo");
         }
+      });
+    }
+  }
+
+  // Spawns the ethereal Winged Heart Life Candy every 2 minutes of active play
+  public spawnWingedLifeCandy(): void {
+    if (this.playState !== "playing" || this.lives <= 0) return;
+    const { width } = this.cameras.main;
+    const spawnX = Phaser.Math.Between(width * 0.2, width * 0.8);
+    const spawnY = 35;
+
+    if (this.wingedLifeCandy && this.wingedLifeCandy.active) {
+      this.wingedLifeCandy.destroy();
+    }
+    if (this.wingedHeartLabel) {
+      this.wingedHeartLabel.destroy();
+    }
+
+    this.wingedLifeCandy = this.physics.add.sprite(spawnX, spawnY, "winged_heart_candy");
+    this.wingedLifeCandy.setCollideWorldBounds(true);
+    this.wingedLifeCandy.setBounce(0.35, 0.35);
+    this.wingedLifeCandy.setGravityY(130); // Ethereal slow parachute float
+    this.wingedLifeCandy.setDrag(20, 10);
+    this.wingedLifeCandy.setCircle(18, 10, 4);
+    this.wingedLifeCandy.setDepth(20);
+    this.wingedLifeCandy.setInteractive({ cursor: "pointer" });
+
+    // Wing flutter tween
+    this.tweens.add({
+      targets: this.wingedLifeCandy,
+      scaleX: 1.1,
+      scaleY: 0.92,
+      duration: 340,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    // Label: "❤️ +1 LIFE"
+    this.wingedHeartLabel = this.add.text(spawnX, spawnY - 26, "❤️ +1 LIFE", {
+      fontFamily: "monospace",
+      fontSize: "12px",
+      fontStyle: "bold",
+      color: "#fb7185",
+      stroke: "#000000",
+      strokeThickness: 3,
+    });
+    this.wingedHeartLabel.setOrigin(0.5);
+    this.wingedHeartLabel.setDepth(21);
+
+    // Overlap with Nomster mouth collider or body
+    this.physics.add.overlap(this.wingedLifeCandy, this.mouthCollider, () => {
+      this.handleEatWingedHeart();
+    });
+    this.physics.add.overlap(this.wingedLifeCandy, this.nomster, () => {
+      this.handleEatWingedHeart();
+    });
+
+    // Soft fade if it reaches the floor without penalizing
+    this.physics.add.overlap(this.wingedLifeCandy, this.groundSensor, () => {
+      if (!this.wingedLifeCandy || !this.wingedLifeCandy.active) return;
+      this.tweens.add({
+        targets: [this.wingedLifeCandy, this.wingedHeartLabel],
+        alpha: 0,
+        scale: 0.2,
+        duration: 350,
+        onComplete: () => {
+          if (this.wingedLifeCandy) this.wingedLifeCandy.destroy();
+          if (this.wingedHeartLabel) this.wingedHeartLabel.destroy();
+        },
+      });
+    });
+
+    // Also clickable/tappable
+    this.wingedLifeCandy.on("pointerdown", () => {
+      this.handleEatWingedHeart();
+    });
+  }
+
+  // Handles collecting the Winged Heart Candy
+  private handleEatWingedHeart(): void {
+    if (!this.wingedLifeCandy || !this.wingedLifeCandy.active) return;
+
+    sounds.playHeartCollect();
+    if (this.tongueSprite) {
+      sounds.playTongueSlurp();
+    }
+
+    const heartX = this.wingedLifeCandy.x;
+    const heartY = this.wingedLifeCandy.y;
+
+    if (this.wingedHeartLabel) {
+      this.wingedHeartLabel.destroy();
+    }
+    this.wingedLifeCandy.destroy();
+
+    // Increase life capped at 10
+    if (this.lives < this.maxCapLives) {
+      this.lives = Math.min(this.maxCapLives, this.lives + 1);
+      if (this.callbacks.onLivesUpdate) {
+        this.callbacks.onLivesUpdate(this.lives);
+      }
+      this.updateNomsterMood();
+    }
+
+    // Spectacular celebration burst!
+    const banner = this.add.text(
+      this.cameras.main.width / 2,
+      130,
+      "💖 LIFE RESTORED! (+1 ❤️) 💖",
+      {
+        fontFamily: "monospace",
+        fontSize: "17px",
+        fontStyle: "bold",
+        color: "#fb7185",
+        stroke: "#000000",
+        strokeThickness: 5,
+      }
+    );
+    banner.setOrigin(0.5);
+    banner.setDepth(35);
+
+    this.tweens.add({
+      targets: banner,
+      y: 95,
+      scale: 1.25,
+      alpha: 0,
+      duration: 1600,
+      ease: "Cubic.easeOut",
+      onComplete: () => banner.destroy(),
+    });
+
+    // Floating fairy sparkle hearts
+    for (let i = 0; i < 6; i++) {
+      const spark = this.add.text(
+        heartX + Phaser.Math.Between(-35, 35),
+        heartY + Phaser.Math.Between(-35, 35),
+        "💖",
+        { fontSize: "18px" }
+      );
+      spark.setOrigin(0.5);
+      spark.setDepth(34);
+      this.tweens.add({
+        targets: spark,
+        y: spark.y - Phaser.Math.Between(40, 80),
+        x: spark.x + Phaser.Math.Between(-30, 30),
+        alpha: 0,
+        scale: 1.4,
+        duration: 900 + i * 100,
+        ease: "Cubic.easeOut",
+        onComplete: () => spark.destroy(),
       });
     }
   }
@@ -2731,7 +3206,7 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
-  public resetGame(livesCount: number = 3): void {
+  public resetGame(livesCount: number = 5): void {
     this.score = 0;
     this.streak = 0;
     this.airJuggleCount = 0;
@@ -2739,6 +3214,23 @@ export class MainScene extends Phaser.Scene {
     this.isFeverOverdrive = false;
     this.isDashReady = true;
     this.isInvulnerable = false;
+    this.nextLifeDropSeconds = 120;
+
+    if (this.wingedLifeCandy && this.wingedLifeCandy.active) {
+      this.wingedLifeCandy.destroy();
+      this.wingedLifeCandy = undefined;
+    }
+    if (this.wingedHeartLabel) {
+      this.wingedHeartLabel.destroy();
+      this.wingedHeartLabel = undefined;
+    }
+    if (this.tongueSprite) {
+      this.tongueSprite.setVisible(false);
+    }
+    if (this.landingGuideGraphics) {
+      this.landingGuideGraphics.clear();
+    }
+
     if (this.feverTimer) this.feverTimer.remove();
     if (this.dashCooldownTimer) this.dashCooldownTimer.remove();
     if (this.callbacks.onFeverMeterUpdate) {
@@ -2748,7 +3240,7 @@ export class MainScene extends Phaser.Scene {
       this.callbacks.onDashCooldownUpdate(true);
     }
 
-    this.lives = livesCount;
+    this.lives = Math.min(this.maxCapLives, livesCount);
     this.isEating = false;
     this.isAnticipating = false;
     if (this.mouthGlow) {

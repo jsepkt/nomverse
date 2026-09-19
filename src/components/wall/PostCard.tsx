@@ -62,7 +62,9 @@ export const PostCard: React.FC<PostCardProps> = ({
   const isFlaggedSensitive = post.reports.length >= 2;
 
   const isSOSPost =
-    post.title.includes("[LIFE SOS]") || post.content.includes("lost all 3 lives");
+    post.title.includes("[LIFE SOS]") ||
+    post.content.includes("lost all my lives") ||
+    post.content.includes("lost all 3 lives");
   const isHighScorePost =
     post.title.includes("[HIGH SCORE RECORD]") || post.title.includes("[HIGH SCORE VICTORY]");
 

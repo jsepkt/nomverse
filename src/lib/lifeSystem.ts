@@ -1,16 +1,17 @@
 // NomVerse Life & Cooldown System
-// 3 Lives Rule, 3-Hour Cooldown, Community Life Gifting & Wall Auto-Posting
+// 5 Lives Base, 10 Maximum Life Cap, 2-Min Winged Life Drops, Community Life Gifting
 
 export interface LifeState {
   userId: string;
-  lives: number; // 0 to 3
+  lives: number; // 0 to 10
   cooldownUntil: number | null; // epoch timestamp
   lastLifeLostAt?: number;
   lastTriviaClaimedDate?: string; // YYYY-MM-DD
   lifesaverKarma: number;
 }
 
-export const MAX_LIVES = 3;
+export const DEFAULT_INITIAL_LIVES = 5;
+export const MAX_LIVES = 10;
 export const COOLDOWN_DURATION_MS = 3 * 60 * 60 * 1000; // 3 hours
 
 const LOCAL_STORAGE_PREFIX = "nomverse_life_state_";
@@ -19,7 +20,7 @@ export function getClientLifeState(userId: string): LifeState {
   if (typeof window === "undefined" || !userId) {
     return {
       userId,
-      lives: MAX_LIVES,
+      lives: DEFAULT_INITIAL_LIVES,
       cooldownUntil: null,
       lifesaverKarma: 0,
     };
@@ -31,7 +32,7 @@ export function getClientLifeState(userId: string): LifeState {
       const state: LifeState = JSON.parse(raw);
       // Check if cooldown has naturally expired
       if (state.cooldownUntil && Date.now() >= state.cooldownUntil) {
-        state.lives = MAX_LIVES;
+        state.lives = DEFAULT_INITIAL_LIVES;
         state.cooldownUntil = null;
         localStorage.setItem(`${LOCAL_STORAGE_PREFIX}${userId}`, JSON.stringify(state));
       }
@@ -43,7 +44,7 @@ export function getClientLifeState(userId: string): LifeState {
 
   const defaultState: LifeState = {
     userId,
-    lives: MAX_LIVES,
+    lives: DEFAULT_INITIAL_LIVES,
     cooldownUntil: null,
     lifesaverKarma: 0,
   };
@@ -78,7 +79,7 @@ export function decrementClientLife(userId: string): LifeState {
   return current;
 }
 
-export function replenishClientLives(userId: string, count: number = MAX_LIVES): LifeState {
+export function replenishClientLives(userId: string, count: number = DEFAULT_INITIAL_LIVES): LifeState {
   const current = getClientLifeState(userId);
   current.lives = Math.min(MAX_LIVES, current.lives + count);
   if (current.lives > 0) {

@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       }
 
       const title = `🚨 [LIFE SOS] Nomster is starving! Can someone send a Life Gift?`;
-      const content = `I lost all 3 lives after reaching a score of ${score || 0} candies! 😢 My 3-hour cooldown is active. Could a fellow builder click below to gift a life? You will receive the permanent ❤️ Lifesaver badge and +10 Karma on The NomWall!`;
+      const content = `I lost all my lives after reaching a score of ${score || 0} candies! 😢 My cooldown is active. Could a fellow builder click below to gift a life? You will receive the permanent ❤️ Lifesaver badge and +10 Karma on The NomWall!`;
 
       const result = createPost(authorId, authorName, authorProvider, title, content, "game");
       if (!result.success) {
