@@ -172,52 +172,52 @@ export const SolanaRpcTelemetry: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 font-mono">
         {/* Metric 1: Current Slot Height */}
         <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="flex items-center justify-between text-slate-300 text-xs font-semibold">
             <span>SLOT HEIGHT</span>
             <Database className="w-3.5 h-3.5 text-emerald-400" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-black text-white truncate">
             {networkStats ? networkStats.slot.toLocaleString() : "..."}
           </div>
-          <div className="text-[10px] text-emerald-400/90 mt-1">Confirmed Blocks</div>
+          <div className="text-xs text-emerald-400 font-medium mt-1">Confirmed Blocks</div>
         </div>
 
         {/* Metric 2: Epoch Progress */}
         <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="flex items-center justify-between text-slate-300 text-xs font-semibold">
             <span>EPOCH</span>
             <Cpu className="w-3.5 h-3.5 text-solana-purple" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-black text-solana-purple">
             {networkStats ? `#${networkStats.epoch}` : "..."}
           </div>
-          <div className="text-[10px] text-slate-400 mt-1">
+          <div className="text-xs text-slate-300 font-medium mt-1">
             {networkStats ? `${networkStats.epochProgressPercent}% Complete` : "Loading..."}
           </div>
         </div>
 
         {/* Metric 3: Real TPS */}
         <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="flex items-center justify-between text-slate-300 text-xs font-semibold">
             <span>NETWORK TPS</span>
             <Zap className="w-3.5 h-3.5 text-amber-400" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-black text-amber-300">
             {networkStats ? `${networkStats.tps.toLocaleString()} TPS` : "..."}
           </div>
-          <div className="text-[10px] text-slate-400 mt-1">Real-time throughput</div>
+          <div className="text-xs text-slate-300 font-medium mt-1">Real-time throughput</div>
         </div>
 
         {/* Metric 4: RPC Latency */}
         <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="flex items-center justify-between text-slate-300 text-xs font-semibold">
             <span>RPC LATENCY</span>
             <Activity className="w-3.5 h-3.5 text-cyan-400" />
           </div>
           <div className="mt-2 text-xl sm:text-2xl font-black text-cyan-300">
             {networkStats ? `${networkStats.latencyMs} ms` : "..."}
           </div>
-          <div className="text-[10px] text-slate-400 mt-1">Direct Node Ping</div>
+          <div className="text-xs text-slate-300 font-medium mt-1">Direct Node Ping</div>
         </div>
       </div>
 
@@ -269,29 +269,29 @@ export const SolanaRpcTelemetry: React.FC = () => {
         )}
 
         {lookupResult && (
-          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono space-y-2 animate-in fade-in">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono space-y-2.5 animate-in fade-in">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+              <div className="flex items-center gap-2 min-w-0">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="font-bold text-white truncate max-w-[200px] sm:max-w-[320px]">
+                <span className="font-bold text-white truncate max-w-[240px] sm:max-w-[320px]">
                   {lookupResult.address}
                 </span>
               </div>
-              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">
+              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold self-start sm:self-auto">
                 {lookupResult.tierName}
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-slate-300 pt-1 border-t border-emerald-500/20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-200 pt-2 border-t border-emerald-500/20">
               <div>
                 Real $NOM Balance: <strong className="text-white">{lookupResult.solBalance.toLocaleString()} $NOM</strong>
               </div>
-              <div className="text-right">
+              <div className="text-left sm:text-right">
                 <a
                   href={`https://solscan.io/account/${lookupResult.address}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1 underline"
+                  className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1 underline font-medium"
                 >
                   <span>View on Solscan</span>
                   <ExternalLink className="w-3 h-3" />

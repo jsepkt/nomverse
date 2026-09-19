@@ -198,32 +198,34 @@ export const MissionControl: React.FC = () => {
       </div>
 
       {/* Visualizer Mode Switcher Deck */}
-      <div className="flex items-center justify-between gap-2 flex-wrap">
-        <span className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <span className="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">
           Bonding Spacetime Physics Engine:
         </span>
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800">
+        <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 w-full sm:w-auto">
           <button
             onClick={() => setVisualMode("singularity")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
               visualMode === "singularity"
                 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <Orbit className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Gravitational Singularity</span>
+            <Orbit className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="sm:hidden">Singularity</span>
+            <span className="hidden sm:inline">Gravitational Singularity</span>
           </button>
           <button
             onClick={() => setVisualMode("orbit")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
               visualMode === "orbit"
                 ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <Rocket className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Starship Trajectory</span>
+            <Rocket className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span className="sm:hidden">Trajectory</span>
+            <span className="hidden sm:inline">Starship Trajectory</span>
           </button>
         </div>
       </div>
@@ -278,19 +280,19 @@ export const MissionControl: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs space-y-2">
+          <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Tokens Received:</span>
-              <span className="text-emerald-400 font-black text-sm">
+              <span className="text-slate-300 font-medium">Tokens Received:</span>
+              <span className="text-emerald-400 font-black text-sm sm:text-base">
                 ~{Math.round(tokensReceived).toLocaleString()} $NOM
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Effective Token Price:</span>
-              <span className="text-white">{(priceSolPerToken * 1e6).toFixed(4)} µSOL</span>
+              <span className="text-slate-300 font-medium">Effective Token Price:</span>
+              <span className="text-white font-semibold">{(priceSolPerToken * 1e6).toFixed(4)} µSOL</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Projected Market Cap:</span>
+              <span className="text-slate-300 font-medium">Projected Market Cap:</span>
               <span className="text-candy-gold font-bold">${marketCapUsd.toLocaleString()} USD</span>
             </div>
           </div>
@@ -308,7 +310,7 @@ export const MissionControl: React.FC = () => {
             </span>
           </div>
 
-          <div className="space-y-2 font-mono text-xs text-slate-300">
+          <div className="space-y-2.5 font-mono text-xs text-slate-200">
             <div className="flex items-center justify-between">
               <span className="text-slate-400">Graduation Target:</span>
               <strong className="text-white">{TARGET_SOL_MIGRATION} SOL (~$69K MC)</strong>

@@ -152,42 +152,42 @@ export const InstantBuyTerminal: React.FC = () => {
 
         {/* Real Live Metrics Box */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800">
-            <div className="text-[10px] text-slate-500 uppercase font-semibold">Live Price</div>
-            <div className="text-emerald-400 font-bold sm:text-sm truncate">
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5">
+            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold">Live Price</div>
+            <div className="text-emerald-400 font-bold text-xs sm:text-sm truncate">
               ${stats.priceUsd < 0.0001 ? stats.priceUsd.toFixed(8) : stats.priceUsd.toFixed(5)}
             </div>
-            <div className="text-[10px] text-slate-400 truncate">
+            <div className="text-[10px] sm:text-[11px] text-slate-300 truncate">
               {stats.priceNativeSol.toFixed(9)} SOL
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800">
-            <div className="text-[10px] text-slate-500 uppercase font-semibold">Market Cap</div>
-            <div className="text-white font-bold sm:text-sm">
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5">
+            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold">Market Cap</div>
+            <div className="text-white font-bold text-xs sm:text-sm">
               ${stats.marketCapUsd.toLocaleString()}
             </div>
-            <div className="text-[10px] text-slate-400">
+            <div className="text-[10px] sm:text-[11px] text-slate-300">
               Goal: $69,000
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800">
-            <div className="text-[10px] text-slate-500 uppercase font-semibold">Curve SOL</div>
-            <div className="text-teal-300 font-bold sm:text-sm">
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5">
+            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold">Curve SOL</div>
+            <div className="text-teal-300 font-bold text-xs sm:text-sm">
               {stats.solCollected.toFixed(2)} SOL
             </div>
-            <div className="text-[10px] text-slate-400">
+            <div className="text-[10px] sm:text-[11px] text-slate-300">
               Target: 85 SOL
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800">
-            <div className="text-[10px] text-slate-500 uppercase font-semibold">Curve Bonded</div>
-            <div className="text-solana-green font-bold sm:text-sm">
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5">
+            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold">Curve Bonded</div>
+            <div className="text-solana-green font-bold text-xs sm:text-sm">
               {stats.bondingProgressPercent}%
             </div>
-            <div className="text-[10px] text-emerald-400/80">
+            <div className="text-[10px] sm:text-[11px] text-emerald-300 font-medium truncate">
               {stats.tokensSold.toLocaleString()} SOLD
             </div>
           </div>
@@ -204,7 +204,7 @@ export const InstantBuyTerminal: React.FC = () => {
             <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
               Verified Solana Mint Address (Token-2022)
             </div>
-            <div className="text-xs sm:text-sm font-mono text-white font-semibold truncate select-all">
+            <div className="text-xs sm:text-sm font-mono text-slate-100 font-semibold truncate select-all">
               {TOKEN_CONFIG.mintAddress}
             </div>
           </div>

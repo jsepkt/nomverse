@@ -181,17 +181,17 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-bold text-sm text-white">{post.authorName}</span>
+              <span className="font-bold text-sm sm:text-base text-white">{post.authorName}</span>
               <UserBadge provider={post.authorProvider} />
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+            <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5 font-medium">
               <span className="capitalize text-emerald-400 font-mono">#{post.category}</span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                <Calendar className="w-3 h-3 text-slate-500" />
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
                 {new Date(post.createdAt).toLocaleDateString()}
               </span>
-              {post.updatedAt && <span className="italic text-slate-600">(edited)</span>}
+              {post.updatedAt && <span className="italic text-slate-500">(edited)</span>}
             </div>
           </div>
         </div>
@@ -285,11 +285,11 @@ export const PostCard: React.FC<PostCardProps> = ({
               </div>
             </div>
           ) : (
-            <div className="my-3 space-y-2">
+            <div className="my-3.5 space-y-2">
               <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
                 {post.title}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+              <p className="text-sm sm:text-base text-slate-200 leading-relaxed whitespace-pre-line font-sans">
                 {post.content}
               </p>
             </div>

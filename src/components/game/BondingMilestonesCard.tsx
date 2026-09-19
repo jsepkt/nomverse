@@ -65,14 +65,14 @@ export const BondingMilestonesCard: React.FC = () => {
             <Flame className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-mono font-bold text-white flex items-center gap-1.5">
+            <h3 className="text-xs sm:text-sm font-mono font-bold text-white flex items-center gap-1.5 flex-wrap">
               <span>RAYDIUM BONDING CURVE MILESTONES</span>
-              <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+              <span className="text-[10px] text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30 font-bold">
                 85 SOL / $69k Goal
               </span>
             </h3>
-            <p className="text-[11px] font-mono text-slate-400">
-              Current: <strong className="text-emerald-400">{bondingProgress}%</strong> • <strong className="text-white">{solCollected} SOL</strong> / 85 SOL • MCap: ${marketCap.toLocaleString()}
+            <p className="text-xs font-mono text-slate-300 mt-0.5">
+              Current: <strong className="text-emerald-400">{bondingProgress}%</strong> • <strong className="text-white">{solCollected} SOL</strong> / 85 SOL • MCap: <strong className="text-candy-gold">${marketCap.toLocaleString()}</strong>
             </p>
           </div>
         </div>
@@ -81,7 +81,7 @@ export const BondingMilestonesCard: React.FC = () => {
           href={TOKEN_CONFIG.pumpFunUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(20,241,149,0.25)]"
+          className="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(20,241,149,0.25)] shrink-0"
         >
           <span>PUSH ON PUMP.FUN</span>
           <ExternalLink className="w-3 h-3" />
@@ -97,37 +97,37 @@ export const BondingMilestonesCard: React.FC = () => {
       </div>
 
       {/* Milestones Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
         {MILESTONES.map((m) => {
           const isUnlocked = bondingProgress >= m.percent;
 
           return (
             <div
               key={m.percent}
-              className={`p-2.5 rounded-xl border text-xs font-mono transition-all ${
+              className={`p-3 rounded-xl border text-xs font-mono transition-all ${
                 isUnlocked
                   ? "bg-emerald-950/30 border-emerald-500/50 text-white shadow-[0_0_15px_rgba(20,241,149,0.1)]"
-                  : "bg-slate-900/40 border-slate-800 text-slate-400"
+                  : "bg-slate-900/50 border-slate-800/90 text-slate-300"
               }`}
             >
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-[11px] text-amber-400">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="font-bold text-xs text-amber-400">
                   {m.percent}% ({`$${(m.targetMcap / 1000).toFixed(1)}k`})
                 </span>
                 {isUnlocked ? (
-                  <span className="text-[10px] text-emerald-400 flex items-center gap-0.5">
+                  <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-bold">
                     <CheckCircle2 className="w-3 h-3" />
                     UNLOCKED
                   </span>
                 ) : (
-                  <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
+                  <span className="text-[11px] text-slate-400 flex items-center gap-1 font-medium">
                     <Lock className="w-3 h-3" />
                     LOCKED
                   </span>
                 )}
               </div>
-              <div className="font-bold text-white text-[11px] mb-0.5">{m.title}</div>
-              <div className="text-[10px] text-slate-400 leading-tight">{m.reward}</div>
+              <div className="font-bold text-white text-xs sm:text-sm mb-1">{m.title}</div>
+              <div className="text-xs text-slate-300 leading-relaxed">{m.reward}</div>
             </div>
           );
         })}

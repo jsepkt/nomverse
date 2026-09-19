@@ -261,24 +261,27 @@ export const GravitationalSingularity: React.FC<GravitationalSingularityProps> =
           className="w-full h-full block select-none"
         />
 
-        {/* Top-Left Telemetry Pill */}
-        <div className="absolute top-3 left-3 bg-slate-950/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 font-mono text-[11px] text-slate-300 space-y-0.5 shadow-lg pointer-events-none">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-emerald-400 font-bold">EVENT HORIZON: Rs = {eventHorizonRadius.toFixed(1)} px</span>
+        {/* Responsive Overlay Telemetry Badges */}
+        <div className="absolute top-2 left-2 right-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5 pointer-events-none">
+          {/* Left Telemetry Badge */}
+          <div className="bg-slate-950/90 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-slate-800 font-mono text-[10px] sm:text-[11px] text-slate-200 shadow-lg space-y-0.5">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="text-emerald-400 font-bold">EVENT HORIZON: Rs = {eventHorizonRadius.toFixed(1)} px</span>
+            </div>
+            <div className="text-[10px] text-slate-400 hidden sm:block">
+              Metric Tensor g₀₀ = {metricG00} • Escape Velocity v_e = {escapeVelocityRatio}c
+            </div>
           </div>
-          <div className="text-[10px] text-slate-400">
-            Metric Tensor g₀₀ = {metricG00} • Escape Velocity v_e = {escapeVelocityRatio}c
-          </div>
-        </div>
 
-        {/* Top-Right Singularity Milestone */}
-        <div className="absolute top-3 right-3 bg-slate-950/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 font-mono text-[11px] text-right shadow-lg pointer-events-none">
-          <div className="text-candy-gold font-bold">
-            {(progressRatio * 100).toFixed(1)}% TO SINGULARITY
-          </div>
-          <div className="text-[10px] text-slate-400">
-            {localSol.toFixed(1)} / {TARGET_SOL} SOL
+          {/* Right Singularity Milestone */}
+          <div className="bg-slate-950/90 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-slate-800 font-mono text-[10px] sm:text-[11px] text-left sm:text-right shadow-lg self-start sm:self-auto">
+            <div className="text-candy-gold font-bold">
+              {(progressRatio * 100).toFixed(1)}% TO SINGULARITY
+            </div>
+            <div className="text-[10px] text-slate-400">
+              {localSol.toFixed(1)} / {TARGET_SOL} SOL
+            </div>
           </div>
         </div>
       </div>

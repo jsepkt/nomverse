@@ -75,7 +75,7 @@ Your story begins here...`;
           {/* Submit Chapter 3 PR Button */}
           <button
             onClick={() => setIsStudioOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-900/30 transition-all hover:scale-105"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-900/30 transition-all hover:scale-105 cursor-pointer"
           >
             <GitPullRequest className="w-4 h-4 text-pink-300" />
             <span>+ Open Chapter 3 Lore Studio</span>
@@ -120,7 +120,7 @@ Your story begins here...`;
             </h1>
 
             {/* Formatted Markdown Content */}
-            <div className="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed whitespace-pre-line font-sans">
+            <div className="space-y-4 text-slate-200 text-sm sm:text-base leading-relaxed whitespace-pre-line font-sans">
               {currentStory.content}
             </div>
           </div>

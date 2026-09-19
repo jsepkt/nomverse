@@ -70,7 +70,7 @@ export const HeroSection: React.FC = () => {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-slate-300 text-sm sm:text-lg leading-relaxed">
+          <p className="text-slate-200 text-sm sm:text-lg leading-relaxed">
             Meet <strong>Nomster</strong>: an unpermissioned, zero-copyright mascot designed for decentralized culture. Play the retro physics arcade, remix CC0 vector graphics, compose 8-bit chiptunes, and hold <strong>$NOM</strong> to unlock immortal daily revives and Whale perks.
           </p>
 
@@ -84,7 +84,7 @@ export const HeroSection: React.FC = () => {
                 <div className="text-[9px] sm:text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
                   Contract Address (Token-2022)
                 </div>
-                <div className="text-xs sm:text-sm font-mono text-slate-200 truncate select-all">
+                <div className="text-xs sm:text-sm font-mono text-slate-100 font-semibold truncate select-all">
                   {TOKEN_CONFIG.mintAddress}
                 </div>
               </div>
@@ -130,7 +130,7 @@ export const HeroSection: React.FC = () => {
               href={TOKEN_CONFIG.pumpFunUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 transition-all text-center"
+              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 transition-all text-center"
             >
               <Rocket className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span>pump.fun</span>
@@ -140,7 +140,7 @@ export const HeroSection: React.FC = () => {
               href="https://github.com/jsepkt/nomverse"
               target="_blank"
               rel="noopener noreferrer"
-              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-slate-800 transition-all text-center"
+              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-4 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-slate-300 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-slate-800 transition-all text-center"
             >
               <GithubIcon className="w-3.5 h-3.5 shrink-0" />
               <span>GitHub</span>
@@ -148,18 +148,18 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* Three Key Trust Metrics */}
-          <div className="pt-4 grid grid-cols-3 gap-4 border-t border-slate-800/80">
+          <div className="pt-4 grid grid-cols-3 gap-2 sm:gap-4 border-t border-slate-800/80">
             <div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400">0% TAX</div>
-              <div className="text-xs text-slate-400">Zero Trading Friction</div>
+              <div className="text-lg sm:text-2xl font-black font-mono text-emerald-400">0% TAX</div>
+              <div className="text-[11px] sm:text-xs text-slate-300 font-medium">Zero Trading Tax</div>
             </div>
             <div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-teal-300">100% CC0</div>
-              <div className="text-xs text-slate-400">Public Domain Forever</div>
+              <div className="text-lg sm:text-2xl font-black font-mono text-teal-300">100% CC0</div>
+              <div className="text-[11px] sm:text-xs text-slate-300 font-medium">Public Domain</div>
             </div>
             <div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-solana-green">1 BILLION</div>
-              <div className="text-xs text-slate-400">Fixed Supply (No Inflation)</div>
+              <div className="text-lg sm:text-2xl font-black font-mono text-solana-green">1B SUPPLY</div>
+              <div className="text-[11px] sm:text-xs text-slate-300 font-medium">Fixed Total</div>
             </div>
           </div>
         </div>

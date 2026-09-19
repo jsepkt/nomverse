@@ -50,11 +50,11 @@ export const ToolkitSection: React.FC = () => {
               </p>
             </div>
 
-            <div className="relative mt-2 p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-slate-300">
-              <code>git clone https://github.com/jsepkt/nomverse.git<br/>cd nomverse &amp;&amp; npm i<br/>npm run dev</code>
+            <div className="relative mt-2 p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 overflow-hidden">
+              <code className="block overflow-x-auto break-all pr-8 select-all text-emerald-400">git clone https://github.com/jsepkt/nomverse.git<br/>cd nomverse &amp;&amp; npm i<br/>npm run dev</code>
               <button
                 onClick={() => copyToClipboard("git clone https://github.com/jsepkt/nomverse.git\ncd nomverse && npm i\nnpm run dev", "clone")}
-                className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
                 title="Copy commands"
               >
                 {copiedCmd === "clone" ? (
@@ -79,9 +79,9 @@ export const ToolkitSection: React.FC = () => {
               </p>
             </div>
 
-            <div className="mt-2 p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 flex items-center justify-between">
-              <span className="text-emerald-400">src/components/game/MainScene.ts</span>
-              <span className="text-[11px] text-slate-500">Phaser 3</span>
+            <div className="mt-2 p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 flex items-center justify-between gap-2 overflow-hidden">
+              <span className="text-emerald-400 truncate">src/components/game/MainScene.ts</span>
+              <span className="text-[11px] text-slate-400 shrink-0">Phaser 3</span>
             </div>
           </div>
 
@@ -147,7 +147,7 @@ export const ToolkitSection: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Mascot Card */}
-            <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-5 flex items-center gap-5">
+            <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-5 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5">
               <div className="relative w-20 h-20 rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-2 flex items-center justify-center shrink-0">
                 <Image
                   src="/mascot.svg"
@@ -158,12 +158,12 @@ export const ToolkitSection: React.FC = () => {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-white text-base truncate">Nomster Mascot</h4>
-                <p className="text-xs text-slate-400 mb-3">Vibrant green vector mascot SVG with expressive cartoon eyes.</p>
+                <h4 className="font-bold text-white text-base">Nomster Mascot</h4>
+                <p className="text-xs text-slate-300 mb-3">Vibrant green vector mascot SVG with expressive cartoon eyes.</p>
                 <a
                   href="/mascot.svg"
                   download="nomster.svg"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-colors"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-colors"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download SVG</span>
@@ -172,7 +172,7 @@ export const ToolkitSection: React.FC = () => {
             </div>
 
             {/* Candy Card */}
-            <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-5 flex items-center gap-5">
+            <div className="rounded-xl bg-slate-950/80 border border-slate-800 p-5 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5">
               <div className="relative w-20 h-20 rounded-xl bg-candy-amber/10 border border-candy-amber/30 p-2 flex items-center justify-center shrink-0">
                 <Image
                   src="/candy.svg"
@@ -183,12 +183,12 @@ export const ToolkitSection: React.FC = () => {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-white text-base truncate">Solana Crypto Candy</h4>
-                <p className="text-xs text-slate-400 mb-3">Golden candy drop with Solana speed transaction stripes.</p>
+                <h4 className="font-bold text-white text-base">Solana Crypto Candy</h4>
+                <p className="text-xs text-slate-300 mb-3">Golden candy drop with Solana speed transaction stripes.</p>
                 <a
                   href="/candy.svg"
                   download="candy.svg"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-colors"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-colors"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download SVG</span>

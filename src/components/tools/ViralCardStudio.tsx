@@ -267,11 +267,11 @@ export const ViralCardStudio: React.FC = () => {
       </div>
 
       {/* Action Buttons: 1-Click Export & Share */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2 font-mono">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2 font-mono">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
           <button
             onClick={handleDownloadCard}
-            className="px-4 py-2.5 rounded-xl font-black text-xs bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl font-black text-xs bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <Download className="w-4 h-4 text-slate-950" />
             <span>Download 4K Card (.PNG)</span>
@@ -279,14 +279,14 @@ export const ViralCardStudio: React.FC = () => {
 
           <button
             onClick={handleTweetScore}
-            className="px-4 py-2.5 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-400 transition-all flex items-center gap-2"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-400 transition-all flex items-center justify-center gap-2"
           >
             <Share2 className="w-4 h-4 text-cyan-400" />
             <span>Share on X / Twitter</span>
           </button>
         </div>
 
-        <div className="text-xs text-slate-400 flex items-center gap-1.5">
+        <div className="text-xs text-slate-300 flex items-center gap-1.5 self-center sm:self-auto font-medium">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
           <span>100% Authentic Real Player Data</span>
         </div>

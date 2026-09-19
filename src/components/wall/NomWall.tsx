@@ -382,7 +382,7 @@ export const NomWall: React.FC = () => {
               className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 ${
                 selectedCategory === "all"
                   ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-[0_0_12px_rgba(34,197,94,0.25)]"
-                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
+                  : "bg-slate-900/80 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
               All Topics ({posts.length})
@@ -392,7 +392,7 @@ export const NomWall: React.FC = () => {
               className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 flex items-center gap-1 ${
                 selectedCategory === "ideas"
                   ? "bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
-                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
+                  : "bg-slate-900/80 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
               <span>💡</span>
@@ -403,7 +403,7 @@ export const NomWall: React.FC = () => {
               className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 flex items-center gap-1 ${
                 selectedCategory === "lore"
                   ? "bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
-                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
+                  : "bg-slate-900/80 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
               <span>📖</span>
@@ -414,7 +414,7 @@ export const NomWall: React.FC = () => {
               className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 flex items-center gap-1 ${
                 selectedCategory === "game"
                   ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-[0_0_12px_rgba(6,182,212,0.25)]"
-                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
+                  : "bg-slate-900/80 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
               <span>🎮</span>
@@ -425,7 +425,7 @@ export const NomWall: React.FC = () => {
               className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 flex items-center gap-1 ${
                 selectedCategory === "tokenomics"
                   ? "bg-rose-500/20 text-rose-300 border-rose-500/50 shadow-[0_0_12px_rgba(244,63,94,0.25)]"
-                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
+                  : "bg-slate-900/80 text-slate-300 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
               <span>🔥</span>
@@ -437,13 +437,13 @@ export const NomWall: React.FC = () => {
           <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
             {/* Search Input */}
             <div className="relative flex-1 md:w-48">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search wall..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-solana-green/50 transition-all"
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-solana-green/50 transition-all"
               />
             </div>
 
@@ -451,7 +451,7 @@ export const NomWall: React.FC = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as "newest" | "discussed" | "likes")}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-solana-green/50 transition-all cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs sm:text-sm font-medium text-slate-200 focus:outline-none focus:border-solana-green/50 transition-all cursor-pointer"
             >
               <option value="newest">Newest</option>
               <option value="discussed">Most Replies</option>

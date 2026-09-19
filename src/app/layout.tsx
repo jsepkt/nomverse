@@ -52,7 +52,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body suppressHydrationWarning className="bg-background text-foreground antialiased min-h-screen flex flex-col">
+      <body suppressHydrationWarning className="bg-background text-foreground antialiased min-h-screen flex flex-col w-full max-w-[100vw] overflow-x-hidden">
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"

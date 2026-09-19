@@ -61,22 +61,22 @@ export const TokenTickerBar: React.FC = () => {
     <div className="w-full bg-[#070b16] border-b border-emerald-500/20 px-3 py-1.5 overflow-x-auto select-none no-scrollbar">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 text-xs font-mono">
         {/* Left: Token ID & Live Indicator */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             <span className="font-bold text-white tracking-wider flex items-center gap-1">
               <span>$NOM</span>
-              <span className="text-[10px] text-slate-400 font-normal">ON PUMP.FUN</span>
+              <span className="text-[10px] text-slate-400 font-normal hidden sm:inline">ON PUMP.FUN</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-1 text-slate-300">
-            <span className="text-slate-400 text-[11px]">PRICE:</span>
+          <div className="flex items-center gap-1 text-slate-200">
+            <span className="text-slate-400 text-[10px] sm:text-[11px]">PRICE:</span>
             <span className="font-bold text-emerald-400">{formattedPrice}</span>
           </div>
 
           <div
-            className={`hidden sm:flex items-center gap-1.5 font-bold ${
+            className={`flex items-center gap-1 font-bold text-[10px] sm:text-xs ${
               isPositive ? "text-emerald-400" : "text-rose-400"
             }`}
           >
@@ -84,7 +84,7 @@ export const TokenTickerBar: React.FC = () => {
             <span>{Math.abs(stats.priceChange24h).toFixed(1)}%</span>
 
             {/* Mini Neon Trendline Sparkline */}
-            <svg className="w-12 h-3.5 ml-0.5 overflow-visible" viewBox="0 0 45 12" fill="none">
+            <svg className="hidden sm:block w-12 h-3.5 ml-0.5 overflow-visible" viewBox="0 0 45 12" fill="none">
               <defs>
                 <linearGradient id="tickerGlow" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor={isPositive ? "#10B981" : "#F43F5E"} stopOpacity="0.3" />
@@ -121,13 +121,13 @@ export const TokenTickerBar: React.FC = () => {
           <span className="font-bold text-solana-green text-[11px]">
             {stats.bondingProgressPercent}%
           </span>
-          <span className="hidden lg:inline text-[10px] text-slate-500">
+          <span className="hidden lg:inline text-[10px] text-slate-400">
             (MCap: ${stats.marketCapUsd.toLocaleString()} / $69k)
           </span>
         </div>
 
         {/* Right: Quick Trade Action */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <div className="hidden sm:flex items-center gap-1 text-slate-400 text-[11px]">
             <span>VOL:</span>
             <span className="text-slate-200 font-bold">
@@ -139,11 +139,12 @@ export const TokenTickerBar: React.FC = () => {
             href={TOKEN_CONFIG.pumpFunUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 hover:text-white font-bold text-[11px] transition-all"
+            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 hover:text-white font-bold text-[10px] sm:text-[11px] transition-all shrink-0"
           >
-            <Rocket className="w-3.5 h-3.5 text-emerald-400" />
-            <span>TRADE ON PUMP.FUN</span>
-            <ExternalLink className="w-3 h-3 text-slate-400" />
+            <Rocket className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+            <span>TRADE</span>
+            <span className="hidden sm:inline">ON PUMP.FUN</span>
+            <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400" />
           </a>
         </div>
       </div>

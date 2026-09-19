@@ -185,9 +185,9 @@ export const Navbar: React.FC = () => {
               <span>Buy $NOM</span>
             </button>
 
-            {/* User Auth Pill / Sign In */}
+            {/* User Auth Pill / Sign In (Desktop / Tablet) */}
             {user ? (
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-sm shrink-0">
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-sm shrink-0">
                 <div className="flex items-center gap-1 text-xs font-bold text-white max-w-[85px] sm:max-w-[120px]">
                   <span className="truncate">{user.name}</span>
                   <UserBadge provider={user.provider} showText={false} />
@@ -219,7 +219,8 @@ export const Navbar: React.FC = () => {
               title="Trade on pump.fun"
             >
               <Rocket className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span className="hidden lg:inline">pump.fun</span>
+              <span>pump.fun</span>
+              <ExternalLink className="w-3 h-3 text-slate-400 shrink-0" />
             </a>
 
             {/* GitHub Repo Button (Desktop) */}
@@ -234,12 +235,15 @@ export const Navbar: React.FC = () => {
               <span className="hidden lg:inline">GitHub</span>
             </a>
 
-            {/* Mobile Hamburger Menu Toggle Button (Mobile & Tablet) */}
+            {/* Mobile Hamburger Menu Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              className="lg:hidden p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white hover:bg-slate-800 transition-all active:scale-95 shrink-0"
+              className="relative lg:hidden p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white hover:bg-slate-800 transition-all active:scale-95 shrink-0"
             >
+              {user && !isMobileMenuOpen && (
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
+              )}
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5 text-rose-400 animate-in spin-in-90 duration-150" />
               ) : (

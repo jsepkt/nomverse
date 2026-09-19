@@ -117,44 +117,46 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
         </div>
 
         {/* Right: Screen Size Switcher (Half vs Full) & Shortcut Hint */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Right: Screen Size Switcher (Half vs Full) & Shortcut Hint */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Half Size (Split Console) Toggle Button */}
           <button
             onClick={() => setScreenSize("half")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
               screenSize === "half"
                 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-[0_0_15px_rgba(20,241,149,0.25)]"
                 : "bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:bg-slate-800"
             }`}
             title="Half Size: Split screen with Stages & Companion Tabs (Press T)"
           >
-            <Monitor className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden sm:inline">Half Size</span>
+            <Monitor className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="hidden sm:inline">Half</span>
             <span className="text-[10px] opacity-60 hidden lg:inline">[T]</span>
           </button>
 
           {/* Full Size (Ultra Arcade) Toggle Button */}
           <button
             onClick={() => setScreenSize("full")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
               screenSize === "full"
                 ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.25)]"
                 : "bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:bg-slate-800"
             }`}
             title="Full Size: Expanded Ultra Arcade view for maximum immersion"
           >
-            <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Full Size</span>
+            <Maximize2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span className="hidden sm:inline">Full</span>
           </button>
 
           {/* 1-Click Buy $NOM Button */}
           <button
             onClick={() => setIsQuickBuyOpen(true)}
-            className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 flex items-center gap-1.5 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 flex items-center gap-1 sm:gap-1.5 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
             title="Instant Buy $NOM on pump.fun"
           >
-            <Rocket className="w-3.5 h-3.5 text-slate-950" />
-            <span>Buy $NOM</span>
+            <Rocket className="w-3.5 h-3.5 text-slate-950 shrink-0" />
+            <span>Buy</span>
+            <span className="hidden sm:inline">$NOM</span>
           </button>
         </div>
       </div>

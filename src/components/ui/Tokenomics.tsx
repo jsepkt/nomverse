@@ -29,32 +29,32 @@ export const Tokenomics: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <div className="rounded-2xl bg-slate-950/80 border border-slate-800/90 p-5 space-y-2">
             <div className="text-2xl font-black font-mono text-emerald-400">0% TAX</div>
-            <div className="text-sm font-bold text-white">Zero Friction</div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <div className="text-sm sm:text-base font-bold text-white">Zero Friction</div>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               No buy taxes, no sell taxes, no team skim. Complete sovereign trading freedom for community holders.
             </p>
           </div>
 
           <div className="rounded-2xl bg-slate-950/80 border border-slate-800/90 p-5 space-y-2">
             <div className="text-2xl font-black font-mono text-solana-green">100% FAIR</div>
-            <div className="text-sm font-bold text-white">Bonding Curve Launch</div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <div className="text-sm sm:text-base font-bold text-white">Bonding Curve Launch</div>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               Every token purchased through the pump.fun bonding curve. Zero VCs, zero presale discounts, zero team tokens.
             </p>
           </div>
 
           <div className="rounded-2xl bg-slate-950/80 border border-slate-800/90 p-5 space-y-2">
             <div className="text-2xl font-black font-mono text-teal-300">TOKEN-2022</div>
-            <div className="text-sm font-bold text-white">Next-Gen Security</div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <div className="text-sm sm:text-base font-bold text-white">Next-Gen Security</div>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               Mint authority renounced (`null`). Freeze authority renounced (`null`). Total supply fixed at 1 Billion $NOM forever.
             </p>
           </div>
 
           <div className="rounded-2xl bg-slate-950/80 border border-slate-800/90 p-5 space-y-2">
             <div className="text-2xl font-black font-mono text-solana-purple">RAYDIUM</div>
-            <div className="text-sm font-bold text-white">Automated Migration</div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <div className="text-sm sm:text-base font-bold text-white">Automated Migration</div>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               Upon reaching 85 SOL in the bonding curve, liquidity is burned and migrated automatically to Raydium DEX.
             </p>
           </div>
