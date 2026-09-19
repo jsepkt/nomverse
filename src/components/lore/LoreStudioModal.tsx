@@ -28,6 +28,8 @@ Nomster tightened his little green fists, adjusted his cyber shades, and grinned
   );
   const [isPreview, setIsPreview] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+  const [isPostingWall, setIsPostingWall] = useState<boolean>(false);
+  const [wallPosted, setWallPosted] = useState<boolean>(false);
 
   // Close on Escape key
   useEffect(() => {
@@ -46,8 +48,9 @@ title: "${title}"
 chapter: ${chapterNum}
 date: "${new Date().toISOString().split("T")[0]}"
 author: "${author}"
-tags: [${tags
+tags: [${(tags || "")
     .split(",")
+    .filter(Boolean)
     .map((t) => `"${t.trim()}"`)
     .join(", ")}]
 ---
@@ -60,9 +63,6 @@ ${content}
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  const [isPostingWall, setIsPostingWall] = useState<boolean>(false);
-  const [wallPosted, setWallPosted] = useState<boolean>(false);
 
   const handleOpenGitHubPR = () => {
     // Generate GitHub file creation link with encoded content
