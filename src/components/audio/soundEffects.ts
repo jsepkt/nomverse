@@ -462,6 +462,139 @@ class SoundManager {
     });
   }
 
+  // Sonic Super Dash Whoosh
+  public playDashWhoosh(): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(650, now);
+    osc.frequency.exponentialRampToValueAtTime(140, now + 0.18);
+
+    gain.gain.setValueAtTime(0.35, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.2);
+  }
+
+  // Air Juggle Combo Chime (Pitch scales with streak)
+  public playAirJuggle(streak: number = 1): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const baseFreq = 440 * Math.pow(1.12, Math.min(streak, 12));
+    const freqs = [baseFreq, baseFreq * 1.25, baseFreq * 1.5]; // Major chord triad
+
+    freqs.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now + idx * 0.035);
+
+      gain.gain.setValueAtTime(0.2, now + idx * 0.035);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.035 + 0.22);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.035);
+      osc.stop(now + idx * 0.035 + 0.23);
+    });
+  }
+
+  // Boss Impact Hit Sound
+  public playBossHit(): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Sub-bass thump
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = "triangle";
+    osc1.frequency.setValueAtTime(180, now);
+    osc1.frequency.exponentialRampToValueAtTime(45, now + 0.15);
+    gain1.gain.setValueAtTime(0.4, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.17);
+
+    // High zap
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = "sawtooth";
+    osc2.frequency.setValueAtTime(920, now);
+    osc2.frequency.exponentialRampToValueAtTime(120, now + 0.1);
+    gain2.gain.setValueAtTime(0.2, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(now);
+    osc2.stop(now + 0.12);
+  }
+
+  // Epic Boss Defeated Victory Fanfare
+  public playBossDefeated(): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const notes = [
+      { f: 523.25, t: 0.0 },  // C5
+      { f: 659.25, t: 0.12 }, // E5
+      { f: 783.99, t: 0.24 }, // G5
+      { f: 1046.5, t: 0.36 }, // C6
+      { f: 1318.5, t: 0.55 }, // E6
+    ];
+
+    notes.forEach(({ f, t }) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(f, now + t);
+      gain.gain.setValueAtTime(0.28, now + t);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + t + 0.38);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + t);
+      osc.stop(now + t + 0.4);
+    });
+  }
+
+  // Fever Mode Overdrive Power Surge
+  public playFeverActive(): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.exponentialRampToValueAtTime(880, now + 0.35);
+
+    gain.gain.setValueAtTime(0.25, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.4);
+  }
+
   // Toggle mute
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;

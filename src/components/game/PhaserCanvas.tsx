@@ -15,6 +15,10 @@ interface PhaserCanvasProps {
   onPowerUpExpired?: (type: PowerUpType) => void;
   onGameStateChange?: (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => void;
   onRivalDethroned?: (score: number, challenger: string) => void;
+  onFeverMeterUpdate?: (feverPercent: number, isOverdrive: boolean) => void;
+  onDashCooldownUpdate?: (dashReady: boolean) => void;
+  onEpisodeComplete?: (episodeId: string, score: number, stars: number) => void;
+  onBossHpUpdate?: (currentHp: number, maxHp: number) => void;
   rival?: { score: number; challenger: string };
   holderTierPerks?: {
     extraLives: number;
@@ -25,6 +29,8 @@ interface PhaserCanvasProps {
   frenzySignal?: number;
   resetSignal?: number;
   startSignal?: number;
+  dashSignal?: number;
+  episodeId?: string | null;
   initialLives?: number;
   equippedSkin?: SkinId;
   waddleSignal?: { direction: "left" | "right"; timestamp: number } | null;
@@ -40,11 +46,17 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   onPowerUpExpired,
   onGameStateChange,
   onRivalDethroned,
+  onFeverMeterUpdate,
+  onDashCooldownUpdate,
+  onEpisodeComplete,
+  onBossHpUpdate,
   rival,
   holderTierPerks,
   frenzySignal,
   resetSignal,
   startSignal,
+  dashSignal,
+  episodeId,
   initialLives = 3,
   equippedSkin = "default",
   waddleSignal,
@@ -78,6 +90,18 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
 
   const onRivalDethronedRef = useRef(onRivalDethroned);
   onRivalDethronedRef.current = onRivalDethroned;
+
+  const onFeverMeterUpdateRef = useRef(onFeverMeterUpdate);
+  onFeverMeterUpdateRef.current = onFeverMeterUpdate;
+
+  const onDashCooldownUpdateRef = useRef(onDashCooldownUpdate);
+  onDashCooldownUpdateRef.current = onDashCooldownUpdate;
+
+  const onEpisodeCompleteRef = useRef(onEpisodeComplete);
+  onEpisodeCompleteRef.current = onEpisodeComplete;
+
+  const onBossHpUpdateRef = useRef(onBossHpUpdate);
+  onBossHpUpdateRef.current = onBossHpUpdate;
 
   useEffect(() => {
     let isMounted = true;
@@ -126,6 +150,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
           initialSkin: equippedSkin,
           rival,
           holderTierPerks,
+          episodeId,
           callbacks: {
             onScoreUpdate: (score: number, streak: number) => {
               if (onScoreUpdateRef.current) {
@@ -167,6 +192,26 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
                 onRivalDethronedRef.current(score, challenger);
               }
             },
+            onFeverMeterUpdate: (feverPercent: number, isOverdrive: boolean) => {
+              if (onFeverMeterUpdateRef.current) {
+                onFeverMeterUpdateRef.current(feverPercent, isOverdrive);
+              }
+            },
+            onDashCooldownUpdate: (dashReady: boolean) => {
+              if (onDashCooldownUpdateRef.current) {
+                onDashCooldownUpdateRef.current(dashReady);
+              }
+            },
+            onEpisodeComplete: (epId: string, score: number, stars: number) => {
+              if (onEpisodeCompleteRef.current) {
+                onEpisodeCompleteRef.current(epId, score, stars);
+              }
+            },
+            onBossHpUpdate: (currentHp: number, maxHp: number) => {
+              if (onBossHpUpdateRef.current) {
+                onBossHpUpdateRef.current(currentHp, maxHp);
+              }
+            },
           },
         });
 
@@ -192,7 +237,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
         sceneRef.current = null;
       }
     };
-  }, [initialLives, equippedSkin]);
+  }, [initialLives, equippedSkin, episodeId]);
 
   // Handle live skin change
   useEffect(() => {
@@ -214,6 +259,13 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
       sceneRef.current.resetGame(3);
     }
   }, [resetSignal]);
+
+  // Handle live super dash signals
+  useEffect(() => {
+    if (dashSignal && dashSignal > 0 && sceneRef.current) {
+      sceneRef.current.performSuperDash();
+    }
+  }, [dashSignal]);
 
   // Handle live whale buy frenzy signals
   useEffect(() => {

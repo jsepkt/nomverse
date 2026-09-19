@@ -2,6 +2,7 @@ import * as Phaser from "phaser";
 import { sounds } from "../audio/soundEffects";
 import { PowerUpType, POWER_UPS, rollForPowerUp } from "@/lib/powerUps";
 import { SkinId } from "@/lib/skins";
+import { EpisodeConfig, EPISODES } from "@/lib/episodes";
 
 export interface SceneCallbacks {
   onScoreUpdate?: (score: number, streak: number) => void;
@@ -14,6 +15,10 @@ export interface SceneCallbacks {
   onGameStateChange?: (state: "idle" | "countdown" | "playing" | "respawning" | "gameover") => void;
   onRivalDethroned?: (score: number, challenger: string) => void;
   onFrenzyEnd?: () => void;
+  onFeverMeterUpdate?: (feverPercent: number, isOverdrive: boolean) => void;
+  onDashCooldownUpdate?: (dashReady: boolean) => void;
+  onEpisodeComplete?: (episodeId: string, score: number, stars: number) => void;
+  onBossHpUpdate?: (currentHp: number, maxHp: number) => void;
 }
 
 export class MainScene extends Phaser.Scene {
@@ -63,6 +68,45 @@ export class MainScene extends Phaser.Scene {
   private slowmoTimer?: Phaser.Time.TimerEvent;
   private shieldTimer?: Phaser.Time.TimerEvent;
 
+  // 60FPS Continuous Keyboard Physics
+  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private keyA!: Phaser.Input.Keyboard.Key;
+  private keyD!: Phaser.Input.Keyboard.Key;
+  private keyW!: Phaser.Input.Keyboard.Key;
+  private keySpace!: Phaser.Input.Keyboard.Key;
+  private keyShift!: Phaser.Input.Keyboard.Key;
+  private nomsterVelocityX: number = 0;
+  private readonly maxNomsterSpeed: number = 440;
+  private readonly nomsterAccel: number = 2400;
+  private readonly nomsterDrag: number = 1900;
+
+  // Sonic Super Dash & Invulnerability
+  public isDashReady: boolean = true;
+  private isInvulnerable: boolean = false;
+  private dashCooldownTimer?: Phaser.Time.TimerEvent;
+  private dashRingVisual?: Phaser.GameObjects.Arc;
+
+  // Air Juggle Combo Multiplier
+  private airJuggleCount: number = 0;
+
+  // NOM-RAGE Fever Overdrive
+  private feverMeter: number = 0;
+  public isFeverOverdrive: boolean = false;
+  private feverTimer?: Phaser.Time.TimerEvent;
+  private feverGlowOverlay?: Phaser.GameObjects.Rectangle;
+
+  // In-Game Lord Mega-FUD Canvas Boss & Episodic Campaign
+  public currentEpisodeConfig?: EpisodeConfig;
+  private bossContainer?: Phaser.GameObjects.Container;
+  private bossSprite?: Phaser.GameObjects.Sprite;
+  private bossHpBar?: Phaser.GameObjects.Rectangle;
+  private bossHpText?: Phaser.GameObjects.Text;
+  private bossCurrentHp: number = 100;
+  private readonly bossMaxHp: number = 100;
+  private bossLaserTimer?: Phaser.Time.TimerEvent;
+  private bossMoveTween?: Phaser.Tweens.Tween;
+  private isBossDefeated: boolean = false;
+
   // Game Lifecycle & Countdown State
   public isGameStarted: boolean = false;
   public playState: "idle" | "countdown" | "playing" | "respawning" | "gameover" = "idle";
@@ -89,6 +133,7 @@ export class MainScene extends Phaser.Scene {
     initialLives?: number;
     initialSkin?: SkinId;
     rival?: { score: number; challenger: string };
+    episodeId?: string | null;
     holderTierPerks?: {
       extraLives: number;
       scoreMultiplier: number;
@@ -115,14 +160,38 @@ export class MainScene extends Phaser.Scene {
       this.rival = undefined;
       this.rivalBeaten = false;
     }
+
+    if (data && data.episodeId) {
+      this.currentEpisodeConfig = EPISODES.find((e) => e.id === data.episodeId);
+      if (this.currentEpisodeConfig) {
+        this.currentStageId = this.currentEpisodeConfig.stageEnvironment;
+      }
+    } else {
+      this.currentEpisodeConfig = undefined;
+    }
+
     this.score = 0;
     this.streak = 0;
+    this.airJuggleCount = 0;
+    this.feverMeter = 0;
+    this.isFeverOverdrive = false;
     this.isFrenzy = false;
     this.isGameStarted = false;
+    this.isDashReady = true;
+    this.isInvulnerable = false;
+    this.isBossDefeated = false;
+    this.bossCurrentHp = 100;
     this.playState = "idle";
     this.activePowerUps = { magnet: false, shield: false, slowmo: false };
+
     if (this.callbacks.onGameStateChange) {
       this.callbacks.onGameStateChange("idle");
+    }
+    if (this.callbacks.onFeverMeterUpdate) {
+      this.callbacks.onFeverMeterUpdate(0, false);
+    }
+    if (this.callbacks.onDashCooldownUpdate) {
+      this.callbacks.onDashCooldownUpdate(true);
     }
   }
 
@@ -212,6 +281,21 @@ export class MainScene extends Phaser.Scene {
     // Setup Interactive Controls
     this.setupInteractivity();
 
+    // 60FPS Continuous Keyboard Controls Setup
+    if (this.input.keyboard) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+      this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+      this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+      this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+      this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+      this.keyShift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    }
+
+    // Spawn In-Game Lord Mega-FUD Boss if Boss Episode
+    if (this.currentEpisodeConfig?.isBossEpisode) {
+      this.spawnBoss();
+    }
+
     // Collisions & Overlaps
     this.physics.add.overlap(this.candy, this.mouthCollider, () => {
       this.handleEatCandy();
@@ -237,12 +321,68 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
-  // Update loop for Starfield, Eye Tracking, Mouth Anticipation, Trails, and Magnetic Pull
+  // Update loop for Starfield, Eye Tracking, Mouth Anticipation, Trails, Keyboard, and Magnetic Pull
   public override update(time: number, delta: number): void {
     if (!this.nomster) return;
 
     const dt = delta / 1000;
     const { width: camWidth, height: camHeight } = this.cameras.main;
+
+    // 0. 60FPS Continuous Velocity Keyboard Controller
+    if (
+      this.playState === "playing" ||
+      this.playState === "countdown" ||
+      this.playState === "respawning"
+    ) {
+      if (this.cursors && this.keyA && this.keyD) {
+        let moveDir = 0;
+        if (this.cursors.left.isDown || this.keyA.isDown) moveDir -= 1;
+        if (this.cursors.right.isDown || this.keyD.isDown) moveDir += 1;
+
+        if (moveDir !== 0) {
+          this.nomsterVelocityX = Phaser.Math.Clamp(
+            this.nomsterVelocityX + moveDir * this.nomsterAccel * dt,
+            -this.maxNomsterSpeed,
+            this.maxNomsterSpeed
+          );
+        } else {
+          // Friction damping
+          if (this.nomsterVelocityX > 0) {
+            this.nomsterVelocityX = Math.max(0, this.nomsterVelocityX - this.nomsterDrag * dt);
+          } else if (this.nomsterVelocityX < 0) {
+            this.nomsterVelocityX = Math.min(0, this.nomsterVelocityX + this.nomsterDrag * dt);
+          }
+        }
+
+        // Apply velocity to Nomster position and banking tilt
+        if (Math.abs(this.nomsterVelocityX) > 8 && !this.isMovingNomster) {
+          this.nomster.x = Phaser.Math.Clamp(
+            this.nomster.x + this.nomsterVelocityX * dt,
+            60,
+            camWidth - 60
+          );
+          this.nomster.angle = (this.nomsterVelocityX / this.maxNomsterSpeed) * 11;
+        } else if (!this.isMovingNomster && Math.abs(this.nomster.angle) > 0.5) {
+          this.nomster.angle = Phaser.Math.Linear(this.nomster.angle, 0, dt * 10);
+        }
+
+        // Spacebar / Shift triggers Super Dash
+        if (
+          Phaser.Input.Keyboard.JustDown(this.keySpace) ||
+          Phaser.Input.Keyboard.JustDown(this.keyShift)
+        ) {
+          this.performSuperDash();
+        }
+
+        // Up arrow / W triggers Leap & Air Juggle
+        if (
+          Phaser.Input.Keyboard.JustDown(this.cursors.up) ||
+          Phaser.Input.Keyboard.JustDown(this.keyW)
+        ) {
+          this.performAirJuggle();
+        }
+      }
+    }
 
     // 1. Drifting Cosmic Starfield Parallax
     if (this.stars && this.stars.length > 0) {
@@ -418,9 +558,28 @@ export class MainScene extends Phaser.Scene {
       this.candyLabel.setPosition(this.candy.x, this.candy.y - 28);
     }
 
-    // Solana Magnet: Tractor beam pull towards Nomster's mouth
+    // Golden aura sparks during NOM-RAGE Fever Overdrive
+    if (this.isFeverOverdrive && Math.random() < 0.4) {
+      const fSpark = this.add.circle(
+        this.nomster.x + Phaser.Math.Between(-30, 30),
+        this.nomster.y - Phaser.Math.Between(10, 60),
+        Phaser.Math.Between(2, 4),
+        0xf59e0b,
+        0.85
+      );
+      fSpark.setBlendMode(Phaser.BlendModes.ADD);
+      this.tweens.add({
+        targets: fSpark,
+        y: fSpark.y - 28,
+        alpha: 0,
+        duration: 260,
+        onComplete: () => fSpark.destroy(),
+      });
+    }
+
+    // Solana Magnet or NOM-RAGE Fever Overdrive: Tractor beam pull towards Nomster's mouth
     if (
-      this.activePowerUps.magnet &&
+      (this.activePowerUps.magnet || this.isFeverOverdrive) &&
       this.candy &&
       !this.isEating &&
       this.lives > 0 &&
@@ -711,6 +870,96 @@ export class MainScene extends Phaser.Scene {
         ctx.arc(64, 18, 2.5, 0, Math.PI * 2);
         ctx.fill();
 
+        canvas.refresh();
+      }
+    }
+
+    // 7. Lord Mega-FUD Boss Sprite
+    if (!this.textures.exists("lord_megafud_boss")) {
+      const canvas = this.textures.createCanvas("lord_megafud_boss", 64, 64);
+      if (canvas) {
+        const ctx = canvas.context;
+        // Dark crimson body
+        const grad = ctx.createRadialGradient(32, 32, 8, 32, 32, 30);
+        grad.addColorStop(0, "#dc2626");
+        grad.addColorStop(0.7, "#7f1d1d");
+        grad.addColorStop(1, "#450a0a");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(32, 34, 24, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Glitch Horns
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.moveTo(14, 20);
+        ctx.lineTo(6, 4);
+        ctx.lineTo(24, 14);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(50, 20);
+        ctx.lineTo(58, 4);
+        ctx.lineTo(40, 14);
+        ctx.closePath();
+        ctx.fill();
+
+        // Glowing red dragon eyes
+        ctx.fillStyle = "#fef08a";
+        ctx.beginPath();
+        ctx.arc(22, 28, 4.5, 0, Math.PI * 2);
+        ctx.arc(42, 28, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.arc(22, 28, 2.5, 0, Math.PI * 2);
+        ctx.arc(42, 28, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Sharp fangs
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.moveTo(22, 42);
+        ctx.lineTo(26, 50);
+        ctx.lineTo(30, 42);
+        ctx.moveTo(34, 42);
+        ctx.lineTo(38, 50);
+        ctx.lineTo(42, 42);
+        ctx.closePath();
+        ctx.fill();
+
+        canvas.refresh();
+      }
+    }
+
+    // 8. FUD Laser Bolt
+    if (!this.textures.exists("fud_laser")) {
+      const canvas = this.textures.createCanvas("fud_laser", 12, 28);
+      if (canvas) {
+        const ctx = canvas.context;
+        ctx.fillStyle = "#ef4444";
+        ctx.fillRect(2, 2, 8, 24);
+        ctx.fillStyle = "#fecaca";
+        ctx.fillRect(4, 4, 4, 20);
+        canvas.refresh();
+      }
+    }
+
+    // 9. Photon Spit Projectile
+    if (!this.textures.exists("photon_spit")) {
+      const canvas = this.textures.createCanvas("photon_spit", 16, 16);
+      if (canvas) {
+        const ctx = canvas.context;
+        const grad = ctx.createRadialGradient(8, 8, 2, 8, 8, 8);
+        grad.addColorStop(0, "#ffffff");
+        grad.addColorStop(0.5, "#14f195");
+        grad.addColorStop(1, "rgba(20, 241, 149, 0)");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(8, 8, 7, 0, Math.PI * 2);
+        ctx.fill();
         canvas.refresh();
       }
     }
@@ -1482,9 +1731,17 @@ export class MainScene extends Phaser.Scene {
     }
 
     let pointsEarned = 1;
-    if (this.isFrenzy) {
+    if (this.isFeverOverdrive) {
+      pointsEarned *= 3;
+    } else if (this.isFrenzy) {
       pointsEarned *= 2;
     }
+
+    if (this.airJuggleCount > 0) {
+      pointsEarned = Math.round(pointsEarned * (1 + this.airJuggleCount));
+      this.airJuggleCount = 0;
+    }
+
     if (this.holderTierPerks?.scoreMultiplier && this.holderTierPerks.scoreMultiplier > 1) {
       pointsEarned = Math.max(1, Math.round(pointsEarned * this.holderTierPerks.scoreMultiplier));
     }
@@ -1492,8 +1749,23 @@ export class MainScene extends Phaser.Scene {
     this.score += pointsEarned;
     this.streak++;
 
+    // Increment NOM-RAGE Fever Meter
+    this.addFeverPoints(7);
+
+    // Retaliate against Lord Mega-FUD if Boss fight is active
+    if (this.bossContainer && !this.isBossDefeated) {
+      this.firePhotonAtBoss();
+    }
+
     // Dynamic Stage Upgrade Check (Level Up!)
     this.checkStageProgression(this.score);
+
+    // Check if story episode objective is achieved
+    if (this.currentEpisodeConfig && !this.currentEpisodeConfig.isBossEpisode) {
+      if (this.score >= this.currentEpisodeConfig.targetScore) {
+        this.handleEpisodeComplete();
+      }
+    }
 
     // Check if rival challenge score is exceeded
     if (this.rival && !this.rivalBeaten && this.score > this.rival.score) {
@@ -2016,9 +2288,466 @@ export class MainScene extends Phaser.Scene {
     });
   }
 
+  // Sonic Super Dash Execution
+  public performSuperDash(): boolean {
+    if (
+      !this.isDashReady ||
+      this.lives <= 0 ||
+      (this.playState !== "playing" && this.playState !== "countdown")
+    ) {
+      return false;
+    }
+
+    this.isDashReady = false;
+    this.isInvulnerable = true;
+    sounds.playDashWhoosh();
+
+    if (this.callbacks.onDashCooldownUpdate) {
+      this.callbacks.onDashCooldownUpdate(false);
+    }
+
+    const { width } = this.cameras.main;
+    let dashDir = this.nomsterVelocityX !== 0 ? Math.sign(this.nomsterVelocityX) : (this.nomster.angle > 0 ? 1 : -1);
+    if (dashDir === 0) dashDir = 1;
+
+    const targetX = Phaser.Math.Clamp(this.nomster.x + dashDir * 135, 60, width - 60);
+
+    // Spawn 3 ghost afterimage sprites
+    for (let i = 1; i <= 3; i++) {
+      this.time.delayedCall(i * 35, () => {
+        if (!this.nomster) return;
+        const ghost = this.add.sprite(this.nomster.x, this.nomster.y, "nomster");
+        ghost.setOrigin(0.5, 0.85);
+        ghost.setAngle(this.nomster.angle);
+        ghost.setScale(this.nomster.scaleX, this.nomster.scaleY);
+        ghost.setTint(i % 2 === 0 ? 0x9945ff : 0x14f195);
+        ghost.setAlpha(0.65);
+        ghost.setDepth(9);
+        this.tweens.add({
+          targets: ghost,
+          alpha: 0,
+          scale: 0.8,
+          duration: 220,
+          ease: "Sine.easeOut",
+          onComplete: () => ghost.destroy(),
+        });
+      });
+    }
+
+    // Fast burst movement
+    this.tweens.add({
+      targets: this.nomster,
+      x: targetX,
+      scaleX: 1.3,
+      scaleY: 0.75,
+      duration: 160,
+      ease: "Cubic.easeOut",
+      onComplete: () => {
+        this.tweens.add({
+          targets: this.nomster,
+          scaleX: this.isFeverOverdrive ? 1.35 : 1.0,
+          scaleY: this.isFeverOverdrive ? 1.35 : 1.0,
+          duration: 100,
+        });
+      },
+    });
+
+    // Invulnerability duration 350ms
+    this.time.delayedCall(350, () => {
+      this.isInvulnerable = false;
+    });
+
+    // Cooldown 2.5s
+    if (this.dashCooldownTimer) this.dashCooldownTimer.remove();
+    this.dashCooldownTimer = this.time.delayedCall(2500, () => {
+      this.isDashReady = true;
+      if (this.callbacks.onDashCooldownUpdate) {
+        this.callbacks.onDashCooldownUpdate(true);
+      }
+    });
+
+    return true;
+  }
+
+  // Air Juggle & Deflection
+  public performAirJuggle(): boolean {
+    if (
+      !this.candy ||
+      !this.candy.active ||
+      this.lives <= 0 ||
+      this.playState !== "playing" ||
+      this.isEating
+    ) {
+      return false;
+    }
+
+    const dist = Phaser.Math.Distance.Between(
+      this.candy.x,
+      this.candy.y,
+      this.nomster.x,
+      this.nomster.y - 40
+    );
+
+    if (dist < 145 && this.candy.y < this.nomster.y) {
+      this.airJuggleCount++;
+      sounds.playAirJuggle(this.airJuggleCount);
+      this.addFeverPoints(15);
+
+      // Bounce candy up
+      const vx = Phaser.Math.Between(-160, 160);
+      this.candy.setVelocity(vx, -460);
+      this.candy.setAngularVelocity(vx * 2);
+
+      // Nomster headbutt jump
+      this.tweens.add({
+        targets: this.nomster,
+        y: this.nomster.y - 24,
+        scaleY: 1.25,
+        scaleX: 0.85,
+        duration: 90,
+        yoyo: true,
+        ease: "Quad.easeOut",
+      });
+
+      // Floating Combo text
+      const juggleText = this.add.text(
+        this.candy.x,
+        this.candy.y - 25,
+        `AIR JUGGLE x${this.airJuggleCount}! 🔥`,
+        {
+          fontFamily: "monospace",
+          fontSize: "15px",
+          fontStyle: "bold",
+          color: this.airJuggleCount >= 3 ? "#F59E0B" : "#14F195",
+          stroke: "#000000",
+          strokeThickness: 4,
+        }
+      );
+      juggleText.setOrigin(0.5);
+      this.tweens.add({
+        targets: juggleText,
+        y: juggleText.y - 50,
+        scale: 1.3,
+        alpha: 0,
+        duration: 850,
+        ease: "Quad.easeOut",
+        onComplete: () => juggleText.destroy(),
+      });
+
+      return true;
+    }
+
+    return false;
+  }
+
+  // NOM-RAGE Fever Meter Charge
+  public addFeverPoints(amount: number): void {
+    if (this.isFeverOverdrive || this.lives <= 0) return;
+    this.feverMeter = Math.min(100, this.feverMeter + amount);
+
+    if (this.callbacks.onFeverMeterUpdate) {
+      this.callbacks.onFeverMeterUpdate(this.feverMeter, false);
+    }
+
+    if (this.feverMeter >= 100) {
+      this.activateFeverOverdrive();
+    }
+  }
+
+  // Activates 8-second Fever Overdrive
+  public activateFeverOverdrive(): void {
+    if (this.isFeverOverdrive) return;
+    this.isFeverOverdrive = true;
+    sounds.playFeverActive();
+    this.cameras.main.shake(300, 0.015);
+
+    if (this.callbacks.onFeverMeterUpdate) {
+      this.callbacks.onFeverMeterUpdate(100, true);
+    }
+
+    // Nomster expansion
+    this.tweens.add({
+      targets: this.nomster,
+      scaleX: 1.35,
+      scaleY: 1.35,
+      duration: 250,
+      ease: "Back.easeOut",
+    });
+
+    const { width } = this.cameras.main;
+    const banner = this.add.text(
+      width / 2,
+      135,
+      "⚡ NOM-RAGE OVERDRIVE! 3X POINTS! ⚡",
+      {
+        fontFamily: "monospace",
+        fontSize: "14px",
+        fontStyle: "bold",
+        color: "#F59E0B",
+        backgroundColor: "#050914FA",
+        padding: { x: 14, y: 7 },
+        stroke: "#000000",
+        strokeThickness: 4,
+        align: "center",
+      }
+    );
+    banner.setOrigin(0.5);
+    banner.setDepth(30);
+    this.tweens.add({
+      targets: banner,
+      y: 110,
+      alpha: 0,
+      duration: 2000,
+      onComplete: () => banner.destroy(),
+    });
+
+    if (this.feverTimer) this.feverTimer.remove();
+    this.feverTimer = this.time.delayedCall(8000, () => {
+      this.isFeverOverdrive = false;
+      this.feverMeter = 0;
+      if (this.callbacks.onFeverMeterUpdate) {
+        this.callbacks.onFeverMeterUpdate(0, false);
+      }
+      this.tweens.add({
+        targets: this.nomster,
+        scaleX: 1.0,
+        scaleY: 1.0,
+        duration: 220,
+      });
+    });
+  }
+
+  // Spawns In-Game Canvas Boss (Lord Mega-FUD)
+  private spawnBoss(): void {
+    const { width } = this.cameras.main;
+    this.bossCurrentHp = 100;
+    this.isBossDefeated = false;
+
+    const container = this.add.container(width / 2, 90);
+    this.bossContainer = container;
+    container.setDepth(15);
+
+    // Boss Sprite
+    const bossSprite = this.add.sprite(0, 0, "lord_megafud_boss");
+    bossSprite.setScale(1.25);
+    container.add(bossSprite);
+    this.bossSprite = bossSprite;
+
+    // HP Bar background
+    const barBg = this.add.rectangle(0, 38, 190, 10, 0x050914, 0.9);
+    barBg.setStrokeStyle(1.5, 0xef4444, 0.8);
+    container.add(barBg);
+
+    // HP Bar Fill
+    const barFill = this.add.rectangle(-95, 38, 190, 8, 0xef4444, 0.95);
+    barFill.setOrigin(0, 0.5);
+    container.add(barFill);
+    this.bossHpBar = barFill;
+
+    // HP Bar Label
+    const barText = this.add.text(0, 52, "LORD MEGA-FUD (100 HP)", {
+      fontFamily: "monospace",
+      fontSize: "9px",
+      fontStyle: "bold",
+      color: "#FCA5A5",
+    });
+    barText.setOrigin(0.5);
+    container.add(barText);
+    this.bossHpText = barText;
+
+    // Boss Hover Tween
+    this.bossMoveTween = this.tweens.add({
+      targets: container,
+      x: { from: 75, to: width - 75 },
+      y: { from: 85, to: 95 },
+      duration: 3200,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    // Boss Attack Laser Loop
+    if (this.bossLaserTimer) this.bossLaserTimer.remove();
+    this.bossLaserTimer = this.time.addEvent({
+      delay: 3400,
+      repeat: -1,
+      callback: () => this.bossFireLaser(),
+    });
+
+    if (this.callbacks.onBossHpUpdate) {
+      this.callbacks.onBossHpUpdate(this.bossCurrentHp, this.bossMaxHp);
+    }
+  }
+
+  // Boss fires red laser bolt downward
+  private bossFireLaser(): void {
+    if (
+      this.isBossDefeated ||
+      !this.bossContainer ||
+      this.playState !== "playing" ||
+      this.lives <= 0
+    ) {
+      return;
+    }
+
+    sounds.playFUDHit();
+    const laser = this.physics.add.sprite(
+      this.bossContainer.x,
+      this.bossContainer.y + 35,
+      "fud_laser"
+    );
+    laser.setDepth(14);
+    laser.setVelocityY(340);
+    laser.setCollideWorldBounds(false);
+
+    const laserOverlap = this.physics.add.overlap(laser, this.mouthCollider, () => {
+      laser.destroy();
+      laserOverlap.destroy();
+
+      if (this.isInvulnerable) {
+        sounds.playDashWhoosh();
+        return;
+      }
+
+      if (this.activePowerUps.shield) {
+        this.activePowerUps.shield = false;
+        if (this.shieldSprite) this.shieldSprite.setVisible(false);
+        sounds.playShieldPop();
+        if (this.callbacks.onPowerUpExpired) this.callbacks.onPowerUpExpired("shield");
+        return;
+      }
+
+      // Life lost from boss laser
+      this.lives -= 1;
+      this.streak = 0;
+      this.airJuggleCount = 0;
+      sounds.playLifeLost();
+      this.cameras.main.shake(250, 0.015);
+
+      if (this.callbacks.onLivesUpdate) {
+        this.callbacks.onLivesUpdate(this.lives);
+      }
+
+      if (this.lives <= 0) {
+        this.playState = "gameover";
+        if (this.callbacks.onGameStateChange) this.callbacks.onGameStateChange("gameover");
+        this.triggerGameOver();
+      }
+    });
+
+    // Cleanup laser after exiting bottom
+    this.time.delayedCall(2200, () => {
+      if (laser.active) laser.destroy();
+    });
+  }
+
+  // Fires photon spit blast up at Lord Mega-FUD
+  private firePhotonAtBoss(): void {
+    if (!this.bossContainer || this.isBossDefeated) return;
+
+    const photon = this.add.sprite(
+      this.mouthCollider.x,
+      this.mouthCollider.y - 20,
+      "photon_spit"
+    );
+    photon.setDepth(14);
+
+    this.tweens.add({
+      targets: photon,
+      x: this.bossContainer.x,
+      y: this.bossContainer.y,
+      duration: 320,
+      ease: "Quad.easeIn",
+      onComplete: () => {
+        photon.destroy();
+        if (this.isBossDefeated) return;
+
+        sounds.playBossHit();
+        const dmg = this.isFeverOverdrive ? 30 : 15;
+        this.bossCurrentHp = Math.max(0, this.bossCurrentHp - dmg);
+
+        // Flash boss white
+        if (this.bossSprite) {
+          this.bossSprite.setTint(0xffffff);
+          this.time.delayedCall(100, () => {
+            if (this.bossSprite) this.bossSprite.clearTint();
+          });
+        }
+
+        // Update HP Bar
+        if (this.bossHpBar) {
+          const pct = Math.max(0, this.bossCurrentHp / this.bossMaxHp);
+          this.bossHpBar.setScale(pct, 1);
+        }
+        if (this.bossHpText) {
+          this.bossHpText.setText(`LORD MEGA-FUD (${this.bossCurrentHp} HP)`);
+        }
+
+        if (this.callbacks.onBossHpUpdate) {
+          this.callbacks.onBossHpUpdate(this.bossCurrentHp, this.bossMaxHp);
+        }
+
+        if (this.bossCurrentHp <= 0) {
+          this.isBossDefeated = true;
+          sounds.playBossDefeated();
+          this.cameras.main.shake(500, 0.02);
+
+          if (this.bossLaserTimer) this.bossLaserTimer.remove();
+          if (this.bossMoveTween) this.bossMoveTween.stop();
+
+          // Boss death explosion
+          this.tweens.add({
+            targets: this.bossContainer,
+            scaleX: 1.6,
+            scaleY: 1.6,
+            alpha: 0,
+            duration: 700,
+            ease: "Power2",
+            onComplete: () => {
+              this.bossContainer?.destroy();
+              this.bossContainer = undefined;
+              this.handleEpisodeComplete();
+            },
+          });
+        }
+      },
+    });
+  }
+
+  // Handles completion of an episodic chapter
+  private handleEpisodeComplete(): void {
+    if (!this.currentEpisodeConfig) return;
+
+    // Determine star rating based on lives remaining
+    const stars = this.lives >= 3 ? 3 : this.lives === 2 ? 2 : 1;
+
+    // Stop candy drops
+    if (this.candy) {
+      this.candy.disableBody(true, true);
+    }
+
+    if (this.callbacks.onEpisodeComplete) {
+      this.callbacks.onEpisodeComplete(this.currentEpisodeConfig.id, this.score, stars);
+    }
+  }
+
   public resetGame(livesCount: number = 3): void {
     this.score = 0;
     this.streak = 0;
+    this.airJuggleCount = 0;
+    this.feverMeter = 0;
+    this.isFeverOverdrive = false;
+    this.isDashReady = true;
+    this.isInvulnerable = false;
+    if (this.feverTimer) this.feverTimer.remove();
+    if (this.dashCooldownTimer) this.dashCooldownTimer.remove();
+    if (this.callbacks.onFeverMeterUpdate) {
+      this.callbacks.onFeverMeterUpdate(0, false);
+    }
+    if (this.callbacks.onDashCooldownUpdate) {
+      this.callbacks.onDashCooldownUpdate(true);
+    }
+
     this.lives = livesCount;
     this.isEating = false;
     this.isAnticipating = false;
@@ -2035,11 +2764,22 @@ export class MainScene extends Phaser.Scene {
       this.candy.disableBody(true, true);
     }
 
+    if (this.bossContainer) {
+      this.bossContainer.destroy();
+      this.bossContainer = undefined;
+    }
+    if (this.bossLaserTimer) {
+      this.bossLaserTimer.remove();
+    }
+    if (this.currentEpisodeConfig?.isBossEpisode) {
+      this.spawnBoss();
+    }
+
     this.nomster.setAngle(0);
     this.nomster.setScale(1.0);
     this.nomster.setAlpha(1);
     this.updateNomsterMood();
-    this.updateStageEnvironment("meadow");
+    this.updateStageEnvironment(this.currentEpisodeConfig ? this.currentEpisodeConfig.stageEnvironment : "meadow");
 
     if (this.rival) {
       this.rivalBeaten = false;

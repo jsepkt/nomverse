@@ -26,6 +26,9 @@ import {
   getTierForBalance,
 } from "@/lib/holderTiers";
 import { sounds } from "../audio/soundEffects";
+import { EpisodeSelectModal } from "./EpisodeSelectModal";
+import { EpisodeVictoryCard } from "./EpisodeBanner";
+import { EPISODES, EpisodeConfig, saveEpisodeCompletion } from "@/lib/episodes";
 import {
   Volume2,
   VolumeX,
@@ -41,6 +44,8 @@ import {
   Swords,
   Coins,
   Crown,
+  Film,
+  Zap,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -98,6 +103,44 @@ export const GameContainer: React.FC = () => {
   const [isHolderModalOpen, setIsHolderModalOpen] = useState<boolean>(false);
   const [holderPerks, setHolderPerks] = useState<HolderPerks>(HOLDER_TIERS.fish);
   const [frenzySignal, setFrenzySignal] = useState<number>(0);
+
+  // Episodic Campaign & Dash & Fever State
+  const [currentEpisodeId, setCurrentEpisodeId] = useState<string | null>(null);
+  const [isEpisodeModalOpen, setIsEpisodeModalOpen] = useState<boolean>(false);
+  const [victoryData, setVictoryData] = useState<{
+    episode: EpisodeConfig;
+    score: number;
+    streak: number;
+    stars: number;
+  } | null>(null);
+  const [feverPercent, setFeverPercent] = useState<number>(0);
+  const [isFeverOverdrive, setIsFeverOverdrive] = useState<boolean>(false);
+  const [dashReady, setDashReady] = useState<boolean>(true);
+  const [dashSignal, setDashSignal] = useState<number>(0);
+
+  const handleEpisodeComplete = useCallback((epId: string, finalScore: number, stars: number) => {
+    const epConfig = EPISODES.find((e) => e.id === epId);
+    if (epConfig) {
+      saveEpisodeCompletion(epId, finalScore, stars, user?.id || "guest");
+      setVictoryData({
+        episode: epConfig,
+        score: finalScore,
+        streak,
+        stars,
+      });
+    }
+  }, [user, streak]);
+
+  const handleNextEpisode = useCallback(() => {
+    if (!victoryData) return;
+    const nextIndex = EPISODES.findIndex((e) => e.id === victoryData.episode.id) + 1;
+    if (nextIndex < EPISODES.length && !EPISODES[nextIndex].isComingSoon) {
+      setCurrentEpisodeId(EPISODES[nextIndex].id);
+      setVictoryData(null);
+      setResetSignal((prev) => prev + 1);
+      setStartSignal((prev) => prev + 1);
+    }
+  }, [victoryData]);
 
   // Synchronize life and skin state on user login
   useEffect(() => {
@@ -513,8 +556,32 @@ export const GameContainer: React.FC = () => {
           </div>
         </div>
 
-        {/* Action controls: Holder Bag, Closet, Sound, Fullscreen & Reset */}
-        <div className="flex items-center gap-2">
+        {/* Action controls: Episodes, Holder Bag, Closet, Sound, Fullscreen & Reset */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Episodes Campaign Button */}
+          <button
+            onClick={() => setIsEpisodeModalOpen(true)}
+            aria-label="Story Episodes"
+            title="Play Story Episodes & Boss Battles"
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 ${
+              currentEpisodeId
+                ? "bg-amber-500/20 border-amber-500/50 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)] font-bold"
+                : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-300"
+            }`}
+          >
+            <Film className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline font-bold">
+              {currentEpisodeId
+                ? `EP 0${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
+                : "Episodes"}
+            </span>
+            <span className="sm:hidden font-bold">
+              {currentEpisodeId
+                ? `EP ${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
+                : "Story"}
+            </span>
+          </button>
+
           {/* Holder Perks Bag Button */}
           <button
             onClick={() => setIsHolderModalOpen(true)}
@@ -590,6 +657,24 @@ export const GameContainer: React.FC = () => {
             <RotateCcw className="w-4 h-4" />
           </button>
         </div>
+      </div>
+
+      {/* NOM-RAGE Fever Overdrive Progress Bar */}
+      <div className="w-full mb-2.5 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-2 select-none shadow-sm">
+        <Flame className={`w-4 h-4 shrink-0 ${isFeverOverdrive ? "text-amber-400 animate-bounce" : "text-slate-400"}`} />
+        <div className="flex-1 bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800/80 relative">
+          <div
+            className={`h-full transition-all duration-150 ${
+              isFeverOverdrive
+                ? "bg-gradient-to-r from-amber-400 via-orange-500 to-yellow-300 animate-pulse shadow-[0_0_12px_#f59e0b]"
+                : "bg-gradient-to-r from-emerald-500 to-solana-green"
+            }`}
+            style={{ width: `${feverPercent}%` }}
+          />
+        </div>
+        <span className={`text-[10px] font-mono font-bold shrink-0 ${isFeverOverdrive ? "text-amber-400 animate-pulse" : "text-slate-300"}`}>
+          {isFeverOverdrive ? "🔥 OVERDRIVE 3X!" : `FEVER ${Math.round(feverPercent)}%`}
+        </span>
       </div>
 
       {/* Active Power-Ups Badges Pill Bar */}
@@ -684,6 +769,21 @@ export const GameContainer: React.FC = () => {
           </div>
         )}
 
+        {/* Story Episode Victory Card */}
+        {victoryData && (
+          <EpisodeVictoryCard
+            episode={victoryData.episode}
+            score={victoryData.score}
+            streak={victoryData.streak}
+            stars={victoryData.stars}
+            onReplay={() => {
+              setVictoryData(null);
+              setResetSignal((prev) => prev + 1);
+            }}
+            onNextEpisode={handleNextEpisode}
+          />
+        )}
+
         {/* Playable Canvas */}
         <PhaserCanvasDynamic
           onScoreUpdate={handleScoreUpdate}
@@ -694,6 +794,14 @@ export const GameContainer: React.FC = () => {
           onPowerUpExpired={handlePowerUpExpired}
           onGameStateChange={handleGameStateChange}
           onRivalDethroned={handleRivalDethroned}
+          onFeverMeterUpdate={(percent, isOverdrive) => {
+            setFeverPercent(percent);
+            setIsFeverOverdrive(isOverdrive);
+          }}
+          onDashCooldownUpdate={(ready) => setDashReady(ready)}
+          onEpisodeComplete={handleEpisodeComplete}
+          dashSignal={dashSignal}
+          episodeId={currentEpisodeId}
           rival={rival || undefined}
           holderTierPerks={{
             extraLives: holderPerks.extraLives,
@@ -714,6 +822,8 @@ export const GameContainer: React.FC = () => {
       {/* Mobile Virtual Waddle Paddles */}
       <MobileWaddlePaddles
         onWaddle={(dir) => setWaddleSignal({ direction: dir, timestamp: Date.now() })}
+        onDash={() => setDashSignal((prev) => prev + 1)}
+        dashReady={dashReady}
         disabled={!user || isGameOver || lives <= 0}
       />
 
@@ -723,7 +833,7 @@ export const GameContainer: React.FC = () => {
           <div className="flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-solana-green" />
             <span>
-              <strong>Controls:</strong> Drag Nomster left/right or use Arrow Keys. Fling candies into his mouth!
+              <strong>Controls:</strong> Arrow Keys / A &amp; D to move, <strong>Space / Shift</strong> to Super Dash, <strong>Up / W</strong> to Air Juggle!
             </span>
           </div>
           <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
@@ -751,6 +861,19 @@ export const GameContainer: React.FC = () => {
         isOpen={isHolderModalOpen}
         onClose={() => setIsHolderModalOpen(false)}
         onTierUpdated={(perks) => setHolderPerks(perks)}
+      />
+
+      {/* Episode Selection & Campaign Modal */}
+      <EpisodeSelectModal
+        isOpen={isEpisodeModalOpen}
+        onClose={() => setIsEpisodeModalOpen(false)}
+        onSelectEpisode={(epId) => {
+          setCurrentEpisodeId(epId);
+          setVictoryData(null);
+          setResetSignal((prev) => prev + 1);
+        }}
+        currentEpisodeId={currentEpisodeId}
+        userId={user?.id}
       />
 
       {/* Live Whale Alert Toasts & In-Game Golden Frenzy Trigger */}
