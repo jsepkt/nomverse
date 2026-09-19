@@ -121,6 +121,24 @@ export const GameContainer: React.FC = () => {
   const [dashSignal, setDashSignal] = useState<number>(0);
   const [nextHeartCountdown, setNextHeartCountdown] = useState<number>(120);
 
+  // Toddler Assist / Kid Mode (Age 3-5)
+  const [toddlerMode, setToddlerMode] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("nomverse_toddler_mode") === "true";
+    }
+    return false;
+  });
+
+  const handleToggleToddlerMode = () => {
+    setToddlerMode((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("nomverse_toddler_mode", String(next));
+      }
+      return next;
+    });
+  };
+
   const handleEpisodeComplete = useCallback((epId: string, finalScore: number, stars: number) => {
     const epConfig = EPISODES.find((e) => e.id === epId);
     if (epConfig) {
@@ -633,6 +651,30 @@ export const GameContainer: React.FC = () => {
             <span className="hidden sm:inline font-bold">Closet</span>
           </button>
 
+          {/* Toddler / Kid Mode (Age 3-5) Toggle */}
+          <button
+            onClick={handleToggleToddlerMode}
+            aria-label={toddlerMode ? "Disable Kid Mode" : "Enable Kid Mode (Age 3-5)"}
+            title={
+              toddlerMode
+                ? "Kid Mode Active: Floaty Candies, Auto-Waddle & Magic Vacuum ON"
+                : "Kid Mode (Age 3-5): Floaty Candies, Auto-Waddle & Magic Vacuum for Toddlers"
+            }
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 cursor-pointer ${
+              toddlerMode
+                ? "bg-amber-500/25 border-amber-400 text-amber-300 font-bold shadow-[0_0_12px_rgba(245,158,11,0.45)]"
+                : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <span className="text-sm leading-none">🧸</span>
+            <span className="hidden sm:inline font-bold">
+              {toddlerMode ? "Kid Mode: ON" : "Kid Mode"}
+            </span>
+            <span className="sm:hidden font-bold">
+              {toddlerMode ? "Kid: ON" : "Kid"}
+            </span>
+          </button>
+
           {/* Sound Toggle */}
           <button
             onClick={handleToggleMute}
@@ -838,10 +880,29 @@ export const GameContainer: React.FC = () => {
           startSignal={startSignal}
           initialLives={lives + holderPerks.extraLives}
           equippedSkin={equippedSkin}
+          toddlerMode={toddlerMode}
           waddleSignal={waddleSignal}
           isFullWindow={isFullWindow}
         />
       </div>
+
+      {/* Toddler / Kid Mode (Age 3-5) Active Banner */}
+      {toddlerMode && (
+        <div className="w-full mt-2.5 px-3.5 py-2 bg-gradient-to-r from-amber-500/15 via-pink-500/15 to-amber-500/15 border border-amber-500/40 rounded-xl flex items-center justify-between text-xs font-mono text-amber-300 animate-in fade-in shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🧸</span>
+            <span>
+              <strong>Kid Mode Active (Age 3-5):</strong> Candies float gently like balloons, Nomster auto-waddles to catch, and tapping anywhere eats the candy!
+            </span>
+          </div>
+          <button
+            onClick={handleToggleToddlerMode}
+            className="text-[10px] text-amber-400 hover:text-white underline ml-2 shrink-0 cursor-pointer font-bold"
+          >
+            Switch to Normal
+          </button>
+        </div>
+      )}
 
       {/* Mobile Virtual Waddle Paddles */}
       <MobileWaddlePaddles

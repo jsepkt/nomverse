@@ -34,6 +34,7 @@ export class MainScene extends Phaser.Scene {
   private currentStageId: string = "meadow";
 
   // 3+ Kid Accessibility, Petting, & Dynamic Life Drops
+  public toddlerMode: boolean = false;
   private tongueSprite?: Phaser.GameObjects.Sprite;
   private landingGuideGraphics?: Phaser.GameObjects.Graphics;
   private wingedLifeCandy?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -166,10 +167,25 @@ export class MainScene extends Phaser.Scene {
     return Boolean(this.nomster);
   }
 
+  public setToddlerMode(enabled: boolean): void {
+    this.toddlerMode = enabled;
+    if (this.mouthCollider) {
+      const mouthRadius = this.toddlerMode ? 80 : 48;
+      this.mouthCollider.setRadius(mouthRadius);
+      if (this.mouthCollider.body) {
+        (this.mouthCollider.body as Phaser.Physics.Arcade.Body).setCircle(mouthRadius);
+      }
+    }
+    if (this.candy && this.candy.active) {
+      this.candy.setGravityY(this.activePowerUps.slowmo ? 120 : this.getStageGravity());
+    }
+  }
+
   public init(data: {
     callbacks?: SceneCallbacks;
     initialLives?: number;
     initialSkin?: SkinId;
+    initialToddlerMode?: boolean;
     rival?: { score: number; challenger: string };
     episodeId?: string | null;
     holderTierPerks?: {
@@ -179,6 +195,9 @@ export class MainScene extends Phaser.Scene {
       hasCrown: boolean;
     };
   }): void {
+    if (data && typeof data.initialToddlerMode === "boolean") {
+      this.toddlerMode = data.initialToddlerMode;
+    }
     if (data && data.callbacks) {
       this.callbacks = data.callbacks;
     }
@@ -304,9 +323,13 @@ export class MainScene extends Phaser.Scene {
     this.tongueSprite.setDepth(9);
     this.tongueSprite.setVisible(false);
 
-    // Nomster Mouth Trigger Area
-    this.mouthCollider = this.add.circle(width / 2, nomsterY - 34, 24, 0x000000, 0);
+    // Nomster Mouth Trigger Area (Generous catch zone: 48px standard, 80px in Toddler Mode)
+    const mouthRadius = this.toddlerMode ? 80 : 48;
+    this.mouthCollider = this.add.circle(width / 2, nomsterY - 34, mouthRadius, 0x000000, 0);
     this.physics.add.existing(this.mouthCollider, true);
+    if (this.mouthCollider.body) {
+      (this.mouthCollider.body as Phaser.Physics.Arcade.Body).setCircle(mouthRadius);
+    }
 
     // Nomster Anticipation Mouth Glow
     this.mouthGlow = this.add.circle(width / 2, nomsterY - 34, 18, 0xf43f5e, 0.65);
@@ -453,6 +476,22 @@ export class MainScene extends Phaser.Scene {
             -this.maxNomsterSpeed,
             this.maxNomsterSpeed
           );
+        } else if (
+          this.toddlerMode &&
+          !this.isMovingNomster &&
+          this.candy &&
+          this.candy.active &&
+          !this.isEating &&
+          this.candy.y > 60
+        ) {
+          // Toddler Auto-Waddle Assist: Nomster happily scampers under candy to help young kids
+          const diff = this.candy.x - this.nomster.x;
+          if (Math.abs(diff) > 8) {
+            const assistSpeed = 240;
+            this.nomsterVelocityX = Math.sign(diff) * assistSpeed;
+          } else {
+            this.nomsterVelocityX = 0;
+          }
         } else {
           // Friction damping
           if (this.nomsterVelocityX > 0) {
@@ -769,9 +808,12 @@ export class MainScene extends Phaser.Scene {
       });
     }
 
-    // Solana Magnet or NOM-RAGE Fever Overdrive: Tractor beam pull towards Nomster's mouth
+    // Solana Magnet, NOM-RAGE Fever Overdrive, Toddler Mode, or Natural Catch Vacuum
+    const isFullMagnet = this.activePowerUps.magnet || this.isFeverOverdrive;
+    const isToddlerVacuum = this.toddlerMode;
+    const suctionRange = isFullMagnet ? 420 : isToddlerVacuum ? 260 : 100;
+
     if (
-      (this.activePowerUps.magnet || this.isFeverOverdrive) &&
       this.candy &&
       !this.isEating &&
       this.lives > 0 &&
@@ -781,31 +823,35 @@ export class MainScene extends Phaser.Scene {
       const dy = this.mouthCollider.y - this.candy.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist > 15 && dist < 420) {
-        const pullFactor = 280;
+      if (dist > 12 && dist < suctionRange && this.candy.y < this.mouthCollider.y + 20) {
+        const pullFactor = isFullMagnet ? 290 : isToddlerVacuum ? 320 : 190;
         const currentVx = this.candy.body?.velocity.x || 0;
         const currentVy = this.candy.body?.velocity.y || 0;
         const targetVx = (dx / dist) * pullFactor;
-        const targetVy = Math.max((dy / dist) * pullFactor, 120);
+        const targetVy = Math.max((dy / dist) * pullFactor, isToddlerVacuum ? 80 : 110);
 
+        const lerpFactor = isToddlerVacuum ? 0.22 : 0.14;
         this.candy.setVelocity(
-          currentVx * 0.88 + targetVx * 0.12,
-          currentVy * 0.88 + targetVy * 0.12
+          currentVx * (1 - lerpFactor) + targetVx * lerpFactor,
+          currentVy * (1 - lerpFactor) + targetVy * lerpFactor
         );
 
-        // Gentle magnet spark trail
-        if (Math.random() < 0.25) {
+        // Gentle spark trail
+        if (Math.random() < (isToddlerVacuum ? 0.35 : 0.2)) {
+          const sparkColor = isToddlerVacuum
+            ? Phaser.Utils.Array.GetRandom([0x14f195, 0xf59e0b, 0xf472b6, 0x38bdf8])
+            : 0x9945ff;
           const spark = this.add.circle(
             this.candy.x + Phaser.Math.Between(-8, 8),
             this.candy.y + Phaser.Math.Between(-8, 8),
-            2,
-            0x9945ff,
-            0.8
+            isToddlerVacuum ? 3 : 2,
+            sparkColor,
+            0.85
           );
           this.tweens.add({
             targets: spark,
             alpha: 0,
-            y: spark.y + 15,
+            y: spark.y + (isToddlerVacuum ? -16 : 15),
             duration: 250,
             onComplete: () => spark.destroy(),
           });
@@ -1781,20 +1827,27 @@ export class MainScene extends Phaser.Scene {
 
       // Tap-to-Feed (Age 3+ Kids & Toddlers):
       // Quick tap on or near candy immediately swooshes candy right into Nomster's mouth!
-      if (
-        tapDuration < 320 &&
-        tapDistance < 22 &&
+      const isKidModeTap =
+        this.toddlerMode &&
         this.candy &&
         this.candy.active &&
         !this.isEating &&
-        this.playState === "playing"
-      ) {
-        const distToCandy = Phaser.Math.Distance.Between(pointer.x, pointer.y, this.candy.x, this.candy.y);
-        if (distToCandy < 85) {
-          this.isDraggingCandy = false;
-          this.performTapToFeed();
-          return;
-        }
+        this.playState === "playing" &&
+        tapDuration < 850;
+
+      const isNormalModeTap =
+        tapDuration < 600 &&
+        tapDistance < 65 &&
+        this.candy &&
+        this.candy.active &&
+        !this.isEating &&
+        this.playState === "playing" &&
+        Phaser.Math.Distance.Between(pointer.x, pointer.y, this.candy.x, this.candy.y) < 180;
+
+      if (isKidModeTap || isNormalModeTap) {
+        this.isDraggingCandy = false;
+        this.performTapToFeed();
+        return;
       }
 
       if (this.isDraggingCandy && this.candy && this.candy.active) {
@@ -2327,10 +2380,11 @@ export class MainScene extends Phaser.Scene {
 
   // Returns current physics gravity based on dynamic stage
   private getStageGravity(): number {
-    if (this.currentStageId === "moon") return 220;
-    if (this.currentStageId === "matrix") return 540;
-    if (this.currentStageId === "hyperdrive") return 480;
-    return 460;
+    if (this.toddlerMode) return 170;
+    if (this.currentStageId === "moon") return 190;
+    if (this.currentStageId === "matrix") return 360;
+    if (this.currentStageId === "hyperdrive") return 340;
+    return 260;
   }
 
   // Dynamic stage shifting engine (Updates background colors, grid, and gravity)
@@ -3291,6 +3345,30 @@ export class MainScene extends Phaser.Scene {
     // If candy was just bounced upward by a trampoline or saved, ignore floor sensor
     if (this.candy && this.candy.body && this.candy.body.velocity.y < -50) return;
 
+    if (this.toddlerMode) {
+      // In Toddler Mode, missed candies never cost a life! Automatic marshmallow bounce saves it!
+      sounds.playBoing();
+      const vx = Phaser.Math.Between(-140, 140);
+      this.candy.setVelocity(vx, -460);
+      const saveText = this.add.text(this.candy.x, this.candy.y - 25, "💖 OOPSIE! SAVED! 💖", {
+        fontFamily: "monospace",
+        fontSize: "15px",
+        fontStyle: "bold",
+        color: "#F472B6",
+        stroke: "#000000",
+        strokeThickness: 3,
+      });
+      saveText.setOrigin(0.5);
+      this.tweens.add({
+        targets: saveText,
+        y: saveText.y - 45,
+        alpha: 0,
+        duration: 850,
+        onComplete: () => saveText.destroy(),
+      });
+      return;
+    }
+
     this.isEating = true;
     this.wakeNomster();
 
@@ -3411,6 +3489,31 @@ export class MainScene extends Phaser.Scene {
   // Hit FUD Glitch Hazard with Shield Absorption
   private handleHitFUD(): void {
     if (this.isEating || this.lives <= 0) return;
+
+    if (this.toddlerMode) {
+      // In Toddler Mode, FUD is harmless and acts as a cheerful bouncy star bumper!
+      sounds.playBoing();
+      const vy = Phaser.Math.Between(-420, -320);
+      const vx = Phaser.Math.Between(-150, 150);
+      this.candy.setVelocity(vx, vy);
+      const boingText = this.add.text(this.fudHazard.x, this.fudHazard.y - 20, "⭐ BOING! ⭐", {
+        fontFamily: "monospace",
+        fontSize: "14px",
+        color: "#14F195",
+        stroke: "#000000",
+        strokeThickness: 3,
+      });
+      boingText.setOrigin(0.5);
+      this.tweens.add({
+        targets: boingText,
+        y: boingText.y - 30,
+        alpha: 0,
+        duration: 600,
+        onComplete: () => boingText.destroy(),
+      });
+      return;
+    }
+
     this.isEating = true;
     this.wakeNomster();
 

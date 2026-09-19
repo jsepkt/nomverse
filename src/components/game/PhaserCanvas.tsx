@@ -34,6 +34,7 @@ interface PhaserCanvasProps {
   episodeId?: string | null;
   initialLives?: number;
   equippedSkin?: SkinId;
+  toddlerMode?: boolean;
   waddleSignal?: { direction: "left" | "right"; timestamp: number } | null;
   isFullWindow?: boolean;
 }
@@ -61,6 +62,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   episodeId,
   initialLives = 5,
   equippedSkin = "default",
+  toddlerMode = false,
   waddleSignal,
   isFullWindow = false,
 }) => {
@@ -153,6 +155,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
         game.scene.add("MainScene", scene, true, {
           initialLives,
           initialSkin: equippedSkin,
+          initialToddlerMode: toddlerMode,
           rival,
           holderTierPerks,
           episodeId,
@@ -294,6 +297,13 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
     }
   }, [waddleSignal]);
 
+  // Handle live toddler mode changes
+  useEffect(() => {
+    if (sceneRef.current) {
+      sceneRef.current.setToddlerMode(Boolean(toddlerMode));
+    }
+  }, [toddlerMode]);
+
   // Refresh Phaser canvas scale when entering/exiting full-window mode
   useEffect(() => {
     if (gameRef.current) {
@@ -317,7 +327,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#10b981]" />
           <span className="text-[9px] sm:text-[10px] font-mono font-black tracking-widest text-emerald-400/90 uppercase">
-            NOM-O-MATIC 3000
+            {toddlerMode ? "🧸 NOM-O-MATIC 3000 • KID ASSIST ON" : "NOM-O-MATIC 3000"}
           </span>
         </div>
         <div className="flex items-center gap-2 text-[8px] sm:text-[9px] font-mono text-slate-400/80">
