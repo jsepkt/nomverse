@@ -5,7 +5,7 @@ import { GithubIcon } from "./icons";
 
 export const Footer: React.FC = () => {
   return (
-    <footer id="license" className="w-full border-t border-slate-800 bg-[#05070B] text-slate-400 py-12 px-4 sm:px-6 lg:px-8">
+    <footer id="license" className="w-full border-t border-slate-800 bg-[#05070B] text-slate-400 pt-12 pb-24 lg:pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
         {/* Brand Icon */}
         <div className="flex items-center gap-2 mb-4">

@@ -94,7 +94,7 @@ export const BountyTab: React.FC = () => {
       </div>
 
       {/* Category Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
         {[
           { id: "all", label: "All Quests" },
           { id: "code", label: "💻 Code & Blinks" },
@@ -104,10 +104,10 @@ export const BountyTab: React.FC = () => {
           <button
             key={cat.id}
             onClick={() => setSelectedCat(cat.id)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-mono transition-all shrink-0 border ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 border hover:scale-105 active:scale-95 ${
               selectedCat === cat.id
-                ? "bg-amber-500/20 text-amber-300 border-amber-500/50 font-bold"
-                : "bg-surface text-slate-400 border-slate-800 hover:text-white"
+                ? "bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
+                : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
             }`}
           >
             {cat.label}

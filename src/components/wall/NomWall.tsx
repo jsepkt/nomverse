@@ -321,42 +321,47 @@ export const NomWall: React.FC = () => {
         </div>
 
         {/* Main Section Navigation Switcher */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <button
-            onClick={() => setActiveMainTab("wall")}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all border ${
-              activeMainTab === "wall"
-                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-[0_0_20px_rgba(34,197,94,0.2)]"
-                : "bg-surface text-slate-400 border-slate-800 hover:text-white"
-            }`}
-          >
-            <MessageSquare className="w-4 h-4" />
-            <span>Community Feed &amp; Discussions</span>
-          </button>
+        <div className="flex justify-center mb-8 px-2">
+          <div className="p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl flex items-center gap-1.5 max-w-full overflow-x-auto no-scrollbar shadow-xl">
+            <button
+              onClick={() => setActiveMainTab("wall")}
+              className={`inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+                activeMainTab === "wall"
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-[0_0_20px_rgba(34,197,94,0.25)]"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+              }`}
+            >
+              <MessageSquare className="w-4 h-4 text-emerald-400" />
+              <span className="hidden sm:inline">Community Feed &amp; Discussions</span>
+              <span className="sm:hidden">Feed</span>
+            </button>
 
-          <button
-            onClick={() => setActiveMainTab("leaderboard")}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all border ${
-              activeMainTab === "leaderboard"
-                ? "bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-                : "bg-surface text-slate-400 border-slate-800 hover:text-white"
-            }`}
-          >
-            <Trophy className="w-4 h-4 text-amber-400" />
-            <span>🏆 Hall of Fame</span>
-          </button>
+            <button
+              onClick={() => setActiveMainTab("leaderboard")}
+              className={`inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+                activeMainTab === "leaderboard"
+                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.25)]"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+              }`}
+            >
+              <Trophy className="w-4 h-4 text-amber-400" />
+              <span className="hidden sm:inline">🏆 Hall of Fame</span>
+              <span className="sm:hidden">🏆 Hall of Fame</span>
+            </button>
 
-          <button
-            onClick={() => setActiveMainTab("bounties")}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all border ${
-              activeMainTab === "bounties"
-                ? "bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.2)]"
-                : "bg-surface text-slate-400 border-slate-800 hover:text-white"
-            }`}
-          >
-            <Award className="w-4 h-4 text-purple-400" />
-            <span>📜 Bounties &amp; Quests</span>
-          </button>
+            <button
+              onClick={() => setActiveMainTab("bounties")}
+              className={`inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+                activeMainTab === "bounties"
+                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.25)]"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+              }`}
+            >
+              <Award className="w-4 h-4 text-purple-400" />
+              <span className="hidden sm:inline">📜 Bounties &amp; Quests</span>
+              <span className="sm:hidden">📜 Quests</span>
+            </button>
+          </div>
         </div>
 
         {activeMainTab === "leaderboard" ? (
@@ -369,72 +374,76 @@ export const NomWall: React.FC = () => {
             <PostComposer onPostCreated={handlePostCreated} />
 
         {/* Filter, Sort & Search Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800/80">
+          {/* Category Filter Pills (Horizontal Scroll Strip) */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 w-full md:w-auto shrink-0 scroll-smooth">
             <button
               onClick={() => setSelectedCategory("all")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 ${
                 selectedCategory === "all"
-                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                  : "bg-surface text-slate-400 border-slate-800 hover:text-white"
+                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-[0_0_12px_rgba(34,197,94,0.25)]"
+                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
               All Topics ({posts.length})
             </button>
             <button
               onClick={() => setSelectedCategory("ideas")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 flex items-center gap-1 ${
                 selectedCategory === "ideas"
-                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                  : "bg-surface text-slate-400 border-slate-800 hover:text-white"
+                  ? "bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
+                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
-              💡 Ideas
+              <span>💡</span>
+              <span>Ideas</span>
             </button>
             <button
               onClick={() => setSelectedCategory("lore")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 flex items-center gap-1 ${
                 selectedCategory === "lore"
-                  ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
-                  : "bg-surface text-slate-400 border-slate-800 hover:text-white"
+                  ? "bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
+                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
-              📖 Lore
+              <span>📖</span>
+              <span>Lore</span>
             </button>
             <button
               onClick={() => setSelectedCategory("game")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 flex items-center gap-1 ${
                 selectedCategory === "game"
-                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                  : "bg-surface text-slate-400 border-slate-800 hover:text-white"
+                  ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-[0_0_12px_rgba(6,182,212,0.25)]"
+                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
-              🎮 Game
+              <span>🎮</span>
+              <span>Game</span>
             </button>
             <button
               onClick={() => setSelectedCategory("tokenomics")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border shrink-0 hover:scale-105 active:scale-95 flex items-center gap-1 ${
                 selectedCategory === "tokenomics"
-                  ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
-                  : "bg-surface text-slate-400 border-slate-800 hover:text-white"
+                  ? "bg-rose-500/20 text-rose-300 border-rose-500/50 shadow-[0_0_12px_rgba(244,63,94,0.25)]"
+                  : "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
               }`}
             >
-              🔥 pump.fun
+              <span>🔥</span>
+              <span>pump.fun</span>
             </button>
           </div>
 
           {/* Right Toolbar: Search & Sort */}
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
             {/* Search Input */}
-            <div className="relative flex-1 sm:w-44">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <div className="relative flex-1 md:w-48">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search wall..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-solana-green/40"
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-solana-green/50 transition-all"
               />
             </div>
 
@@ -442,7 +451,7 @@ export const NomWall: React.FC = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as "newest" | "discussed" | "likes")}
-              className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-solana-green/40"
+              className="px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-solana-green/50 transition-all cursor-pointer"
             >
               <option value="newest">Newest</option>
               <option value="discussed">Most Replies</option>
@@ -452,7 +461,7 @@ export const NomWall: React.FC = () => {
             {/* Refresh Button */}
             <button
               onClick={handleManualRefresh}
-              className={`p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors ${
+              className={`p-2 rounded-xl bg-slate-900/90 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all hover:scale-105 active:scale-95 ${
                 isRefreshing ? "animate-spin text-emerald-400" : ""
               }`}
               title="Refresh Wall"

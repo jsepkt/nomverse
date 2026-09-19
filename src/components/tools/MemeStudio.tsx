@@ -397,21 +397,21 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
     <div className="w-full bg-surface border border-slate-800/80 rounded-2xl p-4 sm:p-6 shadow-2xl">
       <div className="flex flex-col md:flex-row gap-6 items-center">
         {/* Left: Interactive Canvas Preview */}
-        <div className="flex flex-col items-center">
-          <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-[0_0_35px_rgba(20,241,149,0.15)] bg-slate-950">
+        <div className="flex flex-col items-center w-full md:w-auto">
+          <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-[0_0_35px_rgba(20,241,149,0.15)] bg-slate-950 w-full max-w-[380px] aspect-square flex items-center justify-center">
             <canvas
               ref={canvasRef}
               width={480}
               height={480}
-              className="max-w-full w-[340px] sm:w-[400px] h-[340px] sm:h-[400px] object-contain block"
+              className="w-full h-full object-contain block"
             />
           </div>
 
           {/* Action Buttons below preview */}
-          <div className="flex items-center gap-3 mt-4 w-full justify-center">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 mt-4 w-full max-w-[380px] justify-center">
             <button
               onClick={handleDownload}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition-all shadow-md active:scale-95"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition-all shadow-md hover:scale-105 active:scale-95"
             >
               <Download className="w-4 h-4 text-emerald-400" />
               <span>Download PNG</span>
@@ -420,10 +420,10 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
             <button
               onClick={handlePostToWall}
               disabled={isPosting}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-emerald-500 to-solana-green text-slate-950 hover:opacity-90 transition-all shadow-lg active:scale-95 disabled:opacity-50"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-emerald-500 to-solana-green text-slate-950 hover:opacity-90 transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50"
             >
               <Share2 className="w-4 h-4" />
-              <span>{isPosting ? "Posting..." : "Share to NomWall"}</span>
+              <span>{isPosting ? "Posting..." : "Share NomWall"}</span>
             </button>
           </div>
 

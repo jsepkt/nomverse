@@ -18,30 +18,34 @@ export const LeaderboardTab: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Tab Switcher: Top Scores vs Top Lifesavers */}
-      <div className="flex items-center justify-center gap-3">
-        <button
-          onClick={() => setView("scores")}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border ${
-            view === "scores"
-              ? "bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-              : "bg-surface text-slate-400 border-slate-800 hover:text-white"
-          }`}
-        >
-          <Trophy className="w-4 h-4 text-amber-400" />
-          <span>Top Devourers (High Score)</span>
-        </button>
+      <div className="flex justify-center px-2">
+        <div className="p-1 rounded-2xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl inline-flex items-center gap-1.5 shadow-lg">
+          <button
+            onClick={() => setView("scores")}
+            className={`inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              view === "scores"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.25)]"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+            }`}
+          >
+            <Trophy className="w-4 h-4 text-amber-400 shrink-0" />
+            <span className="hidden sm:inline">Top Devourers (High Score)</span>
+            <span className="sm:hidden">High Scores</span>
+          </button>
 
-        <button
-          onClick={() => setView("lifesavers")}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border ${
-            view === "lifesavers"
-              ? "bg-rose-500/20 text-rose-300 border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
-              : "bg-surface text-slate-400 border-slate-800 hover:text-white"
-          }`}
-        >
-          <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-          <span>Nomster Guardians (Lifesavers)</span>
-        </button>
+          <button
+            onClick={() => setView("lifesavers")}
+            className={`inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              view === "lifesavers"
+                ? "bg-rose-500/20 text-rose-300 border border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.25)]"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+            }`}
+          >
+            <Heart className="w-4 h-4 text-rose-500 fill-rose-500 shrink-0" />
+            <span className="hidden sm:inline">Nomster Guardians (Lifesavers)</span>
+            <span className="sm:hidden">Lifesavers</span>
+          </button>
+        </div>
       </div>
 
       {/* Top 3 Podium Cards */}

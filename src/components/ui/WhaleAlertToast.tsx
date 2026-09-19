@@ -93,7 +93,7 @@ export const WhaleAlertToast: React.FC<WhaleAlertToastProps> = ({ onTriggerFrenz
     return (
       <aside
         aria-label="Live Token Stats Trigger"
-        className="fixed bottom-4 left-4 z-40 pointer-events-auto select-none"
+        className="fixed bottom-20 lg:bottom-4 left-3 sm:left-4 z-40 pointer-events-auto select-none"
       >
         <button
           onClick={() => setIsVisible(true)}
@@ -112,7 +112,7 @@ export const WhaleAlertToast: React.FC<WhaleAlertToastProps> = ({ onTriggerFrenz
   return (
     <aside
       aria-label="Live On-Chain pump.fun Stats"
-      className="fixed bottom-4 left-4 z-40 max-w-[340px] w-full animate-in slide-in-from-bottom-4 duration-300 pointer-events-auto"
+      className="fixed bottom-20 lg:bottom-4 left-3 sm:left-4 z-40 max-w-[calc(100vw-24px)] sm:max-w-[340px] w-full animate-in slide-in-from-bottom-4 duration-300 pointer-events-auto"
     >
       <div className="relative rounded-2xl border border-emerald-500/40 bg-slate-950/95 p-3.5 shadow-[0_0_30px_rgba(16,185,129,0.25)] backdrop-blur-md">
         {/* Dismiss Button */}

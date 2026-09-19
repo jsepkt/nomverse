@@ -176,18 +176,20 @@ export const ChiptuneStudio: React.FC = () => {
 
       {/* Sequencer Matrix */}
       <div className="space-y-3 mb-6">
-        {/* Step Indicator Lights */}
-        <div className="flex items-center gap-1.5 sm:gap-2 pl-24 sm:pl-32 pr-1">
-          {[0, 1, 2, 3, 4, 5, 6, 7].map((s) => (
-            <div
-              key={s}
-              className={`flex-1 h-1.5 rounded-full transition-all ${
-                isPlaying && currentStep === s
-                  ? "bg-solana-green shadow-[0_0_10px_#14f195]"
-                  : "bg-slate-800"
-              }`}
-            />
-          ))}
+        {/* Step Indicator Lights (Aligned pixel-perfect with step pads) */}
+        <div className="flex items-center gap-2 sm:gap-3 pl-24 sm:pl-28 pr-1">
+          <div className="flex-1 grid grid-cols-8 gap-1.5 sm:gap-2">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((s) => (
+              <div
+                key={s}
+                className={`h-1.5 rounded-full transition-all ${
+                  isPlaying && currentStep === s
+                    ? "bg-solana-green shadow-[0_0_10px_#14f195]"
+                    : "bg-slate-800"
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* 4 Instrument Tracks */}
@@ -242,7 +244,7 @@ export const ChiptuneStudio: React.FC = () => {
             <button
               key={pName}
               onClick={() => setGrid(PRESETS[pName])}
-              className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors"
+              className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all hover:scale-105 active:scale-95"
             >
               {pName}
             </button>

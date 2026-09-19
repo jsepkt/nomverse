@@ -1,9 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Rocket, Sparkles, BookOpen, Wrench, ShieldCheck, Flame, MessageSquare, LogIn, LogOut, Wallet, Zap } from "lucide-react";
+import {
+  Rocket,
+  Sparkles,
+  Gamepad2,
+  Palette,
+  BookOpen,
+  Code2,
+  ShieldCheck,
+  Flame,
+  MessageSquare,
+  LogOut,
+  Wallet,
+  Zap,
+  Menu,
+  X,
+  ChevronRight,
+  ExternalLink,
+} from "lucide-react";
 import { GithubIcon } from "./icons";
 import { useAuth } from "@/context/AuthContext";
 import { UserBadge } from "../auth/UserBadge";
@@ -12,170 +29,428 @@ import { TokenTickerBar } from "./TokenTickerBar";
 import { TOKEN_CONFIG } from "@/config/token";
 import { QuickBuyModal } from "../wallet/QuickBuyModal";
 
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  glowColor: string;
+  description: string;
+  badge?: string;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  {
+    label: "Play",
+    href: "#arcade",
+    icon: Gamepad2,
+    color: "text-emerald-400",
+    glowColor: "group-hover:text-emerald-300",
+    description: "Browser arcade mini-game, 5 lives & raid bosses",
+    badge: "5 Lives",
+  },
+  {
+    label: "Create",
+    href: "#create",
+    icon: Palette,
+    color: "text-amber-400",
+    glowColor: "group-hover:text-amber-300",
+    description: "In-browser meme studio, vector PFPs & 8-bit beats",
+  },
+  {
+    label: "Lore",
+    href: "#lore",
+    icon: BookOpen,
+    color: "text-purple-400",
+    glowColor: "group-hover:text-purple-300",
+    description: "Read community stories & submit canonical PRs",
+  },
+  {
+    label: "Community",
+    href: "#wall",
+    icon: MessageSquare,
+    color: "text-teal-400",
+    glowColor: "group-hover:text-teal-300",
+    description: "NomWall quests, high score flex & discussions",
+    badge: "Quests",
+  },
+  {
+    label: "Build",
+    href: "#toolkit",
+    icon: Code2,
+    color: "text-yellow-400",
+    glowColor: "group-hover:text-yellow-300",
+    description: "Open source repository, Phaser scenes & modding",
+  },
+  {
+    label: "$NOM",
+    href: "#tokenomics",
+    icon: Flame,
+    color: "text-rose-400",
+    glowColor: "group-hover:text-rose-300",
+    description: "Fair launch on pump.fun & Raydium migration",
+    badge: "Fair Launch",
+  },
+];
+
 export const Navbar: React.FC = () => {
   const { user, openAuthModal, logout } = useAuth();
   const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
+
+  // Add subtle shadow on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleNavClick = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-background/80 backdrop-blur-xl">
-      <TokenTickerBar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo & Brand */}
-        <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="relative w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-400/40 p-1 flex items-center justify-center transition-transform group-hover:scale-110">
-              <Image
-                src="/mascot.svg"
-                alt="Nomster Icon"
-                width={32}
-                height={32}
-                className="object-contain"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-black text-lg tracking-tight text-white flex items-center gap-1.5">
-                NOM<span className="text-solana-green">VERSE</span>
-              </span>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400/80 -mt-1">
-                Fair Launch Edition
-              </span>
-            </div>
-          </Link>
+    <>
+      <header
+        className={`sticky top-0 z-50 w-full transition-all duration-200 ${
+          scrolled
+            ? "border-b border-emerald-500/20 bg-background/95 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
+            : "border-b border-slate-800/80 bg-background/80 backdrop-blur-xl"
+        }`}
+      >
+        <TokenTickerBar />
 
-          {/* CC0 Public Domain Badge */}
-          <Link
-            href="#license"
-            className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>100% CC0 Public Domain</span>
-          </Link>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
+          {/* Brand & Identity */}
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <Link
+              href="/"
+              className="flex items-center gap-2 sm:gap-2.5 group focus:outline-none"
+            >
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-emerald-500/15 border border-emerald-400/50 p-1 flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:border-emerald-400 group-hover:shadow-[0_0_20px_rgba(20,241,149,0.3)]">
+                <div className="absolute inset-0 rounded-full bg-emerald-400/20 animate-ping opacity-25 pointer-events-none" />
+                <Image
+                  src="/mascot.svg"
+                  alt="Nomster Icon"
+                  width={34}
+                  height={34}
+                  className="object-contain"
+                />
+              </div>
 
-          {/* Live Universe Devoured Ticker */}
-          <div className="hidden sm:block">
-            <GlobalCandiesTicker />
+              <div className="flex flex-col">
+                <span className="font-black text-base sm:text-lg tracking-tight text-white flex items-center gap-1 leading-tight">
+                  NOM<span className="text-solana-green">VERSE</span>
+                </span>
+                <span className="text-[9px] sm:text-[10px] font-mono tracking-widest uppercase text-emerald-400/80 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                  Fair Launch
+                </span>
+              </div>
+            </Link>
+
+            {/* CC0 Public Domain Badge (Desktop XL) */}
+            <Link
+              href="#license"
+              className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>CC0 1.0 Public Domain</span>
+            </Link>
+
+            {/* Live Global Candies Ticker */}
+            <div className="hidden 2xl:block">
+              <GlobalCandiesTicker />
+            </div>
+          </div>
+
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs xl:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/70 border border-transparent hover:border-slate-700/60 transition-all duration-150"
+                >
+                  <Icon
+                    className={`w-4 h-4 ${item.color} ${item.glowColor} transition-transform group-hover:scale-110`}
+                  />
+                  <span>{item.label}</span>
+                  {item.badge && (
+                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                      {item.badge}
+                    </span>
+                  )}
+                </a>
+              );
+            })}
+          </nav>
+
+          {/* Right Action Buttons */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Primary PLAY NOW CTA Button (Desktop & Mobile) */}
+            <a
+              href="#arcade"
+              className="relative group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.65)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            >
+              <Gamepad2 className="w-3.5 h-3.5 fill-slate-950 text-slate-950 group-hover:animate-bounce" />
+              <span>PLAY NOW</span>
+            </a>
+
+            {/* Quick Buy SOL Button (Tablet & Desktop) */}
+            <button
+              onClick={() => setIsQuickBuyOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-mono font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:border-amber-500/50 transition-all hover:scale-105"
+              title="Simulate 1-Click SOL Swap"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden md:inline">Quick Buy</span>
+            </button>
+
+            {/* User Auth Pill / Sign In */}
+            {user ? (
+              <div className="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-sm">
+                <div className="flex items-center gap-1 text-xs font-bold text-white max-w-[85px] sm:max-w-[120px]">
+                  <span className="truncate">{user.name}</span>
+                  <UserBadge provider={user.provider} showText={false} />
+                </div>
+                <button
+                  onClick={logout}
+                  className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={openAuthModal}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-all cursor-pointer"
+              >
+                <Wallet className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
+            )}
+
+            {/* GitHub Repo Link (Desktop) */}
+            <a
+              href="https://github.com/jsepkt/nomverse"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700/80 hover:border-slate-500 transition-all"
+              title="Fork on GitHub"
+            >
+              <GithubIcon className="w-3.5 h-3.5 text-slate-300" />
+              <span>GitHub</span>
+            </a>
+
+            {/* pump.fun Button (Desktop) */}
+            <a
+              href={TOKEN_CONFIG.pumpFunUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 hover:border-slate-600 transition-all"
+              title="Trade on pump.fun"
+            >
+              <Rocket className="w-3.5 h-3.5 text-emerald-400" />
+              <span>pump.fun</span>
+            </a>
+
+            {/* Mobile Hamburger Menu Toggle Button (Mobile & Tablet) */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              className="lg:hidden p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white hover:bg-slate-800 transition-all active:scale-95"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5 text-rose-400 animate-in spin-in-90 duration-150" />
+              ) : (
+                <Menu className="w-5 h-5 text-emerald-400 animate-in fade-in duration-150" />
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-5 text-xs sm:text-sm font-medium text-slate-300">
-          <a
-            href="#arcade"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-bold text-white"
-          >
-            <Sparkles className="w-4 h-4 text-emerald-400" />
-            <span>Play</span>
-          </a>
-          <a
-            href="#create"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-medium text-slate-300"
-          >
-            <Sparkles className="w-4 h-4 text-candy-gold" />
-            <span>Create</span>
-          </a>
-          <a
-            href="#lore"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-medium text-slate-300"
-          >
-            <BookOpen className="w-4 h-4 text-solana-purple" />
-            <span>Lore</span>
-          </a>
-          <a
-            href="#wall"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-semibold text-emerald-300"
-          >
-            <MessageSquare className="w-4 h-4 text-emerald-400" />
-            <span>Community</span>
-          </a>
-          <a
-            href="#toolkit"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-medium text-slate-300"
-          >
-            <Wrench className="w-4 h-4 text-candy-gold" />
-            <span>Build</span>
-          </a>
-          <a
-            href="#tokenomics"
-            className="flex items-center gap-1.5 hover:text-solana-green transition-colors font-medium text-slate-300"
-          >
-            <Flame className="w-4 h-4 text-rose-400" />
-            <span>$NOM</span>
-          </a>
-        </nav>
+        {/* Mobile Slide-Down Navigation Drawer */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden border-t border-emerald-500/20 bg-slate-950/98 backdrop-blur-2xl shadow-2xl animate-in slide-in-from-top-4 duration-200 overflow-hidden">
+            <div className="px-4 py-4 space-y-3 max-h-[calc(100vh-5rem)] overflow-y-auto">
+              {/* Mobile Quick Header Actions */}
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-800/80">
+                {!user ? (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      openAuthModal();
+                    }}
+                    className="flex-1 py-2.5 px-3 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 flex items-center justify-center gap-2"
+                  >
+                    <Wallet className="w-4 h-4 text-emerald-400" />
+                    <span>Connect Wallet / Sign In</span>
+                  </button>
+                ) : (
+                  <div className="flex-1 flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <UserBadge provider={user.provider} showText={false} />
+                      <span className="text-xs font-bold text-white truncate max-w-[150px]">
+                        {user.name}
+                      </span>
+                    </div>
+                    <button
+                      onClick={logout}
+                      className="px-2 py-1 text-xs font-mono text-rose-400 bg-rose-500/10 rounded-lg border border-rose-500/20"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
 
-        {/* Action Buttons & Auth */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Prominent Play Now Button */}
-          <a
-            href="#arcade"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.65)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5 fill-slate-950" />
-            <span>PLAY NOW</span>
-          </a>
-
-          {/* User Auth Pill / Button */}
-          {user ? (
-            <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-white">
-                <span className="truncate max-w-[90px] sm:max-w-[120px]">{user.name}</span>
-                <UserBadge provider={user.provider} showText={false} />
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsQuickBuyOpen(true);
+                  }}
+                  className="py-2.5 px-3 rounded-xl font-mono text-xs font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-1.5"
+                >
+                  <Zap className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Quick Buy</span>
+                </button>
               </div>
-              <button
-                onClick={logout}
-                className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
-                title="Sign Out"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
+
+              {/* Navigation Items List */}
+              <div className="grid grid-cols-1 gap-1.5">
+                {NAV_ITEMS.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={handleNavClick}
+                      className="flex items-center justify-between p-3 rounded-xl bg-surface/50 hover:bg-slate-800 border border-slate-800/70 hover:border-slate-700 transition-all active:scale-[0.99] group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 group-hover:border-slate-700">
+                          <Icon className={`w-4 h-4 ${item.color}`} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-white group-hover:text-emerald-300 transition-colors">
+                              {item.label}
+                            </span>
+                            {item.badge && (
+                              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                {item.badge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-slate-400 line-clamp-1">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors shrink-0" />
+                    </a>
+                  );
+                })}
+              </div>
+
+              {/* External Protocol Links in Mobile Drawer */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
+                <a
+                  href={TOKEN_CONFIG.pumpFunUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 flex items-center justify-center gap-2 text-xs font-bold text-slate-200"
+                >
+                  <Rocket className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>pump.fun</span>
+                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+
+                <a
+                  href="https://github.com/jsepkt/nomverse"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 flex items-center justify-center gap-2 text-xs font-bold text-slate-200"
+                >
+                  <GithubIcon className="w-3.5 h-3.5 text-slate-200" />
+                  <span>GitHub</span>
+                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+              </div>
+
+              {/* Mobile CC0 Assurance Badge */}
+              <div className="pt-2 text-center">
+                <Link
+                  href="#license"
+                  onClick={handleNavClick}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400/90 hover:underline"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>100% CC0 Public Domain • Zero IP Restrictions</span>
+                </Link>
+              </div>
             </div>
-          ) : (
-            <button
-              onClick={openAuthModal}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-all"
-            >
-              <Wallet className="w-3.5 h-3.5" />
-              <span>Sign In</span>
-            </button>
-          )}
+          </div>
+        )}
+      </header>
 
-          {/* GitHub Repo */}
-          <a
-            href="https://github.com/jsepkt/nomverse"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden xl:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all hover:border-slate-500"
-          >
-            <GithubIcon className="w-4 h-4" />
-            <span>GitHub</span>
-          </a>
+      {/* Floating App-Like Bottom Dock on Mobile (Thumb-Friendly Navigation) */}
+      <nav
+        aria-label="Mobile Bottom Navigation"
+        className="lg:hidden fixed bottom-3 inset-x-4 z-40 max-w-sm mx-auto rounded-2xl bg-slate-950/85 backdrop-blur-2xl border border-slate-800/90 shadow-[0_8px_30px_rgba(0,0,0,0.8)] p-1.5 flex items-center justify-around transition-all select-none"
+      >
+        <a
+          href="#arcade"
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-emerald-400 hover:bg-emerald-500/10 active:scale-90 transition-all"
+        >
+          <Gamepad2 className="w-4 h-4 mb-0.5 text-emerald-400" />
+          <span>Play</span>
+        </a>
 
-          {/* Quick Buy Modal Trigger */}
-          <button
-            onClick={() => setIsQuickBuyOpen(true)}
-            className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 transition-all hover:scale-105"
-          >
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>Quick Buy</span>
-          </button>
+        <a
+          href="#create"
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-amber-300 hover:bg-amber-500/10 active:scale-90 transition-all"
+        >
+          <Palette className="w-4 h-4 mb-0.5 text-amber-400" />
+          <span>Create</span>
+        </a>
 
-          {/* Buy on pump.fun CTA */}
-          <a
-            href={TOKEN_CONFIG.pumpFunUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 hover:border-slate-600 transition-all"
-          >
-            <Rocket className="w-3.5 h-3.5 text-emerald-400" />
-            <span>pump.fun</span>
-          </a>
-        </div>
-      </div>
+        <a
+          href="#lore"
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-purple-300 hover:bg-purple-500/10 active:scale-90 transition-all"
+        >
+          <BookOpen className="w-4 h-4 mb-0.5 text-purple-400" />
+          <span>Lore</span>
+        </a>
 
+        <a
+          href="#wall"
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-teal-300 hover:bg-teal-500/10 active:scale-90 transition-all"
+        >
+          <MessageSquare className="w-4 h-4 mb-0.5 text-teal-400" />
+          <span>Wall</span>
+        </a>
+
+        <a
+          href="#tokenomics"
+          className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-[10px] font-mono font-bold text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 active:scale-90 transition-all"
+        >
+          <Flame className="w-4 h-4 mb-0.5 text-rose-400" />
+          <span>$NOM</span>
+        </a>
+      </nav>
+
+      {/* Quick Buy SOL Modal */}
       <QuickBuyModal
         isOpen={isQuickBuyOpen}
         onClose={() => setIsQuickBuyOpen(false)}
       />
-    </header>
+    </>
   );
 };

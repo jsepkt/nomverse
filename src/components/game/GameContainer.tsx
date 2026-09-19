@@ -599,191 +599,194 @@ export const GameContainer: React.FC = () => {
       {/* World Raid Boss: Lord Mega-FUD (Normal view) */}
       {!isFullWindow && <RaidBossBanner userId={user?.id} userName={user?.name} />}
 
-      {/* Arcade Header HUD */}
-      <div className="w-full mb-3 flex items-center justify-between px-3 py-2 bg-surface/90 border border-slate-800/80 rounded-xl backdrop-blur-md shadow-lg">
-        {/* Lives (3 Hearts) & Score */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          {/* Hearts Display (5 Base Lives, Cap 10) */}
-          <div className="flex flex-col gap-0.5" title={`${lives}/10 Lives Remaining`}>
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((heartIndex) => {
-                const hasLife = lives >= heartIndex;
-                const isBonus = heartIndex > 5;
-                if (isBonus && lives <= 5 && heartIndex > 5) {
-                  return null;
-                }
-                return (
-                  <Heart
-                    key={heartIndex}
-                    className={`w-3.5 h-3.5 transition-all ${
-                      hasLife
-                        ? isBonus
-                          ? "text-pink-400 fill-pink-400 animate-bounce"
-                          : "text-rose-500 fill-rose-500 animate-pulse"
-                        : "text-slate-700 fill-slate-800"
-                    }`}
-                  />
-                );
-              })}
+      {/* Arcade Cockpit HUD */}
+      <div className="w-full mb-3 rounded-2xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl shadow-xl p-2 sm:p-3 flex flex-col gap-2">
+        {/* Tier 1: Scoreboard Console Deck */}
+        <div className="flex items-center justify-between gap-2 px-1">
+          {/* Left: Hearts & Heart Drop Countdown */}
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-0.5" title={`${lives}/10 Lives Remaining`}>
+              <div className="flex items-center gap-0.5 sm:gap-1">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((heartIndex) => {
+                  const hasLife = lives >= heartIndex;
+                  const isBonus = heartIndex > 5;
+                  if (isBonus && lives <= 5 && heartIndex > 5) {
+                    return null;
+                  }
+                  return (
+                    <Heart
+                      key={heartIndex}
+                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all ${
+                        hasLife
+                          ? isBonus
+                            ? "text-pink-400 fill-pink-400 animate-bounce"
+                            : "text-rose-500 fill-rose-500 animate-pulse"
+                          : "text-slate-800 fill-slate-800/60"
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+              {gameState === "playing" && (
+                <div className="flex items-center gap-1 text-[9px] font-mono text-pink-400/90 font-bold">
+                  <span>❤️ Drop in {Math.floor(nextHeartCountdown / 60)}:{(nextHeartCountdown % 60).toString().padStart(2, "0")}</span>
+                </div>
+              )}
             </div>
-            {gameState === "playing" && (
-              <div className="flex items-center gap-1 text-[9px] font-mono text-pink-400/90 font-bold">
-                <span>❤️ Drop in {Math.floor(nextHeartCountdown / 60)}:{(nextHeartCountdown % 60).toString().padStart(2, "0")}</span>
+          </div>
+
+          {/* Center: Candies Score & Streak */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl bg-slate-950/70 border border-slate-800">
+              <span className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-slate-400">Score:</span>
+              <span
+                className={`text-xl sm:text-2xl font-black font-mono tracking-tight transition-transform ${
+                  recentNom ? "scale-125 text-candy-gold" : "text-emerald-400"
+                }`}
+              >
+                {score}
+              </span>
+            </div>
+
+            {/* Combo Streak */}
+            {streak > 1 && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-[11px] sm:text-xs font-mono font-bold animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                <Flame className="w-3.5 h-3.5 text-amber-400" />
+                <span>x{streak}</span>
               </div>
             )}
           </div>
 
-          {/* Candies Score */}
-          <div className="flex items-center gap-1.5 border-l border-slate-800 pl-3">
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Score:</span>
-            <span
-              className={`text-2xl font-black font-mono tracking-tight transition-transform ${
-                recentNom ? "scale-125 text-candy-gold" : "text-emerald-400"
-              }`}
-            >
-              {score}
-            </span>
-          </div>
-
-          {/* Combo Streak */}
-          {streak > 1 && (
-            <div className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold animate-pulse">
-              <Flame className="w-3.5 h-3.5 text-amber-400" />
-              <span>x{streak}</span>
-            </div>
-          )}
-
-          {/* High Score */}
-          <div className="hidden md:flex items-center gap-1 text-xs font-mono text-amber-400/90 border-l border-slate-800 pl-3">
-            <Trophy className="w-3.5 h-3.5 text-amber-400" />
-            <span>Best: {highScore}</span>
+          {/* Right: Best High Score */}
+          <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] sm:text-xs font-mono text-amber-400/90">
+            <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span className="font-bold"><span className="hidden sm:inline">Best: </span>{highScore}</span>
           </div>
         </div>
 
-        {/* Action controls: Episodes, Holder Bag, Closet, Sound, Fullscreen & Reset */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Episodes Campaign Button */}
-          <button
-            onClick={() => setIsEpisodeModalOpen(true)}
-            aria-label="Story Episodes"
-            title="Play Story Episodes & Boss Battles"
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 ${
-              currentEpisodeId
-                ? "bg-amber-500/20 border-amber-500/50 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)] font-bold"
-                : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-300"
-            }`}
-          >
-            <Film className="w-3.5 h-3.5 text-amber-400" />
-            <span className="hidden sm:inline font-bold">
-              {currentEpisodeId
-                ? `EP 0${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
-                : "Episodes"}
-            </span>
-            <span className="sm:hidden font-bold">
-              {currentEpisodeId
-                ? `EP ${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
-                : "Story"}
-            </span>
-          </button>
-
-          {/* Holder Perks Bag Button */}
-          <button
-            onClick={() => setIsHolderModalOpen(true)}
-            aria-label="Proof of Bag - Holder Perks"
-            title={`Proof of Bag: ${holderPerks.label}`}
-            className="px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105"
-            style={{
-              backgroundColor: `${holderPerks.accentColor}18`,
-              borderColor: `${holderPerks.accentColor}50`,
-              color: holderPerks.accentColor,
-            }}
-          >
-            <Coins className="w-3.5 h-3.5" />
-            <span className="font-bold">{holderPerks.badge}</span>
-            {holderPerks.hasCrown && <Crown className="w-3 h-3 text-amber-400" />}
-          </button>
-
-          {/* CC0 Closet Button */}
-          <button
-            onClick={() => setIsSkinModalOpen(true)}
-            aria-label="Nomster CC0 Closet"
-            title="Nomster CC0 Closet & Accessories"
-            className="p-2 rounded-lg text-xs font-mono transition-colors border bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 flex items-center gap-1.5"
-          >
-            <Shirt className="w-4 h-4 text-purple-400" />
-            <span className="hidden sm:inline font-bold">Closet</span>
-          </button>
-
-          {/* Toddler / Kid Mode (Age 3-5) Toggle */}
-          <button
-            onClick={handleToggleToddlerMode}
-            aria-label={toddlerMode ? "Disable Kid Mode" : "Enable Kid Mode (Age 3-5)"}
-            title={
-              toddlerMode
-                ? "Kid Mode Active: Floaty Candies, Auto-Waddle & Magic Vacuum ON"
-                : "Kid Mode (Age 3-5): Floaty Candies, Auto-Waddle & Magic Vacuum for Toddlers"
-            }
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 cursor-pointer ${
-              toddlerMode
-                ? "bg-amber-500/25 border-amber-400 text-amber-300 font-bold shadow-[0_0_12px_rgba(245,158,11,0.45)]"
-                : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            <span className="text-sm leading-none">🧸</span>
-            <span className="hidden sm:inline font-bold">
-              {toddlerMode ? "Kid Mode: ON" : "Kid Mode"}
-            </span>
-            <span className="sm:hidden font-bold">
-              {toddlerMode ? "Kid: ON" : "Kid"}
-            </span>
-          </button>
-
-          {/* Sound Toggle */}
-          <button
-            onClick={handleToggleMute}
-            aria-label={isMuted ? "Unmute audio" : "Mute audio"}
-            className={`p-2 rounded-lg text-xs font-mono transition-colors border ${
-              isMuted
-                ? "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
-                : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
-            }`}
-          >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          {/* Fullscreen / Full Window Toggle */}
-          {isFullWindow ? (
+        {/* Tier 2: Ergonomic Control Actions Dock */}
+        <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-slate-800/80 overflow-x-auto no-scrollbar">
+          {/* Game Modes & Customization Cluster */}
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            {/* Episodes Campaign Button */}
             <button
-              onClick={toggleFullWindow}
-              aria-label="Exit Fullscreen"
-              title="Exit Fullscreen (Esc)"
-              className="px-3 py-1.5 rounded-lg text-xs font-mono transition-colors border bg-rose-500/20 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 flex items-center gap-1.5 font-bold shadow-lg"
+              onClick={() => setIsEpisodeModalOpen(true)}
+              aria-label="Story Episodes"
+              title="Play Story Episodes & Boss Battles"
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95 ${
+                currentEpisodeId
+                  ? "bg-amber-500/20 border-amber-500/50 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)] font-bold"
+                  : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700/80 text-slate-300 hover:text-white"
+              }`}
             >
-              <Minimize2 className="w-4 h-4" />
-              <span className="hidden sm:inline">EXIT (ESC)</span>
-              <span className="sm:hidden">EXIT</span>
+              <Film className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-bold">
+                {currentEpisodeId
+                  ? `EP 0${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
+                  : "Story"}
+              </span>
             </button>
-          ) : (
-            <button
-              onClick={toggleFullWindow}
-              aria-label="Full Size Window"
-              title="Play in Full Size Window (Distraction-Free)"
-              className="p-2 rounded-lg text-xs font-mono transition-colors border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 flex items-center gap-1.5"
-            >
-              <Maximize2 className="w-4 h-4" />
-              <span className="hidden sm:inline font-bold">Fullscreen</span>
-            </button>
-          )}
 
-          {/* Reset / Restart Drop Button */}
-          <button
-            onClick={handleManualReset}
-            disabled={lives <= 0}
-            aria-label="Restart drop"
-            className="p-2 rounded-lg text-xs font-mono bg-slate-800 hover:bg-slate-700 disabled:opacity-40 border border-slate-700 text-slate-300 transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
+            {/* Holder Perks Bag Button */}
+            <button
+              onClick={() => setIsHolderModalOpen(true)}
+              aria-label="Proof of Bag - Holder Perks"
+              title={`Proof of Bag: ${holderPerks.label}`}
+              className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95"
+              style={{
+                backgroundColor: `${holderPerks.accentColor}18`,
+                borderColor: `${holderPerks.accentColor}50`,
+                color: holderPerks.accentColor,
+              }}
+            >
+              <Coins className="w-3.5 h-3.5" />
+              <span className="font-bold">{holderPerks.badge}</span>
+              {holderPerks.hasCrown && <Crown className="w-3 h-3 text-amber-400" />}
+            </button>
+
+            {/* CC0 Closet Button */}
+            <button
+              onClick={() => setIsSkinModalOpen(true)}
+              aria-label="Nomster CC0 Closet"
+              title="Nomster CC0 Closet & Accessories"
+              className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 flex items-center gap-1.5 hover:scale-105 active:scale-95"
+            >
+              <Shirt className="w-3.5 h-3.5 text-purple-400" />
+              <span className="hidden sm:inline font-bold">Closet</span>
+            </button>
+
+            {/* Toddler / Kid Mode (Age 3-5) Toggle */}
+            <button
+              onClick={handleToggleToddlerMode}
+              aria-label={toddlerMode ? "Disable Kid Mode" : "Enable Kid Mode (Age 3-5)"}
+              title={
+                toddlerMode
+                  ? "Kid Mode Active: Floaty Candies, Auto-Waddle & Magic Vacuum ON"
+                  : "Kid Mode (Age 3-5): Floaty Candies, Auto-Waddle & Magic Vacuum for Toddlers"
+              }
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95 cursor-pointer ${
+                toddlerMode
+                  ? "bg-amber-500/25 border-amber-400 text-amber-300 font-bold shadow-[0_0_12px_rgba(245,158,11,0.45)]"
+                  : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700/80 text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <span className="text-sm leading-none">🧸</span>
+              <span className="font-bold">
+                {toddlerMode ? "Kid: ON" : "Kid Mode"}
+              </span>
+            </button>
+          </div>
+
+          {/* Hardware & Display Controls Cluster */}
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            {/* Sound Toggle */}
+            <button
+              onClick={handleToggleMute}
+              aria-label={isMuted ? "Unmute audio" : "Mute audio"}
+              title={isMuted ? "Unmute Sound" : "Mute Sound"}
+              className={`p-2 rounded-xl text-xs font-mono transition-all border hover:scale-105 active:scale-95 ${
+                isMuted
+                  ? "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
+                  : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
+              }`}
+            >
+              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+            </button>
+
+            {/* Fullscreen / Full Window Toggle */}
+            {isFullWindow ? (
+              <button
+                onClick={toggleFullWindow}
+                aria-label="Exit Fullscreen"
+                title="Exit Fullscreen (Esc)"
+                className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border bg-rose-500/20 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 flex items-center gap-1 font-bold shadow-lg hover:scale-105 active:scale-95"
+              >
+                <Minimize2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">EXIT</span>
+              </button>
+            ) : (
+              <button
+                onClick={toggleFullWindow}
+                aria-label="Full Size Window"
+                title="Play in Full Size Window (Distraction-Free)"
+                className="p-2 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 flex items-center gap-1.5 hover:scale-105 active:scale-95"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline font-bold">Full</span>
+              </button>
+            )}
+
+            {/* Reset / Restart Drop Button */}
+            <button
+              onClick={handleManualReset}
+              disabled={lives <= 0}
+              aria-label="Restart drop"
+              title="Restart Drop"
+              className="p-2 rounded-xl text-xs font-mono bg-slate-800 hover:bg-slate-700 disabled:opacity-40 border border-slate-700 text-slate-300 transition-all hover:scale-105 active:scale-95"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 

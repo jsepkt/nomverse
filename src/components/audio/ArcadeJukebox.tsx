@@ -123,7 +123,7 @@ export const ArcadeJukebox: React.FC = () => {
   return (
     <aside
       aria-label="Arcade Background Jukebox"
-      className="fixed bottom-4 right-4 z-40 pointer-events-auto select-none"
+      className="fixed bottom-20 lg:bottom-4 right-3 sm:right-4 z-40 pointer-events-auto select-none"
     >
       {!isExpanded ? (
         <button
