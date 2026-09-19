@@ -29,6 +29,8 @@ import {
   getTierForBalance,
 } from "@/lib/holderTiers";
 import { sounds } from "../audio/soundEffects";
+import { nomsterVoice } from "../audio/nomsterVoice";
+import type { DeepNomTelemetryData } from "./MainScene";
 import { EpisodeSelectModal } from "./EpisodeSelectModal";
 import { EpisodeVictoryCard } from "./EpisodeBanner";
 import { EPISODES, EpisodeConfig, saveEpisodeCompletion } from "@/lib/episodes";
@@ -50,6 +52,7 @@ import {
   Film,
   Zap,
   Gamepad2,
+  Bot,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -134,6 +137,21 @@ export const GameContainer: React.FC<GameContainerProps> = ({
   const [dashSignal, setDashSignal] = useState<number>(0);
   const [nextHeartCountdown, setNextHeartCountdown] = useState<number>(120);
   const [toddlerMode, setToddlerMode] = useState<boolean>(false);
+
+  // DeepNom AI & Ballistic Autopilot State
+  const [deepNomMode, setDeepNomMode] = useState<"off" | "autopilot" | "duel">("off");
+  const [deepNomTelemetry, setDeepNomTelemetry] = useState<DeepNomTelemetryData | null>(null);
+
+  const handleCycleDeepNom = () => {
+    setDeepNomMode((prev) => {
+      const next = prev === "off" ? "autopilot" : prev === "autopilot" ? "duel" : "off";
+      if (next !== "off") {
+        sounds.playPowerUpCollect();
+        nomsterVoice.speakNomNom();
+      }
+      return next;
+    });
+  };
 
   // Toddler auto-waddle intervals and audio
   const handleToggleToddlerMode = () => {
@@ -574,6 +592,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
 
   const handleToggleMute = () => {
     const muted = sounds.toggleMute();
+    nomsterVoice.toggleMute();
     setIsMuted(muted);
   };
 
@@ -748,6 +767,34 @@ export const GameContainer: React.FC<GameContainerProps> = ({
                 {toddlerMode ? "ON" : "Kid"}
               </span>
             </button>
+
+            {/* DeepNom Autonomous AI & Duel Mode Toggle */}
+            <button
+              onClick={handleCycleDeepNom}
+              aria-label="DeepNom Neural AI Autopilot & Duel System"
+              title={
+                deepNomMode === "off"
+                  ? "DeepNom AI: OFF (Click to activate Autopilot)"
+                  : deepNomMode === "autopilot"
+                  ? "DeepNom AI: AUTOPILOT ACTIVE (Click to switch to AI Duel)"
+                  : "DeepNom AI: DUEL MODE ACTIVE (Click to turn off)"
+              }
+              className={`px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 cursor-pointer shrink-0 ${
+                deepNomMode === "autopilot"
+                  ? "bg-cyan-500/25 border-cyan-400 text-cyan-300 font-bold shadow-[0_0_15px_rgba(6,182,212,0.5)]"
+                  : deepNomMode === "duel"
+                  ? "bg-pink-500/25 border-pink-400 text-pink-300 font-bold shadow-[0_0_15px_rgba(244,63,94,0.5)]"
+                  : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700/80 text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <Bot className={`w-3.5 h-3.5 ${
+                deepNomMode === "autopilot" ? "text-cyan-400" :
+                deepNomMode === "duel" ? "text-pink-400 animate-pulse" : "text-slate-400"
+              }`} />
+              <span className="font-bold text-[10px] sm:text-[11px]">
+                {deepNomMode === "off" ? "AI" : deepNomMode === "autopilot" ? "AUTO" : "DUEL"}
+              </span>
+            </button>
           </div>
 
           {/* Hardware & Display Controls Cluster */}
@@ -876,6 +923,58 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         </div>
       )}
 
+      {/* DeepNom Neural AI Telemetry HUD Strip */}
+      {deepNomMode !== "off" && (
+        <div
+          className={`w-full mb-2.5 px-3 py-2 rounded-xl border flex flex-wrap items-center justify-between gap-2 text-xs font-mono select-none animate-in fade-in transition-all ${
+            deepNomMode === "autopilot"
+              ? "bg-cyan-950/40 border-cyan-500/50 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+              : "bg-pink-950/40 border-pink-500/50 text-pink-300 shadow-[0_0_20px_rgba(244,63,94,0.2)]"
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className={`w-2 h-2 rounded-full animate-ping ${
+                deepNomMode === "autopilot" ? "bg-cyan-400" : "bg-pink-400"
+              }`}
+            />
+            <span className="font-black tracking-wider text-[11px] sm:text-xs">
+              {deepNomMode === "autopilot" ? "🤖 DEEPNOM AUTOPILOT ACTIVE" : "⚔️ HUMAN VS AI DUEL CONTEST"}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3 text-[10px] sm:text-[11px]">
+            {deepNomMode === "duel" && (
+              <span className="font-bold bg-slate-900/80 px-2 py-0.5 rounded border border-pink-500/40">
+                AI: <strong className="text-pink-400">{deepNomTelemetry?.aiScore ?? 0}</strong> vs YOU:{" "}
+                <strong className="text-emerald-400">{score}</strong>
+              </span>
+            )}
+            <span className="text-slate-400 hidden sm:inline">
+              X:{" "}
+              <span className="text-white font-bold">
+                {deepNomTelemetry ? Math.round(deepNomTelemetry.predictedX) : "--"}
+              </span>
+            </span>
+            <span className="text-slate-400">
+              T:{" "}
+              <span className="text-white font-bold">
+                {deepNomTelemetry ? `${deepNomTelemetry.timeRemaining.toFixed(2)}s` : "--"}
+              </span>
+            </span>
+            <span
+              className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest ${
+                deepNomMode === "autopilot"
+                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40"
+                  : "bg-pink-500/20 text-pink-300 border border-pink-400/40"
+              }`}
+            >
+              QUADRATIC 60FPS
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Phaser Canvas Container with Lockscreen / Game Over Overlays */}
       <div
         className={
@@ -983,6 +1082,8 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           waddleSignal={waddleSignal}
           isFullWindow={isFullWindow}
           expandedMode={expandedMode}
+          deepNomMode={deepNomMode}
+          onDeepNomTelemetry={setDeepNomTelemetry}
         />
       </div>
 

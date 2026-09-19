@@ -12,8 +12,10 @@ import {
   Calculator,
   Compass,
   Sparkles,
+  Orbit,
 } from "lucide-react";
 import { TOKEN_CONFIG } from "@/config/token";
+import { GravitationalSingularity } from "./GravitationalSingularity";
 
 // Real pump.fun constant product bonding curve parameters
 const VIRTUAL_SOL_RESERVES = 30; // 30 SOL initial virtual reserve
@@ -27,6 +29,7 @@ export const MissionControl: React.FC = () => {
   // Calculator state
   const [solInput, setSolInput] = useState<number>(1);
   const [currentSolCollected, setCurrentSolCollected] = useState<number>(3.5); // Starts from ~4.1%
+  const [visualMode, setVisualMode] = useState<"singularity" | "orbit">("singularity");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Sync with live on-chain token stats
@@ -186,14 +189,52 @@ export const MissionControl: React.FC = () => {
         </a>
       </div>
 
-      {/* Orbit Trajectory Canvas Visualizer */}
-      <div className="relative w-full h-36 rounded-2xl overflow-hidden border border-slate-800 bg-[#030712]">
-        <canvas ref={canvasRef} width={600} height={144} className="w-full h-full block" />
-        <div className="absolute top-3 left-4 text-xs font-mono text-emerald-400 font-bold bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
-          <span>TRAJECTORY: {graduationProgressPercent}% TO RAYDIUM</span>
+      {/* Visualizer Mode Switcher Deck */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <span className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold">
+          Bonding Spacetime Physics Engine:
+        </span>
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800">
+          <button
+            onClick={() => setVisualMode("singularity")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+              visualMode === "singularity"
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-sm"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            <Orbit className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Gravitational Singularity</span>
+          </button>
+          <button
+            onClick={() => setVisualMode("orbit")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+              visualMode === "orbit"
+                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-sm"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            <Rocket className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Starship Trajectory</span>
+          </button>
         </div>
       </div>
+
+      {/* Render Selected Visualizer */}
+      {visualMode === "singularity" ? (
+        <GravitationalSingularity
+          solCollected={currentSolCollected}
+          onSimulateSol={(s) => setCurrentSolCollected(s)}
+        />
+      ) : (
+        <div className="relative w-full h-36 rounded-2xl overflow-hidden border border-slate-800 bg-[#030712]">
+          <canvas ref={canvasRef} width={600} height={144} className="w-full h-full block" />
+          <div className="absolute top-3 left-4 text-xs font-mono text-emerald-400 font-bold bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
+            <span>TRAJECTORY: {graduationProgressPercent}% TO RAYDIUM</span>
+          </div>
+        </div>
+      )}
 
       {/* Real-time Math Calculator Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">

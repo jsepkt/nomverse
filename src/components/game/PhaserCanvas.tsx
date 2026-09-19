@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import type * as PhaserType from "phaser";
-import type { MainScene as MainSceneType } from "./MainScene";
+import type { MainScene as MainSceneType, DeepNomTelemetryData } from "./MainScene";
 import type { PowerUpType } from "@/lib/powerUps";
 import type { SkinId } from "@/lib/skins";
 
@@ -38,6 +38,8 @@ interface PhaserCanvasProps {
   waddleSignal?: { direction: "left" | "right"; timestamp: number } | null;
   isFullWindow?: boolean;
   expandedMode?: boolean;
+  deepNomMode?: "off" | "autopilot" | "duel";
+  onDeepNomTelemetry?: (data: DeepNomTelemetryData) => void;
 }
 
 export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
@@ -67,6 +69,8 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
   waddleSignal,
   isFullWindow = false,
   expandedMode = false,
+  deepNomMode = "off",
+  onDeepNomTelemetry,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<PhaserType.Game | null>(null);
@@ -111,6 +115,9 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
 
   const onNextLifeDropCountdownRef = useRef(onNextLifeDropCountdown);
   onNextLifeDropCountdownRef.current = onNextLifeDropCountdown;
+
+  const onDeepNomTelemetryRef = useRef(onDeepNomTelemetry);
+  onDeepNomTelemetryRef.current = onDeepNomTelemetry;
 
   useEffect(() => {
     let isMounted = true;
@@ -227,11 +234,19 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
                 onNextLifeDropCountdownRef.current(seconds);
               }
             },
+            onDeepNomTelemetry: (data: DeepNomTelemetryData) => {
+              if (onDeepNomTelemetryRef.current) {
+                onDeepNomTelemetryRef.current(data);
+              }
+            },
           },
         });
 
         if (isMounted) {
           setIsLoading(false);
+          if (deepNomMode !== "off") {
+            scene.setDeepNomMode(deepNomMode);
+          }
         }
       } catch (err) {
         console.error("Failed to initialize Phaser game engine:", err);
@@ -305,6 +320,13 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
       sceneRef.current.setToddlerMode(Boolean(toddlerMode));
     }
   }, [toddlerMode]);
+
+  // Handle live DeepNom mode changes
+  useEffect(() => {
+    if (sceneRef.current) {
+      sceneRef.current.setDeepNomMode(deepNomMode || "off");
+    }
+  }, [deepNomMode]);
 
   // Refresh Phaser canvas scale when entering/exiting full-window mode
   useEffect(() => {

@@ -1,8 +1,18 @@
 import * as Phaser from "phaser";
 import { sounds } from "../audio/soundEffects";
+import { nomsterVoice } from "../audio/nomsterVoice";
 import { PowerUpType, POWER_UPS, rollForPowerUp } from "@/lib/powerUps";
 import { SkinId } from "@/lib/skins";
 import { EpisodeConfig, EPISODES } from "@/lib/episodes";
+
+export interface DeepNomTelemetryData {
+  mode: "off" | "autopilot" | "duel";
+  predictedX: number;
+  timeRemaining: number;
+  aiScore: number;
+  humanScore: number;
+  status: string;
+}
 
 export interface SceneCallbacks {
   onScoreUpdate?: (score: number, streak: number) => void;
@@ -20,6 +30,7 @@ export interface SceneCallbacks {
   onEpisodeComplete?: (episodeId: string, score: number, stars: number) => void;
   onBossHpUpdate?: (currentHp: number, maxHp: number) => void;
   onNextLifeDropCountdown?: (secondsRemaining: number) => void;
+  onDeepNomTelemetry?: (data: DeepNomTelemetryData) => void;
 }
 
 export class MainScene extends Phaser.Scene {
@@ -32,6 +43,20 @@ export class MainScene extends Phaser.Scene {
   private bgGraphics!: Phaser.GameObjects.Graphics;
   private gridGraphics!: Phaser.GameObjects.Graphics;
   private currentStageId: string = "meadow";
+
+  // DeepNom Autonomous Ballistic Neural Autopilot & AI Duel System
+  public deepNomMode: "off" | "autopilot" | "duel" = "off";
+  private deepNomGraphics?: Phaser.GameObjects.Graphics;
+  private deepNomReticleOuter?: Phaser.GameObjects.Arc;
+  private deepNomReticleInner?: Phaser.GameObjects.Arc;
+  private deepNomHudText?: Phaser.GameObjects.Text;
+  private deepNomOpponent?: Phaser.GameObjects.Sprite;
+  private deepNomOpponentLabel?: Phaser.GameObjects.Text;
+  private deepNomOpponentMouthCollider?: Phaser.GameObjects.Arc;
+  public deepNomAiScore: number = 0;
+  public deepNomHumanScore: number = 0;
+  private deepNomPredictedX: number = 0;
+  private deepNomTimeRemaining: number = 0;
 
   // 3+ Kid Accessibility, Petting, & Dynamic Life Drops
   public toddlerMode: boolean = false;
@@ -189,6 +214,184 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
+  public setDeepNomMode(mode: "off" | "autopilot" | "duel"): void {
+    this.deepNomMode = mode;
+    if (mode === "off") {
+      if (this.deepNomGraphics) this.deepNomGraphics.clear();
+      if (this.deepNomReticleOuter) this.deepNomReticleOuter.setVisible(false);
+      if (this.deepNomReticleInner) this.deepNomReticleInner.setVisible(false);
+      if (this.deepNomHudText) this.deepNomHudText.setVisible(false);
+      if (this.deepNomOpponent) this.deepNomOpponent.setVisible(false);
+      if (this.deepNomOpponentLabel) this.deepNomOpponentLabel.setVisible(false);
+      if (this.deepNomOpponentMouthCollider && this.deepNomOpponentMouthCollider.body) {
+        (this.deepNomOpponentMouthCollider.body as Phaser.Physics.Arcade.Body).enable = false;
+      }
+    } else if (mode === "autopilot") {
+      if (this.deepNomOpponent) this.deepNomOpponent.setVisible(false);
+      if (this.deepNomOpponentLabel) this.deepNomOpponentLabel.setVisible(false);
+      if (this.deepNomOpponentMouthCollider && this.deepNomOpponentMouthCollider.body) {
+        (this.deepNomOpponentMouthCollider.body as Phaser.Physics.Arcade.Body).enable = false;
+      }
+      if (this.deepNomReticleOuter) this.deepNomReticleOuter.setVisible(true);
+      if (this.deepNomReticleInner) this.deepNomReticleInner.setVisible(true);
+      if (this.deepNomHudText) this.deepNomHudText.setVisible(true);
+    } else if (mode === "duel") {
+      const { width, height } = this.cameras.main;
+      const nomsterY = height - 76;
+      if (!this.deepNomOpponent) {
+        this.deepNomOpponent = this.add.sprite(width * 0.75, nomsterY, "nomster");
+        this.deepNomOpponent.setOrigin(0.5, 0.85);
+        this.deepNomOpponent.setScale(0.88);
+        this.deepNomOpponent.setTint(0xff0055);
+        this.deepNomOpponent.setDepth(9);
+
+        this.deepNomOpponentLabel = this.add.text(width * 0.75, nomsterY - 95, "DEEPNOM v3.0 [AI]", {
+          fontFamily: "monospace",
+          fontSize: "10px",
+          color: "#ff007f",
+          fontStyle: "bold",
+          stroke: "#000000",
+          strokeThickness: 3,
+        });
+        this.deepNomOpponentLabel.setOrigin(0.5);
+        this.deepNomOpponentLabel.setDepth(10);
+
+        this.deepNomOpponentMouthCollider = this.add.circle(width * 0.75, nomsterY - 34, 44, 0x000000, 0);
+        this.physics.add.existing(this.deepNomOpponentMouthCollider, true);
+
+        if (this.candy) {
+          this.physics.add.overlap(this.candy, this.deepNomOpponentMouthCollider, () => {
+            this.handleAiEatCandy();
+          });
+        }
+      } else {
+        this.deepNomOpponent.setVisible(true);
+        if (this.deepNomOpponentLabel) this.deepNomOpponentLabel.setVisible(true);
+        if (this.deepNomOpponentMouthCollider && this.deepNomOpponentMouthCollider.body) {
+          (this.deepNomOpponentMouthCollider.body as Phaser.Physics.Arcade.Body).enable = true;
+        }
+      }
+      if (this.deepNomReticleOuter) this.deepNomReticleOuter.setVisible(true);
+      if (this.deepNomReticleInner) this.deepNomReticleInner.setVisible(true);
+      if (this.deepNomHudText) this.deepNomHudText.setVisible(true);
+    }
+  }
+
+  private initDeepNomObjects(): void {
+    const { width, height } = this.cameras.main;
+    const mouthY = height - 110;
+
+    this.deepNomReticleOuter = this.add.circle(width / 2, mouthY, 22, 0x00f0ff, 0.12);
+    this.deepNomReticleOuter.setStrokeStyle(2, 0x00f0ff, 0.85);
+    this.deepNomReticleOuter.setDepth(19);
+    this.deepNomReticleOuter.setVisible(false);
+
+    this.deepNomReticleInner = this.add.circle(width / 2, mouthY, 5, 0x00f0ff, 0.95);
+    this.deepNomReticleInner.setDepth(20);
+    this.deepNomReticleInner.setVisible(false);
+
+    this.deepNomHudText = this.add.text(width / 2, mouthY - 30, "", {
+      fontFamily: "monospace",
+      fontSize: "9px",
+      color: "#00f0ff",
+      fontStyle: "bold",
+      stroke: "#050914",
+      strokeThickness: 3,
+    });
+    this.deepNomHudText.setOrigin(0.5);
+    this.deepNomHudText.setDepth(21);
+    this.deepNomHudText.setVisible(false);
+  }
+
+  private handleAiEatCandy(): void {
+    if (
+      !this.candy ||
+      !this.candy.active ||
+      this.isEating ||
+      this.lives <= 0 ||
+      this.deepNomMode !== "duel"
+    ) {
+      return;
+    }
+
+    this.isEating = true;
+    this.deepNomAiScore++;
+
+    nomsterVoice.speakNomNom();
+    sounds.playNom();
+
+    if (this.deepNomOpponent) {
+      this.tweens.add({
+        targets: this.deepNomOpponent,
+        scaleX: 1.1,
+        scaleY: 0.72,
+        duration: 80,
+        yoyo: true,
+        repeat: 1,
+      });
+    }
+
+    const bannerX = this.deepNomOpponent ? this.deepNomOpponent.x : this.candy.x;
+    const bannerY = this.deepNomOpponent ? this.deepNomOpponent.y - 65 : this.candy.y - 35;
+    const aiEatBanner = this.add.text(
+      bannerX,
+      bannerY,
+      `🤖 AI SNATCHED IT! [AI: ${this.deepNomAiScore} | YOU: ${this.score}]`,
+      {
+        fontFamily: "monospace",
+        fontSize: "11px",
+        fontStyle: "bold",
+        color: "#ff007f",
+        stroke: "#000000",
+        strokeThickness: 3,
+      }
+    );
+    aiEatBanner.setOrigin(0.5);
+    aiEatBanner.setDepth(34);
+    this.tweens.add({
+      targets: aiEatBanner,
+      y: aiEatBanner.y - 40,
+      scale: 1.15,
+      alpha: 0,
+      duration: 850,
+      ease: "Back.easeOut",
+      onComplete: () => aiEatBanner.destroy(),
+    });
+
+    const destX = this.deepNomOpponent ? this.deepNomOpponent.x : this.candy.x;
+    const destY = this.deepNomOpponent ? this.deepNomOpponent.y - 34 : this.candy.y;
+    this.tweens.add({
+      targets: this.candy,
+      x: destX,
+      y: destY,
+      scale: 0.1,
+      alpha: 0,
+      duration: 90,
+      onComplete: () => {
+        this.candy.disableBody(true, true);
+        this.isEating = false;
+
+        if (this.callbacks.onDeepNomTelemetry) {
+          this.callbacks.onDeepNomTelemetry({
+            mode: "duel",
+            predictedX: this.deepNomPredictedX,
+            timeRemaining: 0,
+            aiScore: this.deepNomAiScore,
+            humanScore: this.score,
+            status: "AI_SCORED",
+          });
+        }
+
+        this.time.delayedCall(400, () => {
+          if (this.lives > 0 && this.playState === "playing") {
+            const { width } = this.cameras.main;
+            this.spawnCandy(Phaser.Math.Between(width * 0.2, width * 0.8), 45);
+          }
+        });
+      },
+    });
+  }
+
   public init(data: {
     callbacks?: SceneCallbacks;
     initialLives?: number;
@@ -285,6 +488,8 @@ export class MainScene extends Phaser.Scene {
 
     this.aimGraphics = this.add.graphics();
     this.landingGuideGraphics = this.add.graphics();
+    this.deepNomGraphics = this.add.graphics();
+    this.deepNomGraphics.setDepth(18);
 
     // Floor Sensor Line (Bottom Out of Bounds pit between corner trampolines)
     const floorY = height - 12;
@@ -423,6 +628,9 @@ export class MainScene extends Phaser.Scene {
     this.mouthGlow.setDepth(11);
     this.mouthGlow.setVisible(false);
 
+    // Initialize DeepNom Neural Predictor Visual Objects
+    this.initDeepNomObjects();
+
     // 2-Minute Winged Life Candy Drop Interval Timer
     this.time.addEvent({
       delay: 1000,
@@ -543,6 +751,174 @@ export class MainScene extends Phaser.Scene {
 
     const dt = delta / 1000;
     const { width: camWidth, height: camHeight } = this.cameras.main;
+
+    // --- DEEPNOM BALLISTIC NEURAL PREDICTOR & AUTOPILOT ---
+    if (this.deepNomMode !== "off" && this.deepNomGraphics) {
+      this.deepNomGraphics.clear();
+
+      if (
+        this.candy &&
+        this.candy.active &&
+        this.candy.body &&
+        this.playState === "playing" &&
+        this.lives > 0
+      ) {
+        const candyBody = this.candy.body as Phaser.Physics.Arcade.Body;
+        const x0 = this.candy.x;
+        const y0 = this.candy.y;
+        const vx = candyBody.velocity.x;
+        const vy = candyBody.velocity.y;
+        const g = (candyBody.gravity.y || this.getStageGravity()) + this.physics.world.gravity.y;
+        const mouthY = camHeight - 110;
+
+        if (y0 < mouthY && g > 0) {
+          const disc = vy * vy + 2 * g * (mouthY - y0);
+          if (disc >= 0) {
+            const tImpact = (-vy + Math.sqrt(disc)) / g;
+            this.deepNomTimeRemaining = tImpact;
+
+            const minX = 26;
+            const maxX = camWidth - 26;
+            const L = maxX - minX;
+
+            const rawX = (x0 - minX) + vx * tImpact;
+            const modX = ((rawX % (2 * L)) + 2 * L) % (2 * L);
+            const predictedX = (modX < L ? modX : (2 * L - modX)) + minX;
+            this.deepNomPredictedX = predictedX;
+
+            // Draw Ballistic Laser Trajectory Arc (16 sub-steps with wall reflections)
+            const steps = 16;
+            let prevX = x0;
+            let prevY = y0;
+
+            for (let i = 1; i <= steps; i++) {
+              const ti = tImpact * (i / steps);
+              const curY = y0 + vy * ti + 0.5 * g * ti * ti;
+              const curRawX = (x0 - minX) + vx * ti;
+              const curModX = ((curRawX % (2 * L)) + 2 * L) % (2 * L);
+              const curX = (curModX < L ? curModX : (2 * L - curModX)) + minX;
+
+              const isNearWall = curX <= minX + 6 || curX >= maxX - 6;
+              const arcColor = this.deepNomMode === "duel" ? 0xff007f : 0x00f0ff;
+
+              // Outer laser glow
+              this.deepNomGraphics.lineStyle(3, arcColor, 0.28);
+              this.deepNomGraphics.lineBetween(prevX, prevY, curX, curY);
+
+              // Inner laser beam
+              this.deepNomGraphics.lineStyle(1.5, 0xffffff, 0.9);
+              this.deepNomGraphics.lineBetween(prevX, prevY, curX, curY);
+
+              // Bead at vertex or wall bounce
+              if (isNearWall || i === steps || i % 4 === 0) {
+                this.deepNomGraphics.fillStyle(arcColor, 0.95);
+                this.deepNomGraphics.fillCircle(curX, curY, isNearWall ? 4 : 2.5);
+              }
+
+              prevX = curX;
+              prevY = curY;
+            }
+
+            // Holographic Target Reticle
+            if (this.deepNomReticleOuter && this.deepNomReticleInner) {
+              this.deepNomReticleOuter.setPosition(predictedX, mouthY);
+              this.deepNomReticleInner.setPosition(predictedX, mouthY);
+              this.deepNomReticleOuter.setVisible(true);
+              this.deepNomReticleInner.setVisible(true);
+
+              const reticleColor = this.deepNomMode === "duel" ? 0xff007f : 0x00f0ff;
+              this.deepNomReticleOuter.setStrokeStyle(2, reticleColor, 0.85);
+              this.deepNomReticleInner.setFillStyle(reticleColor, 0.95);
+
+              // Pulsate and rotate reticle
+              this.deepNomReticleOuter.setScale(1.0 + Math.sin(time * 0.008) * 0.18);
+
+              // Crosshairs
+              this.deepNomGraphics.lineStyle(1.5, reticleColor, 0.75);
+              this.deepNomGraphics.lineBetween(predictedX - 16, mouthY, predictedX + 16, mouthY);
+              this.deepNomGraphics.lineBetween(predictedX, mouthY - 16, predictedX, mouthY + 16);
+            }
+
+            // HUD Text Readout
+            if (this.deepNomHudText) {
+              this.deepNomHudText.setPosition(predictedX, mouthY - 30);
+              this.deepNomHudText.setText(
+                `TARGET: X=${Math.round(predictedX)} T=${tImpact.toFixed(2)}s P=99.8%`
+              );
+              this.deepNomHudText.setColor(this.deepNomMode === "duel" ? "#ff007f" : "#00f0ff");
+              this.deepNomHudText.setVisible(true);
+            }
+
+            // Telemetry Callback
+            if (this.callbacks.onDeepNomTelemetry) {
+              this.callbacks.onDeepNomTelemetry({
+                mode: this.deepNomMode,
+                predictedX,
+                timeRemaining: tImpact,
+                aiScore: this.deepNomAiScore,
+                humanScore: this.score,
+                status: "CALCULATING_60FPS",
+              });
+            }
+
+            // --- AUTONOMOUS ACTION ---
+            if (this.deepNomMode === "autopilot" && !this.isMovingNomster) {
+              this.wakeNomster();
+              const dx = predictedX - this.nomster.x;
+              const absDx = Math.abs(dx);
+
+              // Automatic Super Dash if candy is far and dropping fast
+              if (absDx > 85 && tImpact < 0.45 && this.isDashReady) {
+                nomsterVoice.speakSuperDash();
+                this.performSuperDash();
+              }
+
+              if (absDx > 6) {
+                const dir = Math.sign(dx);
+                this.nomsterVelocityX = Phaser.Math.Clamp(
+                  this.nomsterVelocityX + dir * this.nomsterAccel * dt * 1.35,
+                  -this.maxNomsterSpeed * 1.15,
+                  this.maxNomsterSpeed * 1.15
+                );
+              } else {
+                this.nomsterVelocityX *= 0.65;
+              }
+            } else if (this.deepNomMode === "duel" && this.deepNomOpponent) {
+              // AI Opponent steering
+              const aiDx = predictedX - this.deepNomOpponent.x;
+              const absAiDx = Math.abs(aiDx);
+              if (absAiDx > 8) {
+                const aiDir = Math.sign(aiDx);
+                const aiSpeed = 380;
+                this.deepNomOpponent.x = Phaser.Math.Clamp(
+                  this.deepNomOpponent.x + aiDir * aiSpeed * dt,
+                  60,
+                  camWidth - 60
+                );
+                this.deepNomOpponent.angle = aiDir * 9;
+              } else {
+                this.deepNomOpponent.angle = Phaser.Math.Linear(this.deepNomOpponent.angle, 0, dt * 10);
+              }
+
+              if (this.deepNomOpponentLabel) {
+                this.deepNomOpponentLabel.setPosition(this.deepNomOpponent.x, this.deepNomOpponent.y - 95);
+                this.deepNomOpponentLabel.setText(`DEEPNOM AI [${this.deepNomAiScore}]`);
+              }
+              if (this.deepNomOpponentMouthCollider) {
+                this.deepNomOpponentMouthCollider.setPosition(
+                  this.deepNomOpponent.x,
+                  this.deepNomOpponent.y - 34
+                );
+              }
+            }
+          }
+        }
+      } else {
+        if (this.deepNomReticleOuter) this.deepNomReticleOuter.setVisible(false);
+        if (this.deepNomReticleInner) this.deepNomReticleInner.setVisible(false);
+        if (this.deepNomHudText) this.deepNomHudText.setVisible(false);
+      }
+    }
 
     // 0. 60FPS Continuous Velocity Keyboard Controller
     if (
@@ -3003,6 +3379,49 @@ export class MainScene extends Phaser.Scene {
     this.score += pointsEarned;
     this.streak++;
 
+    // Procedural Formant Vocal Synthesizer
+    nomsterVoice.speakNomNom();
+
+    // Duel AI Contest Scoring
+    if (this.deepNomMode === "duel") {
+      this.deepNomHumanScore++;
+      const duelBanner = this.add.text(
+        this.mouthCollider.x,
+        this.mouthCollider.y - 45,
+        `⚡ YOU SCORED! [YOU: ${this.score} | AI: ${this.deepNomAiScore}]`,
+        {
+          fontFamily: "monospace",
+          fontSize: "12px",
+          fontStyle: "bold",
+          color: "#14f195",
+          stroke: "#000000",
+          strokeThickness: 3,
+        }
+      );
+      duelBanner.setOrigin(0.5);
+      duelBanner.setDepth(34);
+      this.tweens.add({
+        targets: duelBanner,
+        y: duelBanner.y - 40,
+        scale: 1.15,
+        alpha: 0,
+        duration: 850,
+        ease: "Back.easeOut",
+        onComplete: () => duelBanner.destroy(),
+      });
+
+      if (this.callbacks.onDeepNomTelemetry) {
+        this.callbacks.onDeepNomTelemetry({
+          mode: "duel",
+          predictedX: this.deepNomPredictedX,
+          timeRemaining: 0,
+          aiScore: this.deepNomAiScore,
+          humanScore: this.score,
+          status: "HUMAN_SCORED",
+        });
+      }
+    }
+
     // Pentatonic Xylophone Music-Box Combo
     sounds.playXylophoneCombo(this.streak);
 
@@ -3887,6 +4306,7 @@ export class MainScene extends Phaser.Scene {
     this.isDashReady = false;
     this.isInvulnerable = true;
     sounds.playDashWhoosh();
+    nomsterVoice.speakSuperDash();
 
     if (this.callbacks.onDashCooldownUpdate) {
       this.callbacks.onDashCooldownUpdate(false);
@@ -4046,6 +4466,7 @@ export class MainScene extends Phaser.Scene {
     if (this.isFeverOverdrive || !this.nomster) return;
     this.isFeverOverdrive = true;
     sounds.playFeverActive();
+    nomsterVoice.speakFever();
     this.cameras.main.shake(300, 0.015);
 
     if (this.callbacks.onFeverMeterUpdate) {
@@ -4312,6 +4733,8 @@ export class MainScene extends Phaser.Scene {
     if (this.candy) {
       this.candy.disableBody(true, true);
     }
+
+    nomsterVoice.speakVictory();
 
     if (this.callbacks.onEpisodeComplete) {
       this.callbacks.onEpisodeComplete(this.currentEpisodeConfig.id, this.score, stars);
