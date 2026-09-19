@@ -97,6 +97,23 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // 4. Viral SOS Beacon Revival (P2P Viral Flywheel)
+    if (action === "revive_beacon") {
+      const { recipientId } = body;
+      if (!recipientId) {
+        return NextResponse.json({ success: false, error: "Missing beacon recipientId" }, { status: 400 });
+      }
+
+      const current = pendingLifeGifts.get(recipientId) || 0;
+      pendingLifeGifts.set(recipientId, current + 5);
+
+      return NextResponse.json({
+        success: true,
+        message: `Beacon activated! Sent +5 Lives to your friend, and awarded +5 Bonus Lives to you!`,
+        bonusLivesAwarded: 5,
+      });
+    }
+
     return NextResponse.json({ success: false, error: "Unknown action" }, { status: 400 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Failed to process life request";

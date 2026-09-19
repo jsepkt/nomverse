@@ -19,6 +19,7 @@ import {
   Swords,
   ExternalLink,
   Wallet,
+  Coins,
 } from "lucide-react";
 import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";
@@ -48,6 +49,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   const [sosSent, setSosSent] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [copiedChallenge, setCopiedChallenge] = useState<boolean>(false);
+  const [copiedBeacon, setCopiedBeacon] = useState<boolean>(false);
 
   // Trivia state
   const [showTrivia, setShowTrivia] = useState<boolean>(false);
@@ -111,6 +113,53 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
     setCopiedChallenge(true);
     sounds.playGoldenChime();
     setTimeout(() => setCopiedChallenge(false), 2500);
+  };
+
+  const getBeaconId = () => {
+    if (user?.id) return user.id;
+    if (typeof window !== "undefined") {
+      let guestId = localStorage.getItem("nomverse_guest_id");
+      if (!guestId) {
+        guestId = "guest_" + Math.random().toString(36).slice(2, 9);
+        localStorage.setItem("nomverse_guest_id", guestId);
+      }
+      return guestId;
+    }
+    return "player";
+  };
+
+  const handleCopyBeaconLink = async () => {
+    const id = getBeaconId();
+    const beaconUrl = `${window.location.origin}/play?beacon=${id}`;
+    await copyToClipboard(beaconUrl);
+    setCopiedBeacon(true);
+    sounds.playGoldenChime();
+    setTimeout(() => setCopiedBeacon(false), 2500);
+  };
+
+  const handleShareTelegram = () => {
+    const id = getBeaconId();
+    const beaconUrl = `${window.location.origin}/play?beacon=${id}`;
+    const text = `🚨 RESCUE MISSION: My Nomster is out of lives on NomVerse! Tap to feed him 1 candy to revive me — you will get 5 FREE lives too!`;
+    const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(beaconUrl)}&text=${encodeURIComponent(text)}`;
+    if (typeof window !== "undefined") {
+      const tg = (window as unknown as { Telegram?: { WebApp?: { openTelegramLink?: (url: string) => void } } }).Telegram?.WebApp;
+      if (tg?.openTelegramLink) {
+        tg.openTelegramLink(tgUrl);
+      } else {
+        window.open(tgUrl, "_blank");
+      }
+    }
+  };
+
+  const handleShareWhatsApp = () => {
+    const id = getBeaconId();
+    const beaconUrl = `${window.location.origin}/play?beacon=${id}`;
+    const text = `🚨 RESCUE MISSION: My Nomster is out of lives on NomVerse! Tap to feed him 1 candy to revive me — you will get 5 FREE lives too! ${beaconUrl}`;
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    if (typeof window !== "undefined") {
+      window.open(waUrl, "_blank");
+    }
   };
 
   const handleTriviaAnswer = (index: number) => {
@@ -213,21 +262,74 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
         </div>
 
         {/* Community Life SOS Actions */}
-        <div className="space-y-2">
-          {/* Action 0: Ape to Revive on pump.fun */}
-          <a
-            href={TOKEN_CONFIG.pumpFunUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => {
-              sounds.playGiftReceived();
-              onLifeRestored();
-            }}
-            className="w-full py-3 px-4 rounded-xl font-mono font-bold text-xs bg-gradient-to-r from-emerald-500 via-teal-400 to-solana-green hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-[0_0_25px_rgba(20,241,149,0.35)] transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
-          >
-            <span>🚀 BUY ON PUMP.FUN FOR INSTANT REVIVE</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+        <div className="space-y-2.5">
+          {/* Action 0: P2P Viral Revival Beacon (K > 1 Viral Flywheel) */}
+          <div className="p-3.5 rounded-xl bg-gradient-to-r from-pink-500/15 via-purple-500/15 to-pink-500/15 border border-pink-500/40 text-left space-y-2 shadow-[0_0_20px_rgba(244,63,94,0.15)]">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-pink-300 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                <span>P2P REVIVAL BEACON (GET 5 LIVES)</span>
+              </span>
+              <span className="text-[9px] font-mono text-pink-400/90 bg-pink-500/20 px-1.5 py-0.5 rounded border border-pink-500/30 font-bold">
+                FREE +5
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-300 leading-tight">
+              Share your beacon link. When anyone feeds Nomster 1 candy, <strong>BOTH of you get 5 free lives</strong> instantly!
+            </p>
+            <div className="flex items-center gap-1.5 pt-1">
+              <button
+                onClick={handleCopyBeaconLink}
+                className="flex-1 py-2 px-2.5 rounded-xl font-mono text-xs font-bold bg-pink-600 hover:bg-pink-500 text-white shadow-md transition-all flex items-center justify-center gap-1 cursor-pointer"
+              >
+                {copiedBeacon ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedBeacon ? "Link Copied!" : "Copy Beacon"}</span>
+              </button>
+              <button
+                onClick={handleShareTelegram}
+                className="py-2 px-2.5 rounded-xl font-mono text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white transition-all flex items-center justify-center gap-1 cursor-pointer"
+                title="Share to Telegram Groups"
+              >
+                <span>📲 Telegram</span>
+              </button>
+              <button
+                onClick={handleShareWhatsApp}
+                className="py-2 px-2.5 rounded-xl font-mono text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center justify-center gap-1 cursor-pointer"
+                title="Share to WhatsApp"
+              >
+                <span>💬 WhatsApp</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Action 0b: Immortality Protocol (Direct Pump.fun Buy Conversion) */}
+          <div className="p-3.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-500/40 text-left space-y-2 shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-amber-300 flex items-center gap-1.5">
+                <Coins className="w-3.5 h-3.5 text-amber-400" />
+                <span>IMMORTALITY: HOLD $NOM</span>
+              </span>
+              <span className="text-[9px] font-mono text-amber-400/90 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30 font-bold">
+                AUTO-REVIVE
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-300 leading-tight">
+              Tired of cooldowns? Holding 100k+ $NOM on pump.fun unlocks permanent extra lives, 5-min fast life regen, and score multipliers!
+            </p>
+            <a
+              href={TOKEN_CONFIG.pumpFunUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                sounds.playGiftReceived();
+                onLifeRestored();
+              }}
+              className="w-full py-2.5 px-3 rounded-xl font-mono font-bold text-xs bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 hover:from-amber-300 hover:to-yellow-200 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all flex items-center justify-center gap-2 hover:scale-[1.02] block text-center"
+            >
+              <span>🚀 BUY $NOM ON PUMP.FUN &amp; REVIVE</span>
+              <ExternalLink className="w-3.5 h-3.5 inline-block" />
+            </a>
+          </div>
 
           {/* Action 1: Post SOS on NomWall */}
           <button

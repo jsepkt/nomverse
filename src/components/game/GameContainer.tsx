@@ -142,6 +142,11 @@ export const GameContainer: React.FC<GameContainerProps> = ({
   const [deepNomMode, setDeepNomMode] = useState<"off" | "autopilot" | "duel">("off");
   const [deepNomTelemetry, setDeepNomTelemetry] = useState<DeepNomTelemetryData | null>(null);
 
+  // P2P Viral Revival Beacon State (K > 1 Flywheel)
+  const [rescueBeaconId, setRescueBeaconId] = useState<string | null>(null);
+  const [rescueBeaconCompleted, setRescueBeaconCompleted] = useState<boolean>(false);
+  const [rescueAlert, setRescueAlert] = useState<string | null>(null);
+
   const handleCycleDeepNom = () => {
     setDeepNomMode((prev) => {
       const next = prev === "off" ? "autopilot" : prev === "autopilot" ? "duel" : "off";
@@ -253,7 +258,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
     }
   }, [user]);
 
-  // Parse Rival Challenge URL and Holder Tier State on mount
+  // Parse Rival Challenge, P2P Revival Beacon, and Holder Tier State on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
@@ -262,6 +267,21 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         const rChallenger = params.get("challenger");
         if (!isNaN(rScore) && rScore > 0 && rChallenger) {
           setRival({ score: rScore, challenger: rChallenger });
+        }
+
+        // P2P Viral Revival Beacon Check
+        const beaconParam = params.get("beacon") || params.get("revive");
+        if (beaconParam) {
+          setRescueBeaconId(beaconParam);
+        }
+
+        // Telegram WebApp Native Environment Init
+        const tg = (window as unknown as { Telegram?: { WebApp?: { ready: () => void; expand: () => void; setHeaderColor: (c: string) => void; setBackgroundColor: (c: string) => void } } }).Telegram?.WebApp;
+        if (tg) {
+          tg.ready();
+          tg.expand();
+          tg.setHeaderColor("#050914");
+          tg.setBackgroundColor("#050914");
         }
       } catch {
         // ignore
@@ -420,6 +440,43 @@ export const GameContainer: React.FC<GameContainerProps> = ({
   const handleNomNom = () => {
     setRecentNom(true);
     setTimeout(() => setRecentNom(false), 300);
+
+    // Native Telegram haptic feedback
+    if (typeof window !== "undefined") {
+      const tg = (window as unknown as { Telegram?: { WebApp?: { HapticFeedback?: { impactOccurred: (s: string) => void } } } }).Telegram?.WebApp;
+      tg?.HapticFeedback?.impactOccurred("medium");
+    }
+
+    // P2P Viral Revival Beacon redemption (K > 1 flywheel)
+    if (rescueBeaconId && !rescueBeaconCompleted) {
+      setRescueBeaconCompleted(true);
+      fetch("/api/lives", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "revive_beacon",
+          recipientId: rescueBeaconId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            sounds.playGiftReceived();
+            nomsterVoice.speakVictory();
+            confetti({
+              particleCount: 80,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ["#EC4899", "#14F195", "#38BDF8", "#F59E0B"],
+            });
+            setLives((prev) => Math.min(10, prev + 5));
+            setRescueAlert(
+              `🎉 RESCUE MISSION ACCOMPLISHED! You revived your friend (+5 Lives sent) and unlocked +5 Bonus Lives for yourself!`
+            );
+          }
+        })
+        .catch(() => {});
+    }
 
     // Inflict 1 damage on the World Raid Boss Lord Mega-FUD
     if (user) {
@@ -622,6 +679,34 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           <span>{liveGiftAlert}</span>
           <button
             onClick={() => setLiveGiftAlert(null)}
+            className="text-slate-400 hover:text-white text-xs font-mono ml-2"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Live Rescue Mission Banner (Viral P2P Referral Arrival) */}
+      {rescueBeaconId && !rescueBeaconCompleted && (
+        <div className="w-full mb-3 px-4 py-3 rounded-xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-pink-500/20 border border-pink-500/60 text-pink-300 text-xs font-mono font-bold flex items-center justify-between gap-2 shadow-[0_0_25px_rgba(244,63,94,0.3)] animate-pulse">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🚨</span>
+            <span>
+              <strong>RESCUE MISSION:</strong> Your friend is starving! Feed Nomster 1 candy to revive them! (Both get +5 Lives!)
+            </span>
+          </div>
+          <span className="text-[10px] bg-pink-500/30 px-2 py-0.5 rounded-full border border-pink-400/40 shrink-0">
+            ACTIVE MISSION
+          </span>
+        </div>
+      )}
+
+      {/* Rescue Mission Completed Alert */}
+      {rescueAlert && (
+        <div className="w-full mb-3 px-4 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/60 text-emerald-300 text-xs font-mono font-bold flex items-center justify-between gap-2 shadow-[0_0_25px_rgba(20,241,149,0.3)] animate-in fade-in">
+          <span>{rescueAlert}</span>
+          <button
+            onClick={() => setRescueAlert(null)}
             className="text-slate-400 hover:text-white text-xs font-mono ml-2"
           >
             ✕
