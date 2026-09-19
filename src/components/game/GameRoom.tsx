@@ -26,6 +26,8 @@ import {
   Radio,
   Share2,
 } from "lucide-react";
+import { QuickBuyModal } from "../wallet/QuickBuyModal";
+import { TOKEN_CONFIG } from "@/config/token";
 
 interface GameRoomProps {
   initialMode?: "half" | "full";
@@ -44,6 +46,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
   const [screenSize, setScreenSize] = useState<"half" | "full">(initialMode);
   const [activeTab, setActiveTab] = useState<TabType>("stages");
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
 
   // Auto-detect mobile devices to prioritize full window
   useEffect(() => {
@@ -142,6 +145,16 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
           >
             <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
             <span>Full Size</span>
+          </button>
+
+          {/* 1-Click Buy $NOM Button */}
+          <button
+            onClick={() => setIsQuickBuyOpen(true)}
+            className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 flex items-center gap-1.5 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            title="Instant Buy $NOM on pump.fun"
+          >
+            <Rocket className="w-3.5 h-3.5 text-slate-950" />
+            <span>Buy $NOM</span>
           </button>
         </div>
       </div>
@@ -270,6 +283,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
           </div>
         )}
       </div>
+      <QuickBuyModal isOpen={isQuickBuyOpen} onClose={() => setIsQuickBuyOpen(false)} />
     </div>
   );
 };

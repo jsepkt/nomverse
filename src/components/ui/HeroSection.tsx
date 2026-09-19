@@ -1,91 +1,138 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { GameContainer } from "../game/GameContainer";
 import { BondingMilestonesCard } from "../game/BondingMilestonesCard";
-import { ShieldCheck, Sparkles, Flame, Rocket, Terminal, Zap, Gamepad2 } from "lucide-react";
+import {
+  ShieldCheck,
+  Sparkles,
+  Flame,
+  Rocket,
+  Gamepad2,
+  Copy,
+  Check,
+  Coins,
+  TrendingUp,
+  ArrowRight,
+} from "lucide-react";
 import { GithubIcon } from "./icons";
 import { TOKEN_CONFIG } from "@/config/token";
+import { copyToClipboard } from "@/lib/clipboard";
+import { sounds } from "../audio/soundEffects";
+import confetti from "canvas-confetti";
 
 export const HeroSection: React.FC = () => {
+  const [copied, setCopied] = useState<boolean>(false);
+
+  const handleCopyMint = async () => {
+    await copyToClipboard(TOKEN_CONFIG.mintAddress);
+    setCopied(true);
+    sounds.playGoldenChime();
+    confetti({
+      particleCount: 25,
+      spread: 50,
+      origin: { y: 0.7 },
+      colors: ["#14F195", "#9945FF", "#F59E0B"],
+    });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <section id="arcade" className="relative w-full pt-8 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Background Ambient Glow Orbs */}
+    <section id="arcade" className="relative w-full pt-6 sm:pt-10 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Background Ambient Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-solana-purple/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-[450px] h-[450px] bg-solana-purple/10 rounded-full blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-between gap-10 lg:gap-12">
-        {/* Left Column: Vision & Pitch */}
+        {/* Left Column: Vision, Pitch & Verified CA */}
         <div className="flex-1 text-center lg:text-left space-y-6 max-w-2xl">
-          {/* Badges Bar */}
+          {/* Live Status Badges */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              LIVE ON SOLANA MAINNET
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-solana-purple/10 text-solana-purple border border-solana-purple/30">
               <ShieldCheck className="w-3.5 h-3.5" />
               100% CC0 Public Domain
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-solana-purple/10 text-solana-purple border border-solana-purple/30">
-              <Zap className="w-3.5 h-3.5" />
-              Phaser 3 Physics
-            </span>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-candy-amber/10 text-candy-gold border border-candy-amber/30">
               <Sparkles className="w-3.5 h-3.5" />
-              Community Lore Engine
+              Phaser 3 Arcade
             </span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.08]">
             The Hungry <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green bg-clip-text text-transparent">Open-Source</span> Mascot of Web3
           </h1>
 
           {/* Subtitle */}
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            Meet <strong>Nomster</strong>: an unpermissioned, zero-copyright mascot built for the next generation of decentralized culture. Feed him crypto candies in the browser mini-game, remix his CC0 vector assets, compose 8-bit beats, and shape canonical lore on GitHub.
+            Meet <strong>Nomster</strong>: an unpermissioned, zero-copyright mascot designed for decentralized culture. Play the retro physics arcade, remix CC0 vector graphics, compose 8-bit chiptunes, and hold <strong>$NOM</strong> to unlock immortal daily revives and Whale perks.
           </p>
 
-          {/* 5 Pillars of NomVerse */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-left grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-xs font-mono">
-            <div className="space-y-0.5">
-              <span className="text-emerald-400 font-black block">01 PLAY</span>
-              <span className="text-[11px] text-slate-400 block leading-tight">Instant browser arcade &amp; boss raids</span>
+          {/* 1-Click Verified Mint Address Pill */}
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-3 text-left">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-solana-green/15 border border-solana-green/30 flex items-center justify-center text-solana-green shrink-0">
+                <Coins className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
+                  Contract Address (Token-2022)
+                </div>
+                <div className="text-xs sm:text-sm font-mono text-slate-200 truncate select-all">
+                  {TOKEN_CONFIG.mintAddress}
+                </div>
+              </div>
             </div>
-            <div className="space-y-0.5">
-              <span className="text-candy-gold font-black block">02 CREATE</span>
-              <span className="text-[11px] text-slate-400 block leading-tight">Memes, music &amp; vector PFPs</span>
-            </div>
-            <div className="space-y-0.5">
-              <span className="text-solana-purple font-black block">03 EXPAND</span>
-              <span className="text-[11px] text-slate-400 block leading-tight">Living lore chapters on GitHub PRs</span>
-            </div>
-            <div className="space-y-0.5">
-              <span className="text-teal-400 font-black block">04 COMMUNITY</span>
-              <span className="text-[11px] text-slate-400 block leading-tight">Quests, bounties &amp; NomWall karma</span>
-            </div>
-            <div className="space-y-0.5 col-span-2 sm:col-span-1">
-              <span className="text-rose-400 font-black block">05 OWN</span>
-              <span className="text-[11px] text-slate-400 block leading-tight">100% CC0 public domain &amp; $NOM fair launch</span>
-            </div>
+
+            <button
+              onClick={handleCopyMint}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-emerald-500/50 transition-all shrink-0 active:scale-95"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-400">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Copy CA</span>
+                </>
+              )}
+            </button>
           </div>
 
-          {/* Primary CTA Buttons */}
+          {/* Primary CTA Action Row */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-1">
             <Link
               href="/play"
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl font-black text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               <Gamepad2 className="w-5 h-5 text-slate-950" />
               <span>Enter Game Room</span>
             </Link>
 
             <a
+              href="#tokenomics"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/50 hover:scale-105 transition-all"
+            >
+              <Flame className="w-4 h-4 text-emerald-400" />
+              <span>Instant Buy $NOM</span>
+            </a>
+
+            <a
               href={TOKEN_CONFIG.pumpFunUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/50 hover:scale-105 transition-all"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 transition-all"
             >
-              <Rocket className="w-4 h-4 text-emerald-400" />
+              <Rocket className="w-4 h-4 text-slate-400" />
               <span>pump.fun</span>
             </a>
 
@@ -93,26 +140,26 @@ export const HeroSection: React.FC = () => {
               href="https://github.com/jsepkt/nomverse"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm text-slate-200 bg-surface hover:bg-slate-800 border border-slate-700 hover:border-slate-500 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-3.5 rounded-2xl font-bold text-sm text-slate-400 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-slate-800 transition-all"
             >
               <GithubIcon className="w-4 h-4" />
               <span>GitHub</span>
             </a>
           </div>
 
-          {/* Live Mascot Quick Stats */}
+          {/* Three Key Trust Metrics */}
           <div className="pt-4 grid grid-cols-3 gap-4 border-t border-slate-800/80">
             <div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-white">0%</div>
-              <div className="text-xs text-slate-400">Royalties / IP Restrictions</div>
+              <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400">0% TAX</div>
+              <div className="text-xs text-slate-400">Zero Trading Friction</div>
             </div>
             <div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400">100%</div>
-              <div className="text-xs text-slate-400">Fair Launch on pump.fun</div>
+              <div className="text-xl sm:text-2xl font-black font-mono text-teal-300">100% CC0</div>
+              <div className="text-xs text-slate-400">Public Domain Forever</div>
             </div>
             <div>
-              <div className="text-xl sm:text-2xl font-black font-mono text-solana-green">CC0</div>
-              <div className="text-xs text-slate-400">Open Public Domain</div>
+              <div className="text-xl sm:text-2xl font-black font-mono text-solana-green">1 BILLION</div>
+              <div className="text-xs text-slate-400">Fixed Supply (No Inflation)</div>
             </div>
           </div>
         </div>

@@ -39,16 +39,18 @@ const MILESTONES: MilestoneItem[] = [
 ];
 
 export const BondingMilestonesCard: React.FC = () => {
-  const [bondingProgress, setBondingProgress] = useState<number>(4.1);
-  const [marketCap, setMarketCap] = useState<number>(2801);
+  const [bondingProgress, setBondingProgress] = useState<number>(1.28);
+  const [marketCap, setMarketCap] = useState<number>(3276);
+  const [solCollected, setSolCollected] = useState<number>(1.09);
 
   useEffect(() => {
     fetch("/api/token-stats")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          setBondingProgress(data.bondingProgress || 4.1);
-          setMarketCap(data.marketCap || 2801);
+          setBondingProgress(data.bondingProgress ?? 1.28);
+          setMarketCap(data.marketCap ?? 3276);
+          setSolCollected(data.solCollected ?? 1.09);
         }
       })
       .catch(() => {});
@@ -66,11 +68,11 @@ export const BondingMilestonesCard: React.FC = () => {
             <h3 className="text-xs sm:text-sm font-mono font-bold text-white flex items-center gap-1.5">
               <span>RAYDIUM BONDING CURVE MILESTONES</span>
               <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                $69k Goal
+                85 SOL / $69k Goal
               </span>
             </h3>
             <p className="text-[11px] font-mono text-slate-400">
-              Current: {bondingProgress}% • MCap: ${marketCap.toLocaleString()} / $69,000
+              Current: <strong className="text-emerald-400">{bondingProgress}%</strong> • <strong className="text-white">{solCollected} SOL</strong> / 85 SOL • MCap: ${marketCap.toLocaleString()}
             </p>
           </div>
         </div>

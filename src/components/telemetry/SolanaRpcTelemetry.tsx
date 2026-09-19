@@ -138,40 +138,29 @@ export const SolanaRpcTelemetry: React.FC = () => {
     setLookupResult(null);
 
     try {
-      const res = await fetch(SOLANA_MAINNET_RPC, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: 4,
-          method: "getBalance",
-          params: [addr],
-        }),
-      });
-
+      const res = await fetch(`/api/holder-balance?wallet=${encodeURIComponent(addr)}`);
       const data = await res.json();
-      if (data.error) {
-        throw new Error(data.error.message || "Solana address not found or invalid");
+
+      if (!data.success) {
+        throw new Error(data.error || "Solana address verification failed");
       }
 
-      const lamports = data.result?.value || 0;
-      const solBalance = parseFloat((lamports / 1e9).toFixed(4));
-      const isHolder = solBalance > 0;
-      const tierName = solBalance >= 1 ? "Whale Benefactor" : solBalance >= 0.1 ? "Dolphin Waddler" : "Cadet";
+      const nomBalance = data.balance || 0;
+      const isHolder = nomBalance > 0;
+      const tierName = data.perks?.label || data.tierName || (isHolder ? "NOM Holder" : "Cadet");
 
-      // If address holds SOL, unlock local holder perks
       if (isHolder) {
         setStoredHolderState({
           walletAddress: addr,
-          balance: solBalance * 1000000,
-          tier: solBalance >= 1 ? "whale" : "dolphin",
+          balance: nomBalance,
+          tier: data.tier || "fish",
           verifiedAt: Date.now(),
         });
       }
 
       setLookupResult({
         address: addr,
-        solBalance,
+        solBalance: nomBalance,
         isHolder,
         tierName,
         verifiedAt: Date.now(),
@@ -336,7 +325,7 @@ export const SolanaRpcTelemetry: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-2 text-slate-300 pt-1 border-t border-emerald-500/20">
               <div>
-                Real SOL Balance: <strong className="text-white">{lookupResult.solBalance} SOL</strong>
+                Real $NOM Balance: <strong className="text-white">{lookupResult.solBalance.toLocaleString()} $NOM</strong>
               </div>
               <div className="text-right">
                 <a

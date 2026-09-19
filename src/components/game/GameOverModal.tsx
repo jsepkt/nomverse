@@ -20,6 +20,7 @@ import {
   ExternalLink,
   Wallet,
   Coins,
+  Rocket,
 } from "lucide-react";
 import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";

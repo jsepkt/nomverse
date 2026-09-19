@@ -28,7 +28,8 @@ const TARGET_SOL_MIGRATION = 85; // ~85 SOL to graduate to Raydium (~$69K market
 export const MissionControl: React.FC = () => {
   // Calculator state
   const [solInput, setSolInput] = useState<number>(1);
-  const [currentSolCollected, setCurrentSolCollected] = useState<number>(3.5); // Starts from ~4.1%
+  const [currentSolCollected, setCurrentSolCollected] = useState<number>(1.09);
+  const [liveSolPriceUsd, setLiveSolPriceUsd] = useState<number>(115);
   const [visualMode, setVisualMode] = useState<"singularity" | "orbit">("singularity");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -37,9 +38,17 @@ export const MissionControl: React.FC = () => {
     fetch("/api/token-stats")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data && typeof data.bondingProgressPercent === "number") {
-          const realSol = (data.bondingProgressPercent / 100) * TARGET_SOL_MIGRATION;
-          setCurrentSolCollected(parseFloat(realSol.toFixed(2)));
+        if (data?.success) {
+          if (typeof data.solCollected === "number") {
+            setCurrentSolCollected(parseFloat(data.solCollected.toFixed(2)));
+          } else if (typeof data.bondingProgressPercent === "number") {
+            const realSol = (data.bondingProgressPercent / 100) * TARGET_SOL_MIGRATION;
+            setCurrentSolCollected(parseFloat(realSol.toFixed(2)));
+          }
+
+          if (data.priceUsd > 0 && data.priceNativeSol > 0) {
+            setLiveSolPriceUsd(Math.round(data.priceUsd / data.priceNativeSol));
+          }
         }
       })
       .catch(() => {});
@@ -54,11 +63,10 @@ export const MissionControl: React.FC = () => {
 
   // Price calculations
   const priceSolPerToken = solInput / (tokensReceived || 1);
-  const estimatedSolPriceUsd = 150; // Reference price of SOL
-  const marketCapUsd = Math.round(priceSolPerToken * TOTAL_SUPPLY * estimatedSolPriceUsd);
+  const marketCapUsd = Math.round(priceSolPerToken * TOTAL_SUPPLY * liveSolPriceUsd);
   const graduationProgressPercent = Math.min(
     100,
-    parseFloat(((currentSolCollected / TARGET_SOL_MIGRATION) * 100).toFixed(1))
+    parseFloat(((currentSolCollected / TARGET_SOL_MIGRATION) * 100).toFixed(2))
   );
   const solNeededToMigrate = Math.max(0, TARGET_SOL_MIGRATION - currentSolCollected);
 

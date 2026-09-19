@@ -178,10 +178,10 @@ export const Navbar: React.FC = () => {
             <button
               onClick={() => setIsQuickBuyOpen(true)}
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs font-mono font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:border-amber-500/50 transition-all hover:scale-105 shrink-0"
-              title="Simulate 1-Click SOL Swap"
+              title="Instant Buy $NOM on pump.fun"
             >
               <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span>Quick Buy</span>
+              <span>Buy $NOM</span>
             </button>
 
             {/* User Auth Pill / Sign In */}
