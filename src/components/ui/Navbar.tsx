@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Rocket,
   Sparkles,
@@ -42,12 +43,12 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   {
     label: "Play",
-    href: "#arcade",
+    href: "/play",
     icon: Gamepad2,
     color: "text-emerald-400",
     glowColor: "group-hover:text-emerald-300",
-    description: "Browser arcade mini-game, 5 lives & raid bosses",
-    badge: "5 Lives",
+    description: "Game Room: 5 stages, more games & dev XP",
+    badge: "Game Room",
   },
   {
     label: "Create",
@@ -94,6 +95,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export const Navbar: React.FC = () => {
+  const router = useRouter();
   const { user, openAuthModal, logout } = useAuth();
   const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -110,6 +112,13 @@ export const Navbar: React.FC = () => {
 
   const handleNavClick = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handlePlayClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    const isMobile = window.innerWidth < 1024;
+    router.push(isMobile ? "/play?mode=full" : "/play");
   };
 
   return (
@@ -156,13 +165,14 @@ export const Navbar: React.FC = () => {
           {/* Right Action Buttons & Web3 Controls */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Primary PLAY NOW CTA Button */}
-            <a
-              href="#arcade"
+            <button
+              onClick={handlePlayClick}
               className="relative group inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.65)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+              title="Play NomVerse Game"
             >
               <Gamepad2 className="w-3.5 h-3.5 fill-slate-950 text-slate-950 group-hover:animate-bounce shrink-0" />
               <span>PLAY NOW</span>
-            </a>
+            </button>
 
             {/* Quick Buy SOL Button */}
             <button
@@ -246,7 +256,7 @@ export const Navbar: React.FC = () => {
               {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <a
+                  <Link
                     key={item.label}
                     href={item.href}
                     className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/80 border border-transparent hover:border-slate-700/60 transition-all"
@@ -260,7 +270,7 @@ export const Navbar: React.FC = () => {
                         {item.badge}
                       </span>
                     )}
-                  </a>
+                  </Link>
                 );
               })}
             </nav>
@@ -330,11 +340,18 @@ export const Navbar: React.FC = () => {
               <div className="grid grid-cols-1 gap-1.5">
                 {NAV_ITEMS.map((item) => {
                   const Icon = item.icon;
+                  const isPlay = item.href === "/play";
                   return (
                     <a
                       key={item.label}
                       href={item.href}
-                      onClick={handleNavClick}
+                      onClick={(e) => {
+                        if (isPlay) {
+                          handlePlayClick(e);
+                        } else {
+                          handleNavClick();
+                        }
+                      }}
                       className="flex items-center justify-between p-3 rounded-xl bg-surface/50 hover:bg-slate-800 border border-slate-800/70 hover:border-slate-700 transition-all active:scale-[0.99] group"
                     >
                       <div className="flex items-center gap-3">

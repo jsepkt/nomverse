@@ -2,9 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { GameContainer } from "../game/GameContainer";
 import { BondingMilestonesCard } from "../game/BondingMilestonesCard";
-import { ShieldCheck, Sparkles, Flame, Rocket, Terminal, Zap } from "lucide-react";
+import { ShieldCheck, Sparkles, Flame, Rocket, Terminal, Zap, Gamepad2 } from "lucide-react";
 import { GithubIcon } from "./icons";
 import { TOKEN_CONFIG } from "@/config/token";
 
@@ -69,15 +70,23 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* Primary CTA Buttons */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-1">
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-1">
+            <Link
+              href="/play"
+              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            >
+              <Gamepad2 className="w-5 h-5 text-slate-950" />
+              <span>Enter Game Room</span>
+            </Link>
+
             <a
               href={TOKEN_CONFIG.pumpFunUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 transition-all"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/50 hover:scale-105 transition-all"
             >
-              <Rocket className="w-5 h-5 text-slate-950" />
-              <span>Launch on pump.fun</span>
+              <Rocket className="w-4 h-4 text-emerald-400" />
+              <span>pump.fun</span>
             </a>
 
             <a
@@ -86,8 +95,8 @@ export const HeroSection: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm text-slate-200 bg-surface hover:bg-slate-800 border border-slate-700 hover:border-slate-500 transition-all"
             >
-              <GithubIcon className="w-5 h-5" />
-              <span>Fork on GitHub</span>
+              <GithubIcon className="w-4 h-4" />
+              <span>GitHub</span>
             </a>
           </div>
 
@@ -110,7 +119,7 @@ export const HeroSection: React.FC = () => {
 
         {/* Right Column: Playable Interactive Game Arena */}
         <div className="w-full lg:w-auto flex-1 flex justify-center">
-          <GameContainer />
+          <GameContainer showGameRoomButton={true} />
         </div>
       </div>
 

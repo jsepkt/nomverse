@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -48,6 +49,7 @@ import {
   Crown,
   Film,
   Zap,
+  Gamepad2,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -64,7 +66,15 @@ const PhaserCanvasDynamic = dynamic(
   }
 );
 
-export const GameContainer: React.FC = () => {
+export interface GameContainerProps {
+  initialFullWindow?: boolean;
+  showGameRoomButton?: boolean;
+}
+
+export const GameContainer: React.FC<GameContainerProps> = ({
+  initialFullWindow = false,
+  showGameRoomButton = false,
+}) => {
   const { user } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -78,7 +88,7 @@ export const GameContainer: React.FC = () => {
   const [resetSignal, setResetSignal] = useState<number>(0);
   const [startSignal, setStartSignal] = useState<number>(0);
   const [gameState, setGameState] = useState<"idle" | "countdown" | "playing" | "respawning" | "gameover">("idle");
-  const [isFullWindow, setIsFullWindow] = useState<boolean>(false);
+  const [isFullWindow, setIsFullWindow] = useState<boolean>(initialFullWindow);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [recentNom, setRecentNom] = useState<boolean>(false);
   const [hasPostedHighScore, setHasPostedHighScore] = useState<boolean>(false);
@@ -772,6 +782,18 @@ export const GameContainer: React.FC = () => {
               >
                 <Maximize2 className="w-3.5 h-3.5" />
               </button>
+            )}
+
+            {/* Dedicated Game Room Link Button */}
+            {showGameRoomButton && (
+              <Link
+                href="/play"
+                title="Enter Game Room with Stages & Community Mods"
+                className="p-1.5 sm:px-2 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 shrink-0"
+              >
+                <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden sm:inline text-[10px]">ROOM</span>
+              </Link>
             )}
 
             {/* Reset / Restart Drop Button */}
