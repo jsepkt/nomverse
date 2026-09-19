@@ -1,6 +1,8 @@
 import React from "react";
 import { Navbar } from "@/components/ui/Navbar";
 import { HeroSection } from "@/components/ui/HeroSection";
+import { MissionControl } from "@/components/telemetry/MissionControl";
+import { SolanaRpcTelemetry } from "@/components/telemetry/SolanaRpcTelemetry";
 import { NomWall } from "@/components/wall/NomWall";
 import { StoryReader } from "@/components/lore/StoryReader";
 import { ToolkitSection } from "@/components/ui/ToolkitSection";
@@ -18,6 +20,12 @@ export default function HomePage() {
 
       {/* Hero & Interactive Phaser Arcade */}
       <HeroSection />
+
+      {/* SpaceX-Grade Raydium Mission Control & Real Solana Mainnet-Beta RPC Telemetry */}
+      <section className="w-full py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+        <MissionControl />
+        <SolanaRpcTelemetry />
+      </section>
 
       {/* On-Platform Community Wall (No External Social Media) */}
       <NomWall />

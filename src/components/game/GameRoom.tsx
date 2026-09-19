@@ -6,6 +6,10 @@ import { GameContainer } from "./GameContainer";
 import { GameDetailsTab } from "./GameDetailsTab";
 import { MoreGamesTab } from "./MoreGamesTab";
 import { DevContributionsTab } from "./DevContributionsTab";
+import { PixelSkinWorkshop } from "../tools/PixelSkinWorkshop";
+import { ViralCardStudio } from "../tools/ViralCardStudio";
+import { MissionControl } from "../telemetry/MissionControl";
+import { SolanaRpcTelemetry } from "../telemetry/SolanaRpcTelemetry";
 import {
   Gamepad2,
   Maximize2,
@@ -17,16 +21,24 @@ import {
   Layers,
   ChevronRight,
   Monitor,
-  Smartphone,
-  Flame,
-  Star,
+  Palette,
+  Rocket,
+  Radio,
+  Share2,
 } from "lucide-react";
 
 interface GameRoomProps {
   initialMode?: "half" | "full";
 }
 
-type TabType = "stages" | "more-games" | "devs";
+type TabType =
+  | "stages"
+  | "custom-skin"
+  | "flex-card"
+  | "mission-control"
+  | "solana-rpc"
+  | "more-games"
+  | "devs";
 
 export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
   const [screenSize, setScreenSize] = useState<"half" | "full">(initialMode);
@@ -50,7 +62,6 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
   // Keyboard shortcut listener: 'T' for theater toggle, 'F' for full size
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // If typing in input, ignore
       if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
@@ -61,6 +72,16 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  const TABS = [
+    { id: "stages" as TabType, label: "Stages & Boss", icon: Trophy, color: "text-emerald-400" },
+    { id: "custom-skin" as TabType, label: "Pixel Skins", icon: Palette, color: "text-amber-400" },
+    { id: "flex-card" as TabType, label: "Flex Card", icon: Sparkles, color: "text-pink-400" },
+    { id: "mission-control" as TabType, label: "Raydium Orbit", icon: Rocket, color: "text-cyan-400" },
+    { id: "solana-rpc" as TabType, label: "Solana RPC", icon: Radio, color: "text-purple-400" },
+    { id: "more-games" as TabType, label: "Arcade Commons", icon: Gamepad2, color: "text-emerald-300" },
+    { id: "devs" as TabType, label: "Dev XP", icon: Code2, color: "text-yellow-300" },
+  ];
 
   return (
     <div className="min-h-screen bg-[#050914] text-slate-100 flex flex-col">
@@ -85,7 +106,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
               <span className="text-solana-green">ROOM</span>
             </span>
             <span className="hidden md:inline-block text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-              CC0 Community Arena
+              CC0 Gaming Masterpiece
             </span>
           </div>
         </div>
@@ -100,7 +121,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
                 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-[0_0_15px_rgba(20,241,149,0.25)]"
                 : "bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:bg-slate-800"
             }`}
-            title="Half Size: Split screen with Stages & Community Tabs (Press T)"
+            title="Half Size: Split screen with Stages & Companion Tabs (Press T)"
           >
             <Monitor className="w-3.5 h-3.5 text-emerald-400" />
             <span className="hidden sm:inline">Half Size</span>
@@ -133,52 +154,51 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
               <GameContainer />
             </div>
 
-            {/* Right 6-7 Columns: Companion Console Tabs (Stages, More Games, Dev Contributions) */}
+            {/* Right 6-7 Columns: Companion Console Tabs */}
             <div className="lg:col-span-6 xl:col-span-7 flex flex-col gap-4">
               {/* Tab Switcher Ribbon */}
-              <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-lg">
-                <button
-                  onClick={() => setActiveTab("stages")}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-mono font-bold transition-all ${
-                    activeTab === "stages"
-                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-900/60"
-                  }`}
-                >
-                  <Trophy className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="truncate">Stages &amp; Intel</span>
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("more-games")}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-mono font-bold transition-all ${
-                    activeTab === "more-games"
-                      ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-900/60"
-                  }`}
-                >
-                  <Gamepad2 className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span className="truncate">More Games</span>
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("devs")}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-mono font-bold transition-all ${
-                    activeTab === "devs"
-                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-900/60"
-                  }`}
-                >
-                  <Code2 className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="truncate">Contributions &amp; XP</span>
-                </button>
+              <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-lg overflow-x-auto">
+                {TABS.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center gap-1.5 py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 ${
+                        isActive
+                          ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
+                          : "text-slate-400 hover:text-white hover:bg-slate-900/60"
+                      }`}
+                    >
+                      <Icon className={`w-3.5 h-3.5 ${tab.color} shrink-0`} />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Active Tab Panel Body */}
-              <div className="p-4 sm:p-5 rounded-3xl bg-slate-950/60 border border-slate-800/80 shadow-xl min-h-[500px]">
-                {activeTab === "stages" && <GameDetailsTab />}
-                {activeTab === "more-games" && <MoreGamesTab />}
-                {activeTab === "devs" && <DevContributionsTab />}
+              <div className="min-h-[500px]">
+                {activeTab === "stages" && (
+                  <div className="p-4 sm:p-5 rounded-3xl bg-slate-950/60 border border-slate-800/80 shadow-xl">
+                    <GameDetailsTab />
+                  </div>
+                )}
+                {activeTab === "custom-skin" && <PixelSkinWorkshop />}
+                {activeTab === "flex-card" && <ViralCardStudio />}
+                {activeTab === "mission-control" && <MissionControl />}
+                {activeTab === "solana-rpc" && <SolanaRpcTelemetry />}
+                {activeTab === "more-games" && (
+                  <div className="p-4 sm:p-5 rounded-3xl bg-slate-950/60 border border-slate-800/80 shadow-xl">
+                    <MoreGamesTab />
+                  </div>
+                )}
+                {activeTab === "devs" && (
+                  <div className="p-4 sm:p-5 rounded-3xl bg-slate-950/60 border border-slate-800/80 shadow-xl">
+                    <DevContributionsTab />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -193,52 +213,56 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             {/* Full Size Bottom Companion Deck */}
             <div className="w-full max-w-5xl space-y-4 pt-4 border-t border-slate-800/80">
               {/* Tab Selector */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-mono uppercase tracking-wider text-slate-400 font-bold">
                     Arcade Room Companion:
                   </h3>
                 </div>
 
-                <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800">
-                  <button
-                    onClick={() => setActiveTab("stages")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-                      activeTab === "stages"
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    All Stages
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("more-games")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-                      activeTab === "more-games"
-                        ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    More Games
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("devs")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-                      activeTab === "devs"
-                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    Dev Contributions &amp; XP
-                  </button>
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800 overflow-x-auto">
+                  {TABS.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all shrink-0 ${
+                          isActive
+                            ? "bg-slate-800 text-white border border-slate-700"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        <Icon className={`w-3.5 h-3.5 ${tab.color}`} />
+                        <span>{tab.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Tab Contents */}
-              <div className="p-4 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl">
-                {activeTab === "stages" && <GameDetailsTab />}
-                {activeTab === "more-games" && <MoreGamesTab />}
-                {activeTab === "devs" && <DevContributionsTab />}
+              <div className="w-full">
+                {activeTab === "stages" && (
+                  <div className="p-4 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl">
+                    <GameDetailsTab />
+                  </div>
+                )}
+                {activeTab === "custom-skin" && <PixelSkinWorkshop />}
+                {activeTab === "flex-card" && <ViralCardStudio />}
+                {activeTab === "mission-control" && <MissionControl />}
+                {activeTab === "solana-rpc" && <SolanaRpcTelemetry />}
+                {activeTab === "more-games" && (
+                  <div className="p-4 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl">
+                    <MoreGamesTab />
+                  </div>
+                )}
+                {activeTab === "devs" && (
+                  <div className="p-4 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl">
+                    <DevContributionsTab />
+                  </div>
+                )}
               </div>
             </div>
           </div>

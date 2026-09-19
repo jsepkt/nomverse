@@ -855,7 +855,43 @@ class SoundManager {
   // Toggle mute
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
+    if (this.isMuted) {
+      this.stopCustomBgm();
+    }
     return this.isMuted;
+  }
+
+  private bgmInterval: NodeJS.Timeout | null = null;
+  public isBgmPlaying: boolean = false;
+
+  // Real-Time Procedural In-Game BGM Loop
+  public startCustomBgm(grid: boolean[][], bpm: number = 128): void {
+    this.stopCustomBgm();
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+
+    this.isBgmPlaying = true;
+    let step = 0;
+    const totalSteps = grid[0]?.length || 16;
+    const stepDurationMs = (60 / bpm / 2) * 1000;
+
+    this.bgmInterval = setInterval(() => {
+      if (this.isMuted || !this.isBgmPlaying) return;
+      if (grid[0]?.[step]) this.playKick();
+      if (grid[1]?.[step]) this.playSnare();
+      if (grid[2]?.[step]) this.playHiHat();
+      if (grid[3]?.[step]) this.playArp(step);
+      step = (step + 1) % totalSteps;
+    }, stepDurationMs);
+  }
+
+  public stopCustomBgm(): void {
+    this.isBgmPlaying = false;
+    if (this.bgmInterval) {
+      clearInterval(this.bgmInterval);
+      this.bgmInterval = null;
+    }
   }
 }
 

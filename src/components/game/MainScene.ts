@@ -142,6 +142,14 @@ export class MainScene extends Phaser.Scene {
   private bossMoveTween?: Phaser.Tweens.Tween;
   private isBossDefeated: boolean = false;
 
+  // Ghost Racer Telemetry Replay
+  private ghostNomster?: Phaser.GameObjects.Sprite;
+  private ghostLabel?: Phaser.GameObjects.Text;
+  private ghostTrajectory: { t: number; x: number }[] = [];
+  private currentRunTrajectory: { t: number; x: number }[] = [];
+  private runStartTime: number = 0;
+  private lastTrajectorySampleTime: number = 0;
+
   // Game Lifecycle & Countdown State
   public isGameStarted: boolean = false;
   public playState: "idle" | "countdown" | "playing" | "respawning" | "gameover" = "idle";
@@ -311,6 +319,78 @@ export class MainScene extends Phaser.Scene {
     this.nomster.setScale(1.0);
     this.nomster.setDepth(10);
     this.nomster.setInteractive({ cursor: "grab" });
+
+    // Custom In-Game Skin Texture Injection from PixelSkinWorkshop
+    if (typeof window !== "undefined") {
+      try {
+        const savedCustomSkin = localStorage.getItem("nomverse_custom_skin_data");
+        if (savedCustomSkin) {
+          const img = new Image();
+          img.onload = () => {
+            if (this.textures) {
+              if (this.textures.exists("custom_pixel_skin")) {
+                this.textures.remove("custom_pixel_skin");
+              }
+              this.textures.addImage("custom_pixel_skin", img);
+              if (this.nomster && this.nomster.active) {
+                this.nomster.setTexture("custom_pixel_skin");
+                this.nomster.setDisplaySize(110, 110);
+              }
+            }
+          };
+          img.src = savedCustomSkin;
+        }
+      } catch {
+        // ignore
+      }
+
+      window.addEventListener("nomverse_custom_skin_equipped", (e: Event) => {
+        const customEvent = e as CustomEvent<{ dataUrl: string }>;
+        const dataUrl = customEvent.detail?.dataUrl;
+        if (dataUrl && this.textures) {
+          const img = new Image();
+          img.onload = () => {
+            if (this.textures) {
+              if (this.textures.exists("custom_pixel_skin")) {
+                this.textures.remove("custom_pixel_skin");
+              }
+              this.textures.addImage("custom_pixel_skin", img);
+              if (this.nomster && this.nomster.active) {
+                this.nomster.setTexture("custom_pixel_skin");
+                this.nomster.setDisplaySize(110, 110);
+              }
+            }
+          };
+          img.src = dataUrl;
+        }
+      });
+
+      // Ghost Racer Personal Best Telemetry Spawn
+      try {
+        const rawGhost = localStorage.getItem("nomverse_best_ghost_trajectory");
+        if (rawGhost) {
+          this.ghostTrajectory = JSON.parse(rawGhost);
+          if (this.ghostTrajectory.length > 0) {
+            this.ghostNomster = this.add.sprite(width / 2, nomsterY, "nomster");
+            this.ghostNomster.setOrigin(0.5, 0.85);
+            this.ghostNomster.setAlpha(0.35);
+            this.ghostNomster.setTint(0x00f0ff);
+            this.ghostNomster.setDepth(8);
+            this.ghostLabel = this.add.text(width / 2, nomsterY - 95, "BEST GHOST", {
+              fontFamily: "monospace",
+              fontSize: "9px",
+              color: "#00f0ff",
+              fontStyle: "bold",
+            });
+            this.ghostLabel.setOrigin(0.5, 0.5);
+            this.ghostLabel.setAlpha(0.6);
+            this.ghostLabel.setDepth(9);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
 
     // Mascot Sleeping Eyes
     this.sleepingEyes = this.add.graphics();
@@ -511,6 +591,27 @@ export class MainScene extends Phaser.Scene {
           this.nomster.angle = (this.nomsterVelocityX / this.maxNomsterSpeed) * 11;
         } else if (!this.isMovingNomster && Math.abs(this.nomster.angle) > 0.5) {
           this.nomster.angle = Phaser.Math.Linear(this.nomster.angle, 0, dt * 10);
+        }
+
+        // Ghost Racer Telemetry Sampling & Replay
+        if (this.playState === "playing") {
+          if (!this.runStartTime) this.runStartTime = Date.now();
+          const elapsed = Date.now() - this.runStartTime;
+
+          if (Date.now() - this.lastTrajectorySampleTime > 100) {
+            this.lastTrajectorySampleTime = Date.now();
+            this.currentRunTrajectory.push({ t: elapsed, x: this.nomster.x });
+          }
+
+          if (this.ghostNomster && this.ghostTrajectory.length > 0) {
+            const targetFrame = this.ghostTrajectory.find((pt) => pt.t >= elapsed);
+            if (targetFrame) {
+              this.ghostNomster.x = Phaser.Math.Linear(this.ghostNomster.x, targetFrame.x, 0.25);
+              if (this.ghostLabel) {
+                this.ghostLabel.x = this.ghostNomster.x;
+              }
+            }
+          }
         }
 
         // Spacebar / Shift triggers Super Dash
@@ -3629,6 +3730,21 @@ export class MainScene extends Phaser.Scene {
       duration: 450,
       ease: "Bounce.easeOut",
     });
+
+    // Save Ghost Racer trajectory if this run was a new high score
+    if (typeof window !== "undefined" && this.currentRunTrajectory.length > 0) {
+      try {
+        const storedHS = parseInt(localStorage.getItem("nomverse_highscore") || "0", 10);
+        if (this.score >= storedHS) {
+          localStorage.setItem(
+            "nomverse_best_ghost_trajectory",
+            JSON.stringify(this.currentRunTrajectory)
+          );
+        }
+      } catch {
+        // ignore
+      }
+    }
 
     if (this.callbacks.onGameOver) {
       this.callbacks.onGameOver(this.score);

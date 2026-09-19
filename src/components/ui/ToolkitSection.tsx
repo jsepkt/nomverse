@@ -5,6 +5,8 @@ import Image from "next/image";
 import { GitFork, Code2, Rocket, Download, Copy, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { MemeStudio } from "../tools/MemeStudio";
 import { ChiptuneStudio } from "../audio/ChiptuneStudio";
+import { PixelSkinWorkshop } from "../tools/PixelSkinWorkshop";
+import { ViralCardStudio } from "../tools/ViralCardStudio";
 import { copyToClipboard as safeCopy } from "@/lib/clipboard";
 
 export const ToolkitSection: React.FC = () => {
@@ -106,6 +108,16 @@ export const ToolkitSection: React.FC = () => {
         {/* In-Browser CC0 Nomster PFP & Meme Maker Studio */}
         <div id="create" className="scroll-mt-24 mb-14">
           <MemeStudio />
+        </div>
+
+        {/* CC0 Pixel Skin Workshop */}
+        <div className="mb-14">
+          <PixelSkinWorkshop />
+        </div>
+
+        {/* Holographic Flex Trading Card Studio */}
+        <div className="mb-14">
+          <ViralCardStudio />
         </div>
 
         {/* 8-Bit Chiptune Beat Studio (NomBeats) */}
