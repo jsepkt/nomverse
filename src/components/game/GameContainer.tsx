@@ -292,12 +292,24 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         }
 
         // Telegram WebApp Native Environment Init
-        const tg = (window as unknown as { Telegram?: { WebApp?: { ready: () => void; expand: () => void; setHeaderColor: (c: string) => void; setBackgroundColor: (c: string) => void } } }).Telegram?.WebApp;
+        const tg = (window as unknown as {
+          Telegram?: {
+            WebApp?: {
+              ready: () => void;
+              expand: () => void;
+              isVersionAtLeast?: (ver: string) => boolean;
+              setHeaderColor?: (c: string) => void;
+              setBackgroundColor?: (c: string) => void;
+            };
+          };
+        }).Telegram?.WebApp;
         if (tg) {
           tg.ready();
           tg.expand();
-          tg.setHeaderColor("#050914");
-          tg.setBackgroundColor("#050914");
+          if (tg.isVersionAtLeast && tg.isVersionAtLeast("6.1")) {
+            tg.setHeaderColor?.("#050914");
+            tg.setBackgroundColor?.("#050914");
+          }
         }
 
         // Check Daily Mystery Lootbox status

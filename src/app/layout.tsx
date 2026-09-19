@@ -28,6 +28,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "NomVerse",
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   openGraph: {
     title: "NomVerse — The Hungry Open-Source Mascot of Web3 (CC0)",
     description:
