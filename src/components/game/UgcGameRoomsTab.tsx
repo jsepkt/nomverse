@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Play,
+  Palette,
 } from "lucide-react";
 import {
   getUgcRooms,
@@ -36,6 +37,8 @@ import { ArcadeVaultModal } from "./ArcadeVaultModal";
 import { CreateRoomModal } from "./CreateRoomModal";
 import { BurnTicker } from "./BurnTicker";
 import { BurnHallOfFame } from "./BurnHallOfFame";
+import { MemeCharacterBazaar } from "./MemeCharacterBazaar";
+import { getMemeCharacters } from "@/lib/memeCharacterStorage";
 import { recordFeedItem } from "@/lib/burnFeedStorage";
 import { sounds } from "../audio/soundEffects";
 import confetti from "canvas-confetti";
@@ -48,8 +51,9 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
   const { user, openAuthModal } = useAuth();
   const userId = user?.id || "guest";
 
-  const [subTab, setSubTab] = useState<"rooms" | "hall_of_fame">("rooms");
+  const [subTab, setSubTab] = useState<"rooms" | "bazaar" | "hall_of_fame">("rooms");
   const [rooms, setRooms] = useState<UgcGameRoom[]>([]);
+  const [charactersCount, setCharactersCount] = useState<number>(4);
   const [balance, setBalance] = useState<number>(10000);
   const [totalBurned, setTotalBurned] = useState<number>(42850);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
@@ -65,6 +69,7 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
     setRooms(getUgcRooms());
     setBalance(getUserVault(userId).balance);
     setTotalBurned(getTotalNomBurned());
+    setCharactersCount(getMemeCharacters().length);
 
     // Listen for gameplay victory events from Phaser
     const handleChallengeVictory = (e: Event) => {
@@ -93,8 +98,16 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
       }
     };
 
+    const handleCharsUpdate = () => {
+      setCharactersCount(getMemeCharacters().length);
+    };
+
     window.addEventListener("NOM_CHALLENGE_VICTORY", handleChallengeVictory);
-    return () => window.removeEventListener("NOM_CHALLENGE_VICTORY", handleChallengeVictory);
+    window.addEventListener("NOM_MEME_CHARACTERS_UPDATE", handleCharsUpdate);
+    return () => {
+      window.removeEventListener("NOM_CHALLENGE_VICTORY", handleChallengeVictory);
+      window.removeEventListener("NOM_MEME_CHARACTERS_UPDATE", handleCharsUpdate);
+    };
   }, [userId, user?.name]);
 
   const handleEnterRoom = (room: UgcGameRoom) => {
@@ -224,9 +237,9 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
         </div>
       </div>
 
-      {/* Sub-view Switcher Ribbon: Community Rooms vs Burn Hall of Fame */}
+      {/* Sub-view Switcher Ribbon: Community Rooms vs Meme Characters vs Burn Hall of Fame */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/90 border border-slate-800 shadow-md">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/90 border border-slate-800 shadow-md flex-wrap sm:flex-nowrap">
           <button
             onClick={() => setSubTab("rooms")}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
@@ -237,6 +250,18 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
           >
             <Trophy className="w-3.5 h-3.5 text-emerald-400" />
             <span>Community Rooms ({rooms.length})</span>
+          </button>
+
+          <button
+            onClick={() => setSubTab("bazaar")}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+              subTab === "bazaar"
+                ? "bg-gradient-to-r from-purple-950/60 to-slate-800 text-purple-300 border border-purple-500/50 shadow-sm"
+                : "text-slate-400 hover:text-purple-300"
+            }`}
+          >
+            <Palette className="w-3.5 h-3.5 text-purple-400" />
+            <span>Meme Characters ({charactersCount})</span>
           </button>
 
           <button
@@ -252,7 +277,7 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
           </button>
         </div>
 
-        {subTab === "hall_of_fame" && (
+        {subTab !== "rooms" && (
           <button
             onClick={() => setSubTab("rooms")}
             className="text-xs text-emerald-400 hover:underline flex items-center gap-1 font-bold cursor-pointer"
@@ -301,8 +326,19 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
       {/* VIEW 1: BURN HALL OF FAME & LIVE FEED */}
       {subTab === "hall_of_fame" ? (
         <BurnHallOfFame />
+      ) : subTab === "bazaar" ? (
+        /* VIEW 2: MEME CHARACTER BAZAAR */
+        <MemeCharacterBazaar
+          onOpenWorkshop={() => {
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(
+                new CustomEvent("NOM_SWITCH_TAB", { detail: { tab: "custom-skin" } })
+              );
+            }
+          }}
+        />
       ) : (
-        /* VIEW 2: COMMUNITY CHALLENGE ROOMS GRID */
+        /* VIEW 3: COMMUNITY CHALLENGE ROOMS GRID */
         <div className="space-y-4">
           {/* Filter and Search Bar */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">

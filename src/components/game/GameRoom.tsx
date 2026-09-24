@@ -104,6 +104,22 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Cross-component tab switcher listener
+  useEffect(() => {
+    const handleSwitchTab = (e: Event) => {
+      const customEvent = e as CustomEvent<{ tab: TabType }>;
+      if (customEvent.detail?.tab) {
+        setActiveTab(customEvent.detail.tab);
+        const cabinet = document.getElementById("arcade-cabinet");
+        if (cabinet) {
+          cabinet.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    };
+    window.addEventListener("NOM_SWITCH_TAB", handleSwitchTab);
+    return () => window.removeEventListener("NOM_SWITCH_TAB", handleSwitchTab);
+  }, []);
+
   const TABS = [
     { id: "ugc-arena" as TabType, label: "$NOM Arena", icon: Flame, color: "text-rose-400" },
     { id: "stages" as TabType, label: "Stages & Boss", icon: Trophy, color: "text-emerald-400" },
