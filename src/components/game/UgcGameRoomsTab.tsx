@@ -34,6 +34,9 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { ArcadeVaultModal } from "./ArcadeVaultModal";
 import { CreateRoomModal } from "./CreateRoomModal";
+import { BurnTicker } from "./BurnTicker";
+import { BurnHallOfFame } from "./BurnHallOfFame";
+import { recordFeedItem } from "@/lib/burnFeedStorage";
 import { sounds } from "../audio/soundEffects";
 import confetti from "canvas-confetti";
 
@@ -45,6 +48,7 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
   const { user, openAuthModal } = useAuth();
   const userId = user?.id || "guest";
 
+  const [subTab, setSubTab] = useState<"rooms" | "hall_of_fame">("rooms");
   const [rooms, setRooms] = useState<UgcGameRoom[]>([]);
   const [balance, setBalance] = useState<number>(10000);
   const [totalBurned, setTotalBurned] = useState<number>(42850);
@@ -71,7 +75,7 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
       const room = currentRooms.find((r) => r.id === customEvent.detail.roomId);
       if (room) {
         const prize = room.prizePool;
-        awardChallengePrize(userId, room.id, room.title, prize);
+        awardChallengePrize(userId, room.id, room.title, prize, user?.name || "Anon Champion");
         recordRoomWinEvent(room.id, prize);
 
         setBalance(getUserVault(userId).balance);
@@ -91,13 +95,20 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
 
     window.addEventListener("NOM_CHALLENGE_VICTORY", handleChallengeVictory);
     return () => window.removeEventListener("NOM_CHALLENGE_VICTORY", handleChallengeVictory);
-  }, [userId]);
+  }, [userId, user?.name]);
 
   const handleEnterRoom = (room: UgcGameRoom) => {
     setStatusMessage(null);
 
     // Deduct entry fee: 90% prize pool, 9% creator royalty, 1% auto-burn
-    const res = deductRoomEntryFee(userId, room.id, room.entryFee, room.creatorId);
+    const res = deductRoomEntryFee(
+      userId,
+      room.id,
+      room.entryFee,
+      room.creatorId,
+      room.title,
+      user?.name || "Anon Nommer"
+    );
 
     if (!res.success) {
       setStatusMessage({ text: res.error || "Failed to enter room.", type: "error" });
@@ -164,6 +175,9 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
 
   return (
     <div className="space-y-5 font-mono">
+      {/* Live Deflationary Marquee Ticker */}
+      <BurnTicker />
+
       {/* Top Arcade Bank & Live Deflationary Stats Strip */}
       <div className="p-4 rounded-3xl bg-slate-950/80 border border-emerald-500/30 shadow-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Left: Player $NOM Vault Balance */}
@@ -210,6 +224,45 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
         </div>
       </div>
 
+      {/* Sub-view Switcher Ribbon: Community Rooms vs Burn Hall of Fame */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/90 border border-slate-800 shadow-md">
+          <button
+            onClick={() => setSubTab("rooms")}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+              subTab === "rooms"
+                ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            <Trophy className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Community Rooms ({rooms.length})</span>
+          </button>
+
+          <button
+            onClick={() => setSubTab("hall_of_fame")}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+              subTab === "hall_of_fame"
+                ? "bg-gradient-to-r from-rose-950/60 to-slate-800 text-rose-300 border border-rose-500/50 shadow-sm"
+                : "text-slate-400 hover:text-rose-300"
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+            <span>Burn Hall of Fame &amp; Live Feed</span>
+          </button>
+        </div>
+
+        {subTab === "hall_of_fame" && (
+          <button
+            onClick={() => setSubTab("rooms")}
+            className="text-xs text-emerald-400 hover:underline flex items-center gap-1 font-bold cursor-pointer"
+          >
+            <span>Back to Game Rooms</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+
       {/* Active Challenge Notification Banner */}
       {activeChallenge && (
         <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-teal-950/40 border-2 border-emerald-400/80 shadow-[0_0_25px_rgba(20,241,149,0.3)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-pulse">
@@ -245,41 +298,47 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
         </div>
       )}
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-          {[
-            { id: "all", label: "All Rooms" },
-            { id: "micro", label: "Micro (≤500)" },
-            { id: "high", label: "High Pot (>10k)" },
-            { id: "candy", label: "Candy Rush" },
-            { id: "boss", label: "Boss Attack" },
-          ].map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setSelectedFilter(f.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 border ${
-                selectedFilter === f.id
-                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-sm"
-                  : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+      {/* VIEW 1: BURN HALL OF FAME & LIVE FEED */}
+      {subTab === "hall_of_fame" ? (
+        <BurnHallOfFame />
+      ) : (
+        /* VIEW 2: COMMUNITY CHALLENGE ROOMS GRID */
+        <div className="space-y-4">
+          {/* Filter and Search Bar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+              {[
+                { id: "all", label: "All Rooms" },
+                { id: "micro", label: "Micro (≤500)" },
+                { id: "high", label: "High Pot (>10k)" },
+                { id: "candy", label: "Candy Rush" },
+                { id: "boss", label: "Boss Attack" },
+              ].map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => setSelectedFilter(f.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 border ${
+                    selectedFilter === f.id
+                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-sm"
+                      : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-white"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
 
-        <div className="relative w-full sm:w-56">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search community rooms..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400"
-          />
-        </div>
-      </div>
+            <div className="relative w-full sm:w-56">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search community rooms..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400"
+              />
+            </div>
+          </div>
 
       {/* Community Challenge Rooms Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -351,65 +410,74 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
           );
         })}
       </div>
+    </div>
+  )}
 
-      {/* Challenge Victory Modal */}
-      {victoryRoom && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/85 backdrop-blur-md animate-in zoom-in-95 duration-200">
-          <div className="w-full max-w-md p-6 rounded-3xl bg-slate-950 border-2 border-emerald-400 shadow-2xl text-center space-y-4 font-mono">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 mx-auto flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/20 animate-bounce">
-              <Trophy className="w-8 h-8" />
-            </div>
+  {/* Challenge Victory Modal */}
+  {victoryRoom && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/85 backdrop-blur-md animate-in zoom-in-95 duration-200">
+      <div className="w-full max-w-md p-6 rounded-3xl bg-slate-950 border-2 border-emerald-400 shadow-2xl text-center space-y-4 font-mono">
+        <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 mx-auto flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/20 animate-bounce">
+          <Trophy className="w-8 h-8" />
+        </div>
 
-            <div>
-              <div className="text-xs text-emerald-400 font-bold uppercase tracking-widest">
-                CHALLENGE COMPLETED!
-              </div>
-              <h3 className="text-xl font-black text-white mt-1">
-                You Beat the Room Target!
-              </h3>
-              <p className="text-xs text-slate-300 mt-1 font-sans">
-                Room: &ldquo;{victoryRoom.room.title}&rdquo;
-              </p>
-            </div>
+        <div>
+          <div className="text-xs text-emerald-400 font-bold uppercase tracking-widest">
+            CHALLENGE COMPLETED!
+          </div>
+          <h3 className="text-xl font-black text-white mt-1">
+            You Beat the Room Target!
+          </h3>
+          <p className="text-xs text-slate-300 mt-1 font-sans">
+            Room: &ldquo;{victoryRoom.room.title}&rdquo;
+          </p>
+        </div>
 
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-emerald-950/40 border border-emerald-500/40">
-              <div className="text-xs text-slate-400">Total Bounty Awarded:</div>
-              <div className="text-3xl font-black text-emerald-400 mt-0.5">
-                +{victoryRoom.prizeWon.toLocaleString()} $NOM
-              </div>
-              <div className="text-[10px] text-slate-400 mt-1">
-                Credited directly to your In-Game Arcade Bank!
-              </div>
-            </div>
-
-            <button
-              onClick={() => setVictoryRoom(null)}
-              className="w-full py-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 hover:scale-105 transition-all cursor-pointer shadow-lg"
-            >
-              Collect Rewards &amp; Continue
-            </button>
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-emerald-950/40 border border-emerald-500/40">
+          <div className="text-xs text-slate-400">Total Bounty Awarded:</div>
+          <div className="text-3xl font-black text-emerald-400 mt-0.5">
+            +{victoryRoom.prizeWon.toLocaleString()} $NOM
+          </div>
+          <div className="text-[10px] text-slate-400 mt-1">
+            Credited directly to your In-Game Arcade Bank!
           </div>
         </div>
-      )}
 
-      {/* Modals */}
-      <ArcadeVaultModal
-        isOpen={isVaultOpen}
-        onClose={() => setIsVaultOpen(false)}
-        onBalanceUpdated={(newBal) => setBalance(newBal)}
-      />
-
-      <CreateRoomModal
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        onRoomCreated={(newRoom) => {
-          setRooms(getUgcRooms());
-          setStatusMessage({
-            text: `Room "${newRoom.title}" published! You will earn a 9% royalty whenever someone plays.`,
-            type: "success",
-          });
-        }}
-      />
+        <button
+          onClick={() => setVictoryRoom(null)}
+          className="w-full py-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 hover:scale-105 transition-all cursor-pointer shadow-lg"
+        >
+          Collect Rewards &amp; Continue
+        </button>
+      </div>
     </div>
+  )}
+
+  {/* Modals */}
+  <ArcadeVaultModal
+    isOpen={isVaultOpen}
+    onClose={() => setIsVaultOpen(false)}
+    onBalanceUpdated={(newBal) => setBalance(newBal)}
+  />
+
+  <CreateRoomModal
+    isOpen={isCreateOpen}
+    onClose={() => setIsCreateOpen(false)}
+    onRoomCreated={(newRoom) => {
+      setRooms(getUgcRooms());
+      recordFeedItem({
+        type: "play_entry",
+        playerName: newRoom.creatorName,
+        amountNom: newRoom.entryFee,
+        roomTitle: newRoom.title,
+        roomId: newRoom.id,
+      });
+      setStatusMessage({
+        text: `Room "${newRoom.title}" published! You will earn a 9% royalty whenever someone plays.`,
+        type: "success",
+      });
+    }}
+  />
+</div>
   );
 };

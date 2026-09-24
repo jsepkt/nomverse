@@ -26,6 +26,8 @@ export const BURN_FEE_PERCENT = 1; // 1% lowest burn fee
 export const CREATOR_ROYALTY_PERCENT = 9; // 9% creator royalty
 export const PRIZE_POOL_PERCENT = 90; // 90% added to challenge prize pool
 
+import { recordFeedItem } from "./burnFeedStorage";
+
 export function getUserVault(userId: string): UserVaultState {
   if (typeof window === "undefined") {
     return {
@@ -158,15 +160,24 @@ export function withdrawFromVault(
   });
 
   saveUserVault(userId, state);
+
+  recordFeedItem({
+    type: "withdraw_burn",
+    playerName: `${walletAddress.substring(0, 4)}...${walletAddress.slice(-4)}`,
+    amountNom: netWithdraw,
+    burnedNom: burnedAmount,
+  });
+
   return { success: true, newBalance: state.balance, burnedAmount };
 }
 
-// Deduct Entry Fee when joining a community game room
 export function deductRoomEntryFee(
   userId: string,
   roomId: string,
   entryFee: number,
-  creatorId: string
+  creatorId: string,
+  roomTitle?: string,
+  playerName?: string
 ): {
   success: boolean;
   prizeShare: number;
@@ -215,10 +226,27 @@ export function deductRoomEntryFee(
       description: `Creator Royalty from Room #${roomId.substring(0, 6)}: +${creatorShare.toLocaleString()} $NOM`,
     });
     saveUserVault(creatorId, creatorState);
+
+    recordFeedItem({
+      type: "creator_royalty",
+      playerName: `Creator #${creatorId.substring(0, 6)}`,
+      amountNom: creatorShare,
+      roomTitle: roomTitle || `Room #${roomId.substring(0, 6)}`,
+      roomId,
+    });
   }
 
   // Record permanent global burn
   recordGlobalBurn(burnedShare);
+
+  recordFeedItem({
+    type: "burn",
+    playerName: playerName || (userId === "guest" ? "Anon Nommer" : userId.substring(0, 10)),
+    amountNom: entryFee,
+    burnedNom: burnedShare,
+    roomTitle: roomTitle || `Room #${roomId.substring(0, 6)}`,
+    roomId,
+  });
 
   return {
     success: true,
@@ -233,7 +261,8 @@ export function awardChallengePrize(
   userId: string,
   roomId: string,
   roomTitle: string,
-  prizeAmount: number
+  prizeAmount: number,
+  playerName?: string
 ): { success: boolean; newBalance: number } {
   const state = getUserVault(userId);
   state.balance += prizeAmount;
@@ -248,5 +277,15 @@ export function awardChallengePrize(
   });
 
   saveUserVault(userId, state);
+
+  recordFeedItem({
+    type: "bounty_win",
+    playerName: playerName || (userId === "guest" ? "Anon Champion" : userId.substring(0, 10)),
+    amountNom: prizeAmount,
+    roomTitle,
+    roomId,
+    highlight: true,
+  });
+
   return { success: true, newBalance: state.balance };
 }
