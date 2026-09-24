@@ -163,6 +163,16 @@ export const GameContainer: React.FC<GameContainerProps> = ({
   const [welcomeRefMessage, setWelcomeRefMessage] = useState<string | null>(null);
   const [canClaimCrate, setCanClaimCrate] = useState<boolean>(false);
 
+  // UGC Community Challenge Room State ($NOM Arena)
+  const [activeChallenge, setActiveChallenge] = useState<{
+    roomId: string;
+    roomTitle: string;
+    targetScore: number;
+    timeLimitSeconds: number;
+    prizePool: number;
+  } | null>(null);
+  const [challengeWon, setChallengeWon] = useState<boolean>(false);
+
   const handleCycleDeepNom = () => {
     setDeepNomMode((prev) => {
       const next = prev === "off" ? "autopilot" : prev === "autopilot" ? "duel" : "off";
@@ -340,8 +350,30 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         sounds.playGoldenChime();
       };
       window.addEventListener("NOM_CANDY_FRENZY", handleFrenzyEvent);
+
+      const handleStartChallenge = (e: Event) => {
+        const customEvent = e as CustomEvent<{
+          roomId: string;
+          roomTitle: string;
+          targetScore: number;
+          timeLimitSeconds: number;
+          prizePool: number;
+        }>;
+        if (customEvent.detail) {
+          setActiveChallenge(customEvent.detail);
+          setChallengeWon(false);
+          setIsGameOver(false);
+          setGameState("playing");
+          setResetSignal((prev) => prev + 1);
+          setStartSignal((prev) => prev + 1);
+          sounds.playPowerUpCollect();
+        }
+      };
+      window.addEventListener("NOM_START_CHALLENGE", handleStartChallenge);
+
       return () => {
         window.removeEventListener("NOM_CANDY_FRENZY", handleFrenzyEvent);
+        window.removeEventListener("NOM_START_CHALLENGE", handleStartChallenge);
       };
     }
   }, []);
@@ -448,6 +480,27 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           colors: ["#14F195", "#9945FF", "#F59E0B"],
         });
       }
+    }
+
+    // Check UGC Community Challenge Room Victory condition ($NOM Arena)
+    if (activeChallenge && !challengeWon && newScore >= activeChallenge.targetScore) {
+      setChallengeWon(true);
+      sounds.playGoldenChime();
+      nomsterVoice.speakVictory();
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.4 },
+        colors: ["#14F195", "#9945FF", "#F59E0B", "#38BDF8"],
+      });
+      window.dispatchEvent(
+        new CustomEvent("NOM_CHALLENGE_VICTORY", {
+          detail: {
+            roomId: activeChallenge.roomId,
+            score: newScore,
+          },
+        })
+      );
     }
   };
 
@@ -1049,6 +1102,66 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* UGC $NOM Community Challenge Room HUD Banner */}
+      {activeChallenge && (
+        <div className="w-full mb-2.5 p-3 rounded-2xl bg-gradient-to-r from-slate-900/95 via-rose-950/40 to-slate-900/95 border-2 border-amber-500/60 backdrop-blur-xl shadow-[0_0_25px_rgba(245,158,11,0.25)] flex flex-col gap-2 animate-in fade-in select-none">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="text-base animate-bounce">🎯</span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-wider">
+                  COMMUNITY ARENA BOUNTY
+                </span>
+                <span className="text-xs font-mono font-black text-white truncate max-w-[200px] sm:max-w-xs">
+                  {activeChallenge.roomTitle}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono font-black text-candy-gold bg-amber-500/15 px-2.5 py-1 rounded-xl border border-amber-500/40 shadow-sm">
+                +{activeChallenge.prizePool.toLocaleString()} $NOM
+              </span>
+              <button
+                onClick={() => {
+                  setActiveChallenge(null);
+                  setChallengeWon(false);
+                }}
+                className="text-slate-400 hover:text-white text-xs font-mono px-1.5 py-0.5 rounded hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Dismiss Challenge"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {/* Target Progress Bar */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex-1 bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800 relative">
+              <div
+                className={`h-full transition-all duration-150 ${
+                  challengeWon
+                    ? "bg-gradient-to-r from-emerald-400 to-solana-green shadow-[0_0_15px_#14f195]"
+                    : "bg-gradient-to-r from-amber-400 via-yellow-400 to-emerald-400"
+                }`}
+                style={{
+                  width: `${Math.min(100, Math.max(5, (score / activeChallenge.targetScore) * 100))}%`,
+                }}
+              />
+            </div>
+            <span className="text-[11px] font-mono font-bold shrink-0">
+              {challengeWon ? (
+                <span className="text-emerald-400 font-black animate-pulse">👑 WON!</span>
+              ) : (
+                <span className="text-slate-300">
+                  <strong className="text-white">{score}</strong> / <strong className="text-amber-300">{activeChallenge.targetScore}</strong>
+                </span>
+              )}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* NOM-RAGE Fever Overdrive Progress Bar */}
       <div className="w-full mb-2.5 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-2 select-none shadow-sm">

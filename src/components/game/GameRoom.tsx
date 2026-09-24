@@ -28,12 +28,18 @@ import {
 } from "lucide-react";
 import { QuickBuyModal } from "../wallet/QuickBuyModal";
 import { TOKEN_CONFIG } from "@/config/token";
+import { UgcGameRoomsTab } from "./UgcGameRoomsTab";
+import { ArcadeVaultModal } from "./ArcadeVaultModal";
+import { getUserVault, getTotalNomBurned } from "@/lib/arcadeVault";
+import { useAuth } from "@/context/AuthContext";
+import { Coins, Flame } from "lucide-react";
 
 interface GameRoomProps {
   initialMode?: "half" | "full";
 }
 
 type TabType =
+  | "ugc-arena"
   | "stages"
   | "custom-skin"
   | "flex-card"
@@ -43,10 +49,30 @@ type TabType =
   | "devs";
 
 export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
+  const { user } = useAuth();
+  const userId = user?.id || "guest";
   const [screenSize, setScreenSize] = useState<"half" | "full">(initialMode);
-  const [activeTab, setActiveTab] = useState<TabType>("stages");
+  const [activeTab, setActiveTab] = useState<TabType>("ugc-arena");
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
+  const [isVaultOpen, setIsVaultOpen] = useState<boolean>(false);
+  const [vaultBalance, setVaultBalance] = useState<number>(10000);
+  const [totalBurned, setTotalBurned] = useState<number>(42850);
+
+  // Sync in-game vault balance and global burn ledger
+  useEffect(() => {
+    const updateVault = () => {
+      setVaultBalance(getUserVault(userId).balance);
+      setTotalBurned(getTotalNomBurned());
+    };
+    updateVault();
+    window.addEventListener("NOM_VAULT_UPDATE", updateVault);
+    window.addEventListener("NOM_BURN_UPDATE", updateVault);
+    return () => {
+      window.removeEventListener("NOM_VAULT_UPDATE", updateVault);
+      window.removeEventListener("NOM_BURN_UPDATE", updateVault);
+    };
+  }, [userId]);
 
   // Auto-detect mobile devices to prioritize full window
   useEffect(() => {
@@ -79,6 +105,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
   }, []);
 
   const TABS = [
+    { id: "ugc-arena" as TabType, label: "$NOM Arena", icon: Flame, color: "text-rose-400" },
     { id: "stages" as TabType, label: "Stages & Boss", icon: Trophy, color: "text-emerald-400" },
     { id: "custom-skin" as TabType, label: "Pixel Skins", icon: Palette, color: "text-amber-400" },
     { id: "flex-card" as TabType, label: "Flex Card", icon: Sparkles, color: "text-pink-400" },
@@ -116,9 +143,22 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
           </div>
         </div>
 
-        {/* Right: Screen Size Switcher (Half vs Full) & Shortcut Hint */}
-        {/* Right: Screen Size Switcher (Half vs Full) & Shortcut Hint */}
+        {/* Right: Controls & Vault Pill */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* In-Game $NOM Vault & Burn Sink Indicator */}
+          <button
+            onClick={() => setIsVaultOpen(true)}
+            className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-slate-900/90 hover:bg-slate-800 border border-amber-500/40 text-amber-300 flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+            title="Arcade Vault: Deposit, Withdraw & 1% Deflationary Burn Sink"
+          >
+            <Coins className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span className="font-mono font-black">{vaultBalance.toLocaleString()}</span>
+            <span className="hidden sm:inline text-[10px] text-amber-400/80">$NOM</span>
+            <span className="hidden xl:inline text-[10px] text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/30">
+              🔥 {totalBurned.toLocaleString()} Burned
+            </span>
+          </button>
+
           {/* Half Size (Split Console) Toggle Button */}
           <button
             onClick={() => setScreenSize("half")}
@@ -167,7 +207,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
         {screenSize === "half" ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left 5-6 Columns: Game Arcade Cabinet */}
-            <div className="lg:col-span-6 xl:col-span-5 flex flex-col items-center justify-start sticky top-20">
+            <div id="arcade-cabinet" className="lg:col-span-6 xl:col-span-5 flex flex-col items-center justify-start sticky top-20">
               <GameContainer />
             </div>
 
@@ -197,6 +237,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
               {/* Active Tab Panel Body */}
               <div className="min-h-[500px]">
+                {activeTab === "ugc-arena" && <UgcGameRoomsTab />}
                 {activeTab === "stages" && (
                   <div className="p-4 sm:p-5 rounded-3xl bg-slate-950/60 border border-slate-800/80 shadow-xl">
                     <GameDetailsTab />
@@ -223,7 +264,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
           /* VIEW 2: FULL SIZE (EXPANDED ULTRA ARCADE) */
           <div className="flex flex-col items-center justify-start gap-8 w-full">
             {/* Centered Expanded Arcade Cabinet */}
-            <div className="w-full flex justify-center">
+            <div id="arcade-cabinet" className="w-full flex justify-center">
               <GameContainer expandedMode={true} />
             </div>
 
@@ -261,6 +302,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
               {/* Tab Contents */}
               <div className="w-full">
+                {activeTab === "ugc-arena" && <UgcGameRoomsTab />}
                 {activeTab === "stages" && (
                   <div className="p-4 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl">
                     <GameDetailsTab />
@@ -285,6 +327,11 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
           </div>
         )}
       </div>
+      <ArcadeVaultModal
+        isOpen={isVaultOpen}
+        onClose={() => setIsVaultOpen(false)}
+        onBalanceUpdated={(newBal) => setVaultBalance(newBal)}
+      />
       <QuickBuyModal isOpen={isQuickBuyOpen} onClose={() => setIsQuickBuyOpen(false)} />
     </div>
   );
