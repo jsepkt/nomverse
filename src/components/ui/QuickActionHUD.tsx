@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Gamepad2,
   Flame,
@@ -21,6 +21,7 @@ import { QuickBuyModal } from "../wallet/QuickBuyModal";
 
 export const QuickActionHUD: React.FC = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMuted, setIsMuted] = useState(false);
   const [isVaultOpen, setIsVaultOpen] = useState(false);
   const [isQuickBuyOpen, setIsQuickBuyOpen] = useState(false);
@@ -38,7 +39,7 @@ export const QuickActionHUD: React.FC = () => {
     return () => window.removeEventListener("nomverse_sound_toggle", handleSoundToggle);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted || pathname === "/play") return null;
 
   const handleToggleSound = () => {
     const nextMuted = soundEngine.toggleMute();

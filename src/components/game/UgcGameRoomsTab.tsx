@@ -286,41 +286,41 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
 
       {/* Sub-view Switcher Ribbon: Community Rooms vs Meme Characters vs Burn Hall of Fame */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/90 border border-slate-800 shadow-md flex-wrap sm:flex-nowrap">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/90 border border-slate-800 shadow-md overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x flex-nowrap w-full sm:w-auto">
           <button
             onClick={() => setSubTab("rooms")}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 cursor-pointer ${
               subTab === "rooms"
                 ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <Trophy className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Community Rooms ({rooms.length})</span>
+            <Trophy className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="whitespace-nowrap"><span className="hidden sm:inline">Community </span>Rooms ({rooms.length})</span>
           </button>
 
           <button
             onClick={() => setSubTab("bazaar")}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 cursor-pointer ${
               subTab === "bazaar"
                 ? "bg-gradient-to-r from-purple-950/60 to-slate-800 text-purple-300 border border-purple-500/50 shadow-sm"
                 : "text-slate-400 hover:text-purple-300"
             }`}
           >
-            <Palette className="w-3.5 h-3.5 text-purple-400" />
-            <span>Meme Characters ({charactersCount})</span>
+            <Palette className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+            <span className="whitespace-nowrap"><span className="hidden sm:inline">Meme </span>Characters ({charactersCount})</span>
           </button>
 
           <button
             onClick={() => setSubTab("hall_of_fame")}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 cursor-pointer ${
               subTab === "hall_of_fame"
                 ? "bg-gradient-to-r from-rose-950/60 to-slate-800 text-rose-300 border border-rose-500/50 shadow-sm"
                 : "text-slate-400 hover:text-rose-300"
             }`}
           >
-            <Flame className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
-            <span>Burn Hall of Fame &amp; Live Feed</span>
+            <Flame className="w-3.5 h-3.5 text-rose-400 animate-pulse shrink-0" />
+            <span className="whitespace-nowrap">Hall of Fame<span className="hidden sm:inline"> &amp; Feed</span></span>
           </button>
         </div>
 

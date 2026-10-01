@@ -161,11 +161,11 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
         </div>
 
         {/* Right: Controls & Vault Pill */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* In-Game $NOM Vault & Burn Sink Indicator */}
           <button
             onClick={() => setIsVaultOpen(true)}
-            className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-slate-900/90 hover:bg-slate-800 border border-amber-500/40 text-amber-300 flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+            className="px-2 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-slate-900/90 hover:bg-slate-800 border border-amber-500/40 text-amber-300 flex items-center gap-1 sm:gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
             title="Arcade Vault: Deposit, Withdraw & 1% Deflationary Burn Sink"
           >
             <Coins className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -176,13 +176,13 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             </span>
           </button>
 
-          {/* Half Size (Split Console) Toggle Button */}
+          {/* Half Size (Split Console) Toggle Button - Desktop Only */}
           <button
             onClick={() => {
               sounds.playButtonClick();
               setScreenSize("half");
             }}
-            className={`tactile-button px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
+            className={`tactile-button hidden md:flex px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
               screenSize === "half"
                 ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 shadow-[0_0_15px_rgba(20,241,149,0.3)]"
                 : "bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:bg-slate-800"
@@ -194,13 +194,13 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <span className="text-[10px] opacity-60 hidden lg:inline">[T]</span>
           </button>
 
-          {/* Full Size (Ultra Arcade) Toggle Button */}
+          {/* Full Size (Ultra Arcade) Toggle Button - Desktop Only */}
           <button
             onClick={() => {
               sounds.playButtonClick();
               setScreenSize("full");
             }}
-            className={`tactile-button px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
+            className={`tactile-button hidden md:flex px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
               screenSize === "full"
                 ? "bg-cyan-500/25 text-cyan-300 border border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
                 : "bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:bg-slate-800"
@@ -222,7 +222,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
           >
             <Rocket className="w-3.5 h-3.5 text-slate-950 shrink-0" />
             <span>Buy</span>
-            <span className="hidden sm:inline">$NOM</span>
+            <span className="hidden xs:inline">$NOM</span>
           </button>
         </div>
       </div>
@@ -239,29 +239,33 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
             {/* Right 7 Columns: Companion Console Tabs */}
             <div className="col-12 col-lg-7 d-flex flex-column gap-4">
-              {/* Tab Switcher Ribbon */}
-              <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-lg overflow-x-auto">
-                {TABS.map((tab) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => {
-                        sounds.playButtonClick();
-                        setActiveTab(tab.id);
-                      }}
-                      className={`tactile-button flex items-center gap-1.5 py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 cursor-pointer ${
-                        isActive
-                          ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
-                          : "text-slate-400 hover:text-white hover:bg-slate-900/60"
-                      }`}
-                    >
-                      <Icon className={`w-3.5 h-3.5 ${tab.color} shrink-0`} />
-                      <span>{tab.label}</span>
-                    </button>
-                  );
-                })}
+              {/* Tab Switcher Ribbon with Gradient Edge Masks */}
+              <div className="relative w-full overflow-hidden">
+                <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-[#050914] to-transparent z-10 sm:hidden" />
+                <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-[#050914] to-transparent z-10 sm:hidden" />
+                <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-950/90 border border-slate-800 shadow-lg overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x select-none">
+                  {TABS.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => {
+                          sounds.playButtonClick();
+                          setActiveTab(tab.id);
+                        }}
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all shrink-0 min-h-[38px] cursor-pointer touch-manipulation ${
+                          isActive
+                            ? "bg-slate-800 text-white border border-slate-700 shadow-[0_0_12px_rgba(20,241,149,0.25)] ring-1 ring-emerald-500/40"
+                            : "text-slate-400 hover:text-white hover:bg-slate-900"
+                        }`}
+                      >
+                        <Icon className={`w-3.5 h-3.5 ${tab.color} shrink-0`} />
+                        <span className="whitespace-nowrap">{tab.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Active Tab Panel Body */}
@@ -307,25 +311,32 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
                   </h3>
                 </div>
 
-                <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800 overflow-x-auto">
-                  {TABS.map((tab) => {
-                    const Icon = tab.icon;
-                    const isActive = activeTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all shrink-0 ${
-                          isActive
-                            ? "bg-slate-800 text-white border border-slate-700"
-                            : "text-slate-400 hover:text-white"
-                        }`}
-                      >
-                        <Icon className={`w-3.5 h-3.5 ${tab.color}`} />
-                        <span>{tab.label}</span>
-                      </button>
-                    );
-                  })}
+                <div className="relative w-full overflow-hidden">
+                  <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-[#050914] to-transparent z-10 sm:hidden" />
+                  <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-[#050914] to-transparent z-10 sm:hidden" />
+                  <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-md overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x select-none">
+                    {TABS.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => {
+                            sounds.playButtonClick();
+                            setActiveTab(tab.id);
+                          }}
+                          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all shrink-0 min-h-[38px] cursor-pointer touch-manipulation ${
+                            isActive
+                              ? "bg-slate-800 text-white border border-slate-700 shadow-[0_0_12px_rgba(20,241,149,0.25)] ring-1 ring-emerald-500/40"
+                              : "text-slate-400 hover:text-white hover:bg-slate-900"
+                          }`}
+                        >
+                          <Icon className={`w-3.5 h-3.5 ${tab.color} shrink-0`} />
+                          <span className="whitespace-nowrap">{tab.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 

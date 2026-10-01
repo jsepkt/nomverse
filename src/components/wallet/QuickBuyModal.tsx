@@ -131,7 +131,7 @@ export const QuickBuyModal: React.FC<QuickBuyModalProps> = ({ isOpen, onClose })
                   setSelectedSol(sol);
                   setCustomSol("");
                 }}
-                className={`py-2 px-1 rounded-xl text-xs font-mono font-bold transition-all ${
+                className={`py-2 px-0.5 sm:px-1 rounded-xl text-[10px] sm:text-xs font-mono font-bold transition-all text-center truncate ${
                   !customSol && selectedSol === sol
                     ? "bg-emerald-500 text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.35)] scale-105"
                     : "bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800"

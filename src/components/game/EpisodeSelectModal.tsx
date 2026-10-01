@@ -128,7 +128,7 @@ export const EpisodeSelectModal: React.FC<EpisodeSelectModalProps> = ({
                       : "bg-slate-800/50 hover:bg-slate-800/80 border-slate-700/60"
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                     <div className="flex items-start gap-3">
                       <div
                         className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 border"
@@ -140,7 +140,7 @@ export const EpisodeSelectModal: React.FC<EpisodeSelectModalProps> = ({
                         {ep.icon}
                       </div>
 
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-[11px] font-mono font-bold text-slate-400">
                             EPISODE 0{ep.number}
@@ -183,7 +183,7 @@ export const EpisodeSelectModal: React.FC<EpisodeSelectModalProps> = ({
                     </div>
 
                     {/* Action / Stars / Lock */}
-                    <div className="flex flex-col items-end gap-2 shrink-0">
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 shrink-0 pt-2 sm:pt-0 border-t border-slate-800/60 sm:border-0 w-full sm:w-auto">
                       {ep.isComingSoon ? (
                         <span className="text-[10px] font-mono text-cyan-400 px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
                           SEASON 2

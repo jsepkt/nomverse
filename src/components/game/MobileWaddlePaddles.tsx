@@ -87,7 +87,7 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
           <ChevronRight className="w-5 h-5 text-solana-green shrink-0" />
         </button>
       </div>
-      <span className="text-[10px] sm:text-xs font-mono text-slate-400">
+      <span className="text-[10px] sm:text-xs font-mono text-slate-400 text-center leading-tight">
         💡 Tip: Drag finger directly across arcade screen or tap paddles to steer Nomster
       </span>
     </div>

@@ -915,22 +915,23 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         </div>
 
         {/* Tier 2: Ergonomic Control Actions Dock */}
-        <div className="flex items-center justify-between gap-1 sm:gap-1.5 pt-2 border-t border-slate-800/80 w-full overflow-x-auto no-scrollbar select-none">
+        {/* Desktop View (>= 640px) */}
+        <div className="hidden sm:flex items-center justify-between gap-1.5 pt-2 border-t border-slate-800/80 w-full select-none">
           {/* Game Modes & Customization Cluster */}
-          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             {/* Episodes Campaign Button */}
             <button
               onClick={() => setIsEpisodeModalOpen(true)}
               aria-label="Story Episodes"
               title="Play Story Episodes & Boss Battles"
-              className={`px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 shrink-0 ${
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 shrink-0 ${
                 currentEpisodeId
                   ? "bg-amber-500/20 border-amber-500/50 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.3)] font-bold"
                   : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700/80 text-slate-300 hover:text-white"
               }`}
             >
               <Film className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="font-bold hidden sm:inline">
+              <span className="font-bold">
                 {currentEpisodeId
                   ? `EP 0${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
                   : "Story"}
@@ -942,7 +943,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               onClick={() => setIsHolderModalOpen(true)}
               aria-label="Proof of Bag - Holder Perks"
               title={`Proof of Bag: ${holderPerks.label}`}
-              className="px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 shrink-0"
+              className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 shrink-0"
               style={{
                 backgroundColor: `${holderPerks.accentColor}18`,
                 borderColor: `${holderPerks.accentColor}50`,
@@ -950,7 +951,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               }}
             >
               <Coins className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-bold hidden sm:inline">{holderPerks.badge}</span>
+              <span className="font-bold">{holderPerks.badge}</span>
               {holderPerks.hasCrown && <Crown className="w-3 h-3 text-amber-400 shrink-0" />}
             </button>
 
@@ -959,7 +960,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               onClick={() => setIsSkinModalOpen(true)}
               aria-label="Nomster CC0 Closet"
               title="Nomster CC0 Closet & Accessories"
-              className="p-1.5 sm:p-2 rounded-xl text-xs font-mono transition-all border bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 flex items-center justify-center hover:scale-105 active:scale-95 shrink-0"
+              className="p-2 rounded-xl text-xs font-mono transition-all border bg-purple-500/10 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 flex items-center justify-center hover:scale-105 active:scale-95 shrink-0"
             >
               <Shirt className="w-3.5 h-3.5 text-purple-400" />
             </button>
@@ -969,10 +970,10 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               onClick={() => setIsDailyLootboxOpen(true)}
               aria-label="Daily Mystery Lootbox"
               title="Open Daily Mystery Lootbox (Free Lives & Candies)"
-              className="relative p-1.5 sm:px-2 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-amber-500/15 hover:bg-amber-500/25 border-amber-500/40 text-amber-300 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+              className="relative px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border bg-amber-500/15 hover:bg-amber-500/25 border-amber-500/40 text-amber-300 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 cursor-pointer shrink-0"
             >
               <Gift className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden sm:inline text-[10px]">CRATE</span>
+              <span className="text-[10px]">CRATE</span>
               {canClaimCrate && (
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />
               )}
@@ -983,10 +984,10 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               onClick={() => setIsReferralModalOpen(true)}
               aria-label="Invite Squad"
               title="Invite Friends: They get +3 Lives, You get 10% Candy Commission"
-              className="p-1.5 sm:px-2 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-500/40 text-emerald-300 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+              className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-500/40 text-emerald-300 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 cursor-pointer shrink-0"
             >
               <Users className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="hidden sm:inline text-[10px]">SQUAD</span>
+              <span className="text-[10px]">SQUAD</span>
             </button>
 
             {/* Toddler / Kid Mode (Age 3-5) Toggle */}
@@ -998,14 +999,14 @@ export const GameContainer: React.FC<GameContainerProps> = ({
                   ? "Kid Mode Active: Floaty Candies, Auto-Waddle & Magic Vacuum ON"
                   : "Kid Mode (Age 3-5): Floaty Candies, Auto-Waddle & Magic Vacuum for Toddlers"
               }
-              className={`px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 cursor-pointer shrink-0 ${
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 cursor-pointer shrink-0 ${
                 toddlerMode
                   ? "bg-amber-500/25 border-amber-400 text-amber-300 font-bold shadow-[0_0_12px_rgba(245,158,11,0.45)]"
                   : "bg-slate-800/80 hover:bg-slate-700/80 border-slate-700/80 text-slate-400 hover:text-slate-200"
               }`}
             >
               <span className="text-sm leading-none">🧸</span>
-              <span className="font-bold text-[10px] sm:text-[11px] hidden sm:inline">
+              <span className="font-bold text-[11px]">
                 {toddlerMode ? "ON" : "Kid"}
               </span>
             </button>
@@ -1021,7 +1022,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
                   ? "DeepNom AI: AUTOPILOT ACTIVE (Click to switch to AI Duel)"
                   : "DeepNom AI: DUEL MODE ACTIVE (Click to turn off)"
               }
-              className={`px-2 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 cursor-pointer shrink-0 ${
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 cursor-pointer shrink-0 ${
                 deepNomMode === "autopilot"
                   ? "bg-cyan-500/25 border-cyan-400 text-cyan-300 font-bold shadow-[0_0_15px_rgba(6,182,212,0.5)]"
                   : deepNomMode === "duel"
@@ -1033,20 +1034,20 @@ export const GameContainer: React.FC<GameContainerProps> = ({
                 deepNomMode === "autopilot" ? "text-cyan-400" :
                 deepNomMode === "duel" ? "text-pink-400 animate-pulse" : "text-slate-400"
               }`} />
-              <span className="font-bold text-[10px] sm:text-[11px] hidden sm:inline">
+              <span className="font-bold text-[11px]">
                 {deepNomMode === "off" ? "AI" : deepNomMode === "autopilot" ? "AUTO" : "DUEL"}
               </span>
             </button>
           </div>
 
           {/* Hardware & Display Controls Cluster */}
-          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             {/* Sound Toggle */}
             <button
               onClick={handleToggleMute}
               aria-label={isMuted ? "Unmute audio" : "Mute audio"}
               title={isMuted ? "Unmute Sound" : "Mute Sound"}
-              className={`p-1.5 sm:p-2 rounded-xl text-xs font-mono transition-all border hover:scale-105 active:scale-95 shrink-0 ${
+              className={`p-2 rounded-xl text-xs font-mono transition-all border hover:scale-105 active:scale-95 shrink-0 ${
                 isMuted
                   ? "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
                   : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
@@ -1061,17 +1062,17 @@ export const GameContainer: React.FC<GameContainerProps> = ({
                 onClick={toggleFullWindow}
                 aria-label="Exit Fullscreen"
                 title="Exit Fullscreen (Esc)"
-                className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-rose-500/20 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 flex items-center gap-1 font-bold shadow-lg hover:scale-105 active:scale-95 shrink-0"
+                className="px-2.5 py-1.5 rounded-xl text-xs font-mono transition-all border bg-rose-500/20 border-rose-500/40 text-rose-300 hover:bg-rose-500/30 flex items-center gap-1 font-bold shadow-lg hover:scale-105 active:scale-95 shrink-0"
               >
                 <Minimize2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline text-[11px]">EXIT</span>
+                <span className="text-[11px]">EXIT</span>
               </button>
             ) : (
               <button
                 onClick={toggleFullWindow}
                 aria-label="Full Size Window"
                 title="Play in Full Size Window (Distraction-Free)"
-                className="p-1.5 sm:p-2 rounded-xl text-xs font-mono transition-all border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 flex items-center justify-center hover:scale-105 active:scale-95 shrink-0"
+                className="p-2 rounded-xl text-xs font-mono transition-all border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 flex items-center justify-center hover:scale-105 active:scale-95 shrink-0"
               >
                 <Maximize2 className="w-3.5 h-3.5" />
               </button>
@@ -1082,10 +1083,10 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               <Link
                 href="/play"
                 title="Enter Game Room with Stages & Community Mods"
-                className="p-1.5 sm:px-2 sm:py-1.5 rounded-xl text-xs font-mono transition-all border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 shrink-0"
+                className="px-2 py-1.5 rounded-xl text-xs font-mono transition-all border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 flex items-center gap-1 font-bold hover:scale-105 active:scale-95 shrink-0"
               >
                 <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="hidden sm:inline text-[10px]">ROOM</span>
+                <span className="text-[10px]">ROOM</span>
               </Link>
             )}
 
@@ -1095,10 +1096,165 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               disabled={lives <= 0}
               aria-label="Restart drop"
               title="Restart Drop"
-              className="p-1.5 sm:p-2 rounded-xl text-xs font-mono bg-slate-800 hover:bg-slate-700 disabled:opacity-40 border border-slate-700 text-slate-300 transition-all hover:scale-105 active:scale-95 shrink-0"
+              className="p-2 rounded-xl text-xs font-mono bg-slate-800 hover:bg-slate-700 disabled:opacity-40 border border-slate-700 text-slate-300 transition-all hover:scale-105 active:scale-95 shrink-0"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
+          </div>
+        </div>
+
+        {/* Mobile Master-Tier Control Dock (< 640px) - 100% Fit with ZERO Overflow */}
+        <div className="sm:hidden flex flex-col gap-2 pt-2 border-t border-slate-800/80 w-full select-none">
+          {/* Row 1: 7 Arcade Features & Modes Pills */}
+          <div className="flex items-center justify-between gap-1 w-full">
+            {/* Story Episodes */}
+            <button
+              onClick={() => setIsEpisodeModalOpen(true)}
+              aria-label="Story Episodes"
+              className={`flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border flex items-center justify-center active:scale-95 ${
+                currentEpisodeId
+                  ? "bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.4)]"
+                  : "bg-slate-900 border-slate-800 text-slate-300 hover:text-white"
+              }`}
+              title="Story Episodes"
+            >
+              <Film className="w-4 h-4 text-amber-400" />
+            </button>
+
+            {/* Proof of Bag Perks */}
+            <button
+              onClick={() => setIsHolderModalOpen(true)}
+              aria-label="Proof of Bag"
+              className="flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border flex items-center justify-center active:scale-95"
+              style={{
+                backgroundColor: `${holderPerks.accentColor}18`,
+                borderColor: `${holderPerks.accentColor}50`,
+                color: holderPerks.accentColor,
+              }}
+              title={`Perks: ${holderPerks.label}`}
+            >
+              <Coins className="w-4 h-4" />
+            </button>
+
+            {/* CC0 Closet */}
+            <button
+              onClick={() => setIsSkinModalOpen(true)}
+              aria-label="Nomster Closet"
+              className="flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border bg-purple-500/15 border-purple-500/40 text-purple-300 flex items-center justify-center active:scale-95"
+              title="CC0 Closet"
+            >
+              <Shirt className="w-4 h-4 text-purple-400" />
+            </button>
+
+            {/* Daily Loot Crate */}
+            <button
+              onClick={() => setIsDailyLootboxOpen(true)}
+              aria-label="Daily Crate"
+              className="relative flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border bg-amber-500/15 border-amber-500/40 text-amber-300 flex items-center justify-center active:scale-95 cursor-pointer"
+              title="Daily Loot Crate"
+            >
+              <Gift className="w-4 h-4 text-amber-400" />
+              {canClaimCrate && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-amber-400 rounded-full animate-ping" />
+              )}
+            </button>
+
+            {/* Viral Squad */}
+            <button
+              onClick={() => setIsReferralModalOpen(true)}
+              aria-label="Invite Squad"
+              className="flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 flex items-center justify-center active:scale-95 cursor-pointer"
+              title="Invite Squad"
+            >
+              <Users className="w-4 h-4 text-emerald-400" />
+            </button>
+
+            {/* Toddler Mode Toggle */}
+            <button
+              onClick={handleToggleToddlerMode}
+              aria-label={toddlerMode ? "Disable Kid Mode" : "Enable Kid Mode"}
+              className={`flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border flex items-center justify-center active:scale-95 cursor-pointer ${
+                toddlerMode
+                  ? "bg-amber-500/30 border-amber-400 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                  : "bg-slate-900 border-slate-800 text-slate-400"
+              }`}
+              title="Kid Mode (Age 3-5)"
+            >
+              <span className="text-base leading-none">🧸</span>
+            </button>
+
+            {/* DeepNom AI Toggle */}
+            <button
+              onClick={handleCycleDeepNom}
+              aria-label="DeepNom AI"
+              className={`flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border flex items-center justify-center active:scale-95 cursor-pointer ${
+                deepNomMode === "autopilot"
+                  ? "bg-cyan-500/30 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
+                  : deepNomMode === "duel"
+                  ? "bg-pink-500/30 border-pink-400 text-pink-300 shadow-[0_0_15px_rgba(244,63,94,0.5)]"
+                  : "bg-slate-900 border-slate-800 text-slate-400"
+              }`}
+              title="DeepNom AI Autopilot & Duel"
+            >
+              <Bot className={`w-4 h-4 ${
+                deepNomMode === "autopilot" ? "text-cyan-400" :
+                deepNomMode === "duel" ? "text-pink-400 animate-pulse" : "text-slate-400"
+              }`} />
+            </button>
+          </div>
+
+          {/* Row 2: Tactile Hardware & Quick Play Controls */}
+          <div className="flex items-center justify-between gap-1.5 w-full">
+            {/* Sound Toggle */}
+            <button
+              onClick={handleToggleMute}
+              aria-label={isMuted ? "Unmute audio" : "Mute audio"}
+              className={`flex-1 min-h-[38px] py-2 px-2 rounded-xl text-xs font-mono font-bold transition-all border flex items-center justify-center gap-1.5 active:scale-95 ${
+                isMuted
+                  ? "bg-rose-500/15 border-rose-500/40 text-rose-400"
+                  : "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
+              }`}
+            >
+              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              <span>{isMuted ? "Muted" : "Sound"}</span>
+            </button>
+
+            {/* Reset / Restart Drop Button */}
+            <button
+              onClick={handleManualReset}
+              disabled={lives <= 0}
+              aria-label="Restart drop"
+              className="flex-1 min-h-[38px] py-2 px-2 rounded-xl text-xs font-mono font-bold bg-slate-900 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-40"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+              <span>Reset</span>
+            </button>
+
+            {/* Fullscreen / Full Window Toggle */}
+            <button
+              onClick={toggleFullWindow}
+              aria-label={isFullWindow ? "Exit Fullscreen" : "Fullscreen"}
+              className={`flex-1 min-h-[38px] py-2 px-2 rounded-xl text-xs font-mono font-bold transition-all border flex items-center justify-center gap-1.5 active:scale-95 ${
+                isFullWindow
+                  ? "bg-rose-500/20 border-rose-500/40 text-rose-300"
+                  : "bg-cyan-500/15 border-cyan-500/40 text-cyan-300"
+              }`}
+            >
+              {isFullWindow ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+              <span>{isFullWindow ? "Exit" : "Full"}</span>
+            </button>
+
+            {/* Dedicated Game Room Link Button (if enabled) */}
+            {showGameRoomButton && (
+              <Link
+                href="/play"
+                aria-label="Enter Game Room"
+                className="flex-1 min-h-[38px] py-2 px-2 rounded-xl text-xs font-mono font-bold border bg-emerald-500/20 border-emerald-500/50 text-emerald-300 flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Room</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -1228,44 +1384,49 @@ export const GameContainer: React.FC<GameContainerProps> = ({
       {/* DeepNom Neural AI Telemetry HUD Strip */}
       {deepNomMode !== "off" && (
         <div
-          className={`w-full mb-2.5 px-3 py-2 rounded-xl border flex flex-wrap items-center justify-between gap-2 text-xs font-mono select-none animate-in fade-in transition-all ${
+          className={`w-full mb-2.5 px-3 py-2 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 text-xs font-mono select-none animate-in fade-in transition-all ${
             deepNomMode === "autopilot"
               ? "bg-cyan-950/40 border-cyan-500/50 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
               : "bg-pink-950/40 border-pink-500/50 text-pink-300 shadow-[0_0_20px_rgba(244,63,94,0.2)]"
           }`}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between w-full sm:w-auto gap-2">
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-2 h-2 rounded-full shrink-0 ${
+                  deepNomMode === "autopilot" ? "bg-cyan-400 animate-ping" : "bg-pink-400 animate-pulse"
+                }`}
+              />
+              <span className="font-black tracking-wider text-[11px] sm:text-xs">
+                {deepNomMode === "autopilot" ? "🤖 AUTOPILOT ACTIVE" : "⚔️ HUMAN VS AI DUEL"}
+              </span>
+            </div>
             <span
-              className={`w-2 h-2 rounded-full animate-ping ${
-                deepNomMode === "autopilot" ? "bg-cyan-400" : "bg-pink-400"
+              className={`sm:hidden text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest ${
+                deepNomMode === "autopilot"
+                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40"
+                  : "bg-pink-500/20 text-pink-300 border border-pink-400/40"
               }`}
-            />
-            <span className="font-black tracking-wider text-[11px] sm:text-xs">
-              {deepNomMode === "autopilot" ? "🤖 DEEPNOM AUTOPILOT ACTIVE" : "⚔️ HUMAN VS AI DUEL CONTEST"}
+            >
+              60FPS AI
             </span>
           </div>
 
-          <div className="flex items-center gap-3 text-[10px] sm:text-[11px]">
+          <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-3 text-[10px] sm:text-[11px] w-full sm:w-auto">
             {deepNomMode === "duel" && (
               <span className="font-bold bg-slate-900/80 px-2 py-0.5 rounded border border-pink-500/40">
                 AI: <strong className="text-pink-400">{deepNomTelemetry?.aiScore ?? 0}</strong> vs YOU:{" "}
                 <strong className="text-emerald-400">{score}</strong>
               </span>
             )}
-            <span className="text-slate-400 hidden sm:inline">
-              X:{" "}
-              <span className="text-white font-bold">
-                {deepNomTelemetry ? Math.round(deepNomTelemetry.predictedX) : "--"}
-              </span>
+            <span className="text-slate-400">
+              X: <span className="text-white font-bold">{deepNomTelemetry ? Math.round(deepNomTelemetry.predictedX) : "--"}</span>
             </span>
             <span className="text-slate-400">
-              T:{" "}
-              <span className="text-white font-bold">
-                {deepNomTelemetry ? `${deepNomTelemetry.timeRemaining.toFixed(2)}s` : "--"}
-              </span>
+              T: <span className="text-white font-bold">{deepNomTelemetry ? `${deepNomTelemetry.timeRemaining.toFixed(2)}s` : "--"}</span>
             </span>
             <span
-              className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest ${
+              className={`hidden sm:inline-block text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest ${
                 deepNomMode === "autopilot"
                   ? "bg-cyan-500/20 text-cyan-300 border border-cyan-400/40"
                   : "bg-pink-500/20 text-pink-300 border border-pink-400/40"

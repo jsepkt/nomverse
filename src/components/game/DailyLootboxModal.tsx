@@ -161,7 +161,7 @@ export const DailyLootboxModal: React.FC<DailyLootboxModalProps> = ({
           </div>
 
           {/* 7-Day Streak Timeline Grid */}
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2 mb-6">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-6">
             {DAILY_REWARDS_SCHEDULE.map((item) => {
               const isPast = item.day < claimStatus.effectiveDay;
               const isCurrent = item.day === claimStatus.effectiveDay;
@@ -170,7 +170,7 @@ export const DailyLootboxModal: React.FC<DailyLootboxModalProps> = ({
               return (
                 <div
                   key={item.day}
-                  className={`relative p-2 rounded-xl flex flex-col items-center justify-between border transition-all ${
+                  className={`relative p-1 sm:p-2 rounded-lg sm:rounded-xl flex flex-col items-center justify-between border transition-all ${
                     isCurrent
                       ? "bg-amber-500/20 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.35)] scale-105"
                       : isPast
@@ -178,11 +178,11 @@ export const DailyLootboxModal: React.FC<DailyLootboxModalProps> = ({
                       : "bg-slate-950/50 border-slate-800/80 text-slate-400"
                   }`}
                 >
-                  <div className="text-[9px] font-mono font-bold">D{item.day}</div>
-                  <div className="my-1 text-base sm:text-lg">
+                  <div className="text-[8px] sm:text-[9px] font-mono font-bold">D{item.day}</div>
+                  <div className="my-0.5 sm:my-1 text-sm sm:text-lg">
                     {item.day === 7 ? "👑" : item.powerUp ? "⚡" : "🍬"}
                   </div>
-                  <div className="text-[8px] font-mono font-bold text-amber-300">
+                  <div className="text-[7px] sm:text-[8px] font-mono font-bold text-amber-300">
                     +{item.candies}
                   </div>
                   {isPast && (

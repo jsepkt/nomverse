@@ -280,21 +280,21 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
         </div>
 
         {/* Tab Switcher */}
-        <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800 mb-4 text-xs font-bold">
+        <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800 mb-4 text-[10px] sm:text-xs font-bold">
           <button
             onClick={() => {
               setActiveTab("deposit");
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
+            className={`py-2 px-0.5 sm:px-1 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
               activeTab === "deposit"
                 ? "bg-emerald-500 text-slate-950 shadow-md font-black"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <ArrowDownCircle className="w-3.5 h-3.5" />
-            <span>Deposit</span>
+            <ArrowDownCircle className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Deposit</span>
           </button>
 
           <button
@@ -303,14 +303,14 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
+            className={`py-2 px-0.5 sm:px-1 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
               activeTab === "withdraw"
                 ? "bg-cyan-500 text-slate-950 shadow-md font-black"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <ArrowUpCircle className="w-3.5 h-3.5" />
-            <span>Withdraw</span>
+            <ArrowUpCircle className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Withdraw</span>
           </button>
 
           <button
@@ -319,14 +319,14 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
+            className={`py-2 px-0.5 sm:px-1 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
               activeTab === "burn"
                 ? "bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-md font-black"
                 : "text-rose-400 hover:text-rose-300"
             }`}
           >
-            <Flame className="w-3.5 h-3.5" />
-            <span>🔥 Burn</span>
+            <Flame className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">🔥 Burn</span>
           </button>
 
           <button
@@ -335,13 +335,13 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
+            className={`py-2 px-0.5 sm:px-1 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer truncate ${
               activeTab === "history"
                 ? "bg-slate-800 text-white border border-slate-700 font-black"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <span>History</span>
+            <span className="truncate">History</span>
           </button>
         </div>
 
