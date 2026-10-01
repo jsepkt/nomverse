@@ -48,7 +48,7 @@ interface UgcGameRoomsTabProps {
 }
 
 export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallenge }) => {
-  const { user, openAuthModal } = useAuth();
+  const { user, openAuthModal, realNomBalance } = useAuth();
   const userId = user?.id || "guest";
 
   const [subTab, setSubTab] = useState<"rooms" | "bazaar" | "hall_of_fame">("rooms");
@@ -199,7 +199,14 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
             <Coins className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-[10px] text-slate-400 uppercase tracking-wider">Your Arcade Vault</div>
+            <div className="text-[10px] text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>Your Arcade Vault</span>
+              {user && ["phantom", "solflare", "backpack"].includes(user.provider) && (
+                <span className="text-[9px] text-purple-400 font-bold">
+                  (Chain: {realNomBalance.toLocaleString()})
+                </span>
+              )}
+            </div>
             <div className="text-xl sm:text-2xl font-black text-white flex items-baseline gap-1.5">
               <span>{balance.toLocaleString()}</span>
               <span className="text-emerald-400 text-sm">$NOM</span>

@@ -21,7 +21,27 @@ export const UserBadge: React.FC<UserBadgeProps> = ({
           title="Verified Phantom Solana Wallet"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-          {showText && <span>Phantom Verified</span>}
+          {showText && <span>Phantom</span>}
+        </span>
+      );
+    case "solflare":
+      return (
+        <span
+          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-orange-500/10 text-orange-300 border border-orange-500/30 ${className}`}
+          title="Verified Solflare Solana Wallet"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+          {showText && <span>Solflare</span>}
+        </span>
+      );
+    case "backpack":
+      return (
+        <span
+          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30 ${className}`}
+          title="Verified Backpack Solana Wallet"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+          {showText && <span>Backpack</span>}
         </span>
       );
     case "metamask":
@@ -31,7 +51,7 @@ export const UserBadge: React.FC<UserBadgeProps> = ({
           title="Verified MetaMask EVM Wallet"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-          {showText && <span>MetaMask Verified</span>}
+          {showText && <span>MetaMask</span>}
         </span>
       );
     case "google":
@@ -41,7 +61,7 @@ export const UserBadge: React.FC<UserBadgeProps> = ({
           title="Verified Google Account"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-          {showText && <span>Google Verified</span>}
+          {showText && <span>Google</span>}
         </span>
       );
     default:

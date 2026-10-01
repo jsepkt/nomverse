@@ -127,13 +127,24 @@ export const TokenTickerBar: React.FC = () => {
         </div>
 
         {/* Right: Quick Trade Action */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           <div className="hidden sm:flex items-center gap-1 text-slate-400 text-[11px]">
             <span>VOL:</span>
             <span className="text-slate-200 font-bold">
               ${stats.volume24hUsd.toLocaleString()}
             </span>
           </div>
+
+          <a
+            href={`https://dexscreener.com/solana/${TOKEN_CONFIG.mintAddress}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-white font-bold text-[10px] sm:text-[11px] transition-all shrink-0"
+            title="View chart on DexScreener"
+          >
+            <span>Chart</span>
+            <ExternalLink className="w-2.5 h-2.5 text-slate-400" />
+          </a>
 
           <a
             href={TOKEN_CONFIG.pumpFunUrl}

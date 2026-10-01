@@ -35,10 +35,36 @@ export interface TokenStatsResponse {
 // On-chain canonical addresses for NomVerse on pump.fun
 const VAULT_TOKEN_ACCOUNT = "5Tny4qYRv8S2j4f3VVQbVEr3CCuCkxoCef8Zk3QLws9E";
 const BONDING_CURVE_ACCOUNT = "4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf";
-const SOLANA_RPC = "https://api.mainnet-beta.solana.com";
+const RPC_ENDPOINTS = [
+  "https://rpc.ankr.com/solana",
+  "https://solana-rpc.publicnode.com",
+  "https://api.mainnet-beta.solana.com",
+];
 const TARGET_SOL_MIGRATION = 85; // 85 SOL Raydium graduation target
 const VIRTUAL_SOL_BASE = 30; // 30 SOL initial virtual reserve
 const VIRTUAL_TOKEN_BASE = 1_073_000_000; // 1.073B virtual token reserve
+
+async function callRpcBatchWithFallback(batch: any[]): Promise<any[] | null> {
+  for (const endpoint of RPC_ENDPOINTS) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(batch),
+        signal: AbortSignal.timeout(4000),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json) && json.length >= 2) {
+          return json;
+        }
+      }
+    } catch {
+      // try next
+    }
+  }
+  return null;
+}
 
 // Fetch real-time SOL price in USD
 async function fetchSolPriceUsd(): Promise<number> {
@@ -124,29 +150,22 @@ export async function GET() {
 
   // 2. Query Live On-Chain Solana RPC (100% Authentic Block Data)
   try {
-    const [rpcRes, solPriceUsd] = await Promise.all([
-      fetch(SOLANA_RPC, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify([
-          // 1. Vault token balance (NOM remaining in bonding curve)
-          { jsonrpc: "2.0", id: 1, method: "getTokenAccountBalance", params: [VAULT_TOKEN_ACCOUNT] },
-          // 2. Bonding curve account SOL lamports
-          { jsonrpc: "2.0", id: 2, method: "getBalance", params: [BONDING_CURVE_ACCOUNT] },
-          // 3. Real transaction history for mint
-          { jsonrpc: "2.0", id: 3, method: "getSignaturesForAddress", params: [mint, { limit: 50 }] },
-        ]),
-        signal: AbortSignal.timeout(4500),
-      }),
+    const [batchData, solPriceUsd] = await Promise.all([
+      callRpcBatchWithFallback([
+        // 1. Vault token balance (NOM remaining in bonding curve)
+        { jsonrpc: "2.0", id: 1, method: "getTokenAccountBalance", params: [VAULT_TOKEN_ACCOUNT] },
+        // 2. Bonding curve account SOL lamports
+        { jsonrpc: "2.0", id: 2, method: "getBalance", params: [BONDING_CURVE_ACCOUNT] },
+        // 3. Real transaction history for mint
+        { jsonrpc: "2.0", id: 3, method: "getSignaturesForAddress", params: [mint, { limit: 50 }] },
+      ]),
       fetchSolPriceUsd(),
     ]);
 
-    if (rpcRes.ok) {
-      const batchData = await rpcRes.json();
-      if (Array.isArray(batchData) && batchData.length >= 2) {
-        const vaultRes = batchData.find((b: any) => b.id === 1);
-        const solRes = batchData.find((b: any) => b.id === 2);
-        const sigRes = batchData.find((b: any) => b.id === 3);
+    if (batchData && Array.isArray(batchData) && batchData.length >= 2) {
+      const vaultRes = batchData.find((b: any) => b.id === 1);
+      const solRes = batchData.find((b: any) => b.id === 2);
+      const sigRes = batchData.find((b: any) => b.id === 3);
 
         const vaultTokensRemaining: number = vaultRes?.result?.value?.uiAmount ?? 986053615.03;
         const totalCurveSolLamports: number = solRes?.result?.value ?? 4089837830;
@@ -207,7 +226,6 @@ export async function GET() {
 
         return NextResponse.json(onChainPayload);
       }
-    }
   } catch (rpcErr) {
     console.error("Solana RPC batch query error:", rpcErr);
   }

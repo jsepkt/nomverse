@@ -97,7 +97,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export const Navbar: React.FC = () => {
   const router = useRouter();
-  const { user, openAuthModal, logout } = useAuth();
+  const { user, openAuthModal, logout, realNomBalance } = useAuth();
   const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState<boolean>(false);
@@ -187,10 +187,15 @@ export const Navbar: React.FC = () => {
 
             {/* User Auth Pill / Sign In (Desktop / Tablet) */}
             {user ? (
-              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-sm shrink-0">
-                <div className="flex items-center gap-1 text-xs font-bold text-white max-w-[85px] sm:max-w-[120px]">
+              <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 shadow-sm shrink-0">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-white max-w-[160px] sm:max-w-[210px]">
                   <span className="truncate">{user.name}</span>
                   <UserBadge provider={user.provider} showText={false} />
+                  {["phantom", "solflare", "backpack"].includes(user.provider) && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 truncate">
+                      {realNomBalance.toLocaleString()} $NOM
+                    </span>
+                  )}
                 </div>
                 <button
                   onClick={logout}
@@ -206,7 +211,7 @@ export const Navbar: React.FC = () => {
                 className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/50 transition-all cursor-pointer shrink-0"
               >
                 <Wallet className="w-3.5 h-3.5 shrink-0" />
-                <span>Sign In</span>
+                <span>Connect Wallet</span>
               </button>
             )}
 

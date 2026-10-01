@@ -6,31 +6,49 @@ export const dynamic = "force-dynamic";
 
 const TOKEN_2022_PROGRAM_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 const TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
-const SOLANA_RPC = "https://api.mainnet-beta.solana.com";
+
+const RPC_ENDPOINTS = [
+  "https://rpc.ankr.com/solana",
+  "https://solana-rpc.publicnode.com",
+  "https://api.mainnet-beta.solana.com",
+];
+
+async function callRpcWithFallback(body: any): Promise<any> {
+  for (const endpoint of RPC_ENDPOINTS) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(4000),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && !json.error) {
+          return json;
+        }
+      }
+    } catch {
+      // Try next fallback endpoint
+    }
+  }
+  return null;
+}
 
 async function queryTokensByProgram(wallet: string, programId: string): Promise<number> {
   try {
-    const res = await fetch(SOLANA_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "getTokenAccountsByOwner",
-        params: [
-          wallet,
-          { programId },
-          { encoding: "jsonParsed" },
-        ],
-      }),
-      signal: AbortSignal.timeout(5000),
+    const data = await callRpcWithFallback({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "getTokenAccountsByOwner",
+      params: [
+        wallet,
+        { programId },
+        { encoding: "jsonParsed" },
+      ],
     });
 
-    if (!res.ok) return 0;
-
-    const data = await res.json();
     let balance = 0;
-
     if (Array.isArray(data?.result?.value)) {
       for (const account of data.result.value) {
         const info = account?.account?.data?.parsed?.info;
@@ -48,6 +66,24 @@ async function queryTokensByProgram(wallet: string, programId: string): Promise<
   }
 }
 
+async function querySolBalance(wallet: string): Promise<number> {
+  try {
+    const data = await callRpcWithFallback({
+      jsonrpc: "2.0",
+      id: 2,
+      method: "getBalance",
+      params: [wallet],
+    });
+    const lamports = data?.result?.value;
+    if (typeof lamports === "number") {
+      return parseFloat((lamports / 1e9).toFixed(4));
+    }
+    return 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -60,10 +96,14 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // First query Token-2022 (canonical program for $NOM on pump.fun)
-    let tokenBalance = await queryTokensByProgram(wallet, TOKEN_2022_PROGRAM_ID);
+    // Parallel fetch: Token-2022 balance and native SOL balance
+    const [token2022Balance, solBalance] = await Promise.all([
+      queryTokensByProgram(wallet, TOKEN_2022_PROGRAM_ID),
+      querySolBalance(wallet),
+    ]);
 
-    // If 0, fallback query standard SPL Token program
+    let tokenBalance = token2022Balance;
+    // Fallback: check standard SPL token program if 0
     if (tokenBalance === 0) {
       tokenBalance = await queryTokensByProgram(wallet, TOKEN_PROGRAM_ID);
     }
@@ -74,6 +114,7 @@ export async function GET(req: NextRequest) {
       success: true,
       wallet,
       balance: tokenBalance,
+      solBalance,
       tier: perks.tier,
       tierName: perks.label,
       perks,
@@ -86,6 +127,7 @@ export async function GET(req: NextRequest) {
       success: false,
       error: error?.message || "Failed to fetch on-chain holder balance",
       balance: 0,
+      solBalance: 0,
       tier: "fish",
     });
   }

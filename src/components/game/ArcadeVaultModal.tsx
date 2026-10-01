@@ -14,6 +14,7 @@ import {
   Sparkles,
   Wallet,
   Zap,
+  RefreshCw,
 } from "lucide-react";
 import {
   getUserVault,
@@ -39,19 +40,28 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
   onClose,
   onBalanceUpdated,
 }) => {
-  const { user, openAuthModal } = useAuth();
+  const {
+    user,
+    openAuthModal,
+    realNomBalance,
+    solBalance,
+    tierName,
+    isVerifyingBalance,
+    refreshBalance,
+  } = useAuth();
   const userId = user?.id || "guest";
 
   const [vaultState, setVaultState] = useState<UserVaultState>(getUserVault(userId));
   const [activeTab, setActiveTab] = useState<"deposit" | "withdraw" | "history">("deposit");
   const [depositAmount, setDepositAmount] = useState<number>(2500);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(1000);
-  const [walletAddress, setWalletAddress] = useState<string>(
-    user?.provider === "phantom" || user?.provider === "metamask" ? user.id : ""
-  );
+  const [walletAddress, setWalletAddress] = useState<string>("");
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [totalBurned, setTotalBurned] = useState<number>(getTotalNomBurned());
+
+  const isSolanaConnected =
+    !!user && ["phantom", "solflare", "backpack"].includes(user.provider);
 
   useEffect(() => {
     if (isOpen) {
@@ -60,8 +70,11 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
       setTotalBurned(getTotalNomBurned());
       setActionSuccess(null);
       setActionError(null);
+      if (user?.addressOrEmail && isSolanaConnected) {
+        setWalletAddress(user.addressOrEmail);
+      }
     }
-  }, [isOpen, userId]);
+  }, [isOpen, userId, user, isSolanaConnected]);
 
   if (!isOpen) return null;
 
@@ -88,7 +101,7 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
   };
 
   const handleWithdraw = () => {
-    const targetAddr = walletAddress.trim() || user?.id || "Solana_Wallet_Holder";
+    const targetAddr = walletAddress.trim() || user?.addressOrEmail || "Solana_Wallet_Holder";
     if (withdrawAmount <= 0) {
       setActionError("Please enter a valid withdrawal amount.");
       return;
@@ -103,7 +116,7 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
       setVaultState(getUserVault(userId));
       setTotalBurned(getTotalNomBurned());
       setActionSuccess(
-        `Withdrawal approved! Sent ${(withdrawAmount - res.burnedAmount).toLocaleString()} $NOM to wallet (${res.burnedAmount.toLocaleString()} $NOM burned 🔥)`
+        `Withdrawal approved! Sent ${(withdrawAmount - res.burnedAmount).toLocaleString()} $NOM to ${targetAddr.slice(0, 6)}... (${res.burnedAmount.toLocaleString()} $NOM burned 🔥)`
       );
       setActionError(null);
       sounds.playGoldenChime();
@@ -142,8 +155,67 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
           </div>
         </div>
 
-        {/* Active Balance Card */}
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-emerald-950/20 to-slate-900 border border-emerald-500/30 shadow-inner mb-5">
+        {/* Real On-Chain Solana Wallet Sync Strip */}
+        <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-400 flex items-center gap-1.5 uppercase font-bold">
+                <span>ON-CHAIN WALLET</span>
+                {isSolanaConnected ? (
+                  <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[9px]">
+                    {user?.provider.toUpperCase()} CONNECTED
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 text-[9px]">
+                    NOT CONNECTED
+                  </span>
+                )}
+              </div>
+              {isSolanaConnected ? (
+                <div className="font-bold text-white flex flex-wrap items-center gap-2 mt-0.5">
+                  <span className="text-emerald-400">{realNomBalance.toLocaleString()} $NOM</span>
+                  <span className="text-slate-500">•</span>
+                  <span className="text-slate-300">{solBalance} SOL</span>
+                  <span className="text-[10px] text-amber-400 font-mono">({tierName})</span>
+                </div>
+              ) : (
+                <div className="text-xs text-slate-300 mt-0.5 font-sans">
+                  Connect Phantom or Solflare to sync real tokens
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            {isSolanaConnected ? (
+              <button
+                type="button"
+                onClick={() => refreshBalance()}
+                disabled={isVerifyingBalance}
+                className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Refresh on-chain balance"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 text-purple-400 ${isVerifyingBalance ? "animate-spin" : ""}`} />
+                <span>{isVerifyingBalance ? "Syncing..." : "Sync Chain"}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <Wallet className="w-3.5 h-3.5" />
+                <span>Connect Wallet</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Active In-Game Balance Card */}
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-emerald-950/20 to-slate-900 border border-emerald-500/30 shadow-inner mb-4">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
             <span>AVAILABLE ARCADE BALANCE</span>
             <span className="text-emerald-400 font-bold flex items-center gap-1">
@@ -162,7 +234,7 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
         </div>
 
         {/* Global Deflationary Burn Ticker Strip */}
-        <div className="flex items-center justify-between p-2.5 rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs mb-5">
+        <div className="flex items-center justify-between p-2.5 rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs mb-4">
           <div className="flex items-center gap-2 text-rose-300">
             <Flame className="w-4 h-4 text-rose-400 animate-pulse" />
             <span>TOTAL $NOM BURNED VIA ARCADE:</span>
@@ -180,7 +252,7 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === "deposit"
                 ? "bg-emerald-500 text-slate-950 shadow-md"
                 : "text-slate-400 hover:text-white"
@@ -196,7 +268,7 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === "withdraw"
                 ? "bg-cyan-500 text-slate-950 shadow-md"
                 : "text-slate-400 hover:text-white"
@@ -212,7 +284,7 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === "history"
                 ? "bg-slate-800 text-white border border-slate-700"
                 : "text-slate-400 hover:text-white"
@@ -225,6 +297,36 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
         {/* Tab 1: Deposit */}
         {activeTab === "deposit" && (
           <div className="space-y-4">
+            {/* Quick Fill from Real On-Chain Wallet Balance if Connected */}
+            {isSolanaConnected && realNomBalance > 0 && (
+              <div className="p-2.5 rounded-xl bg-purple-950/25 border border-purple-500/30 flex items-center justify-between text-xs">
+                <span className="text-purple-300 text-[11px]">From On-Chain Wallet:</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setDepositAmount(Math.max(100, Math.floor(realNomBalance * 0.25)))}
+                    className="px-2 py-0.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 text-[10px] font-bold border border-purple-500/30 cursor-pointer"
+                  >
+                    25%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDepositAmount(Math.max(100, Math.floor(realNomBalance * 0.5)))}
+                    className="px-2 py-0.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 text-[10px] font-bold border border-purple-500/30 cursor-pointer"
+                  >
+                    50%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDepositAmount(Math.floor(realNomBalance))}
+                    className="px-2 py-0.5 rounded-lg bg-purple-500/30 hover:bg-purple-500/40 text-purple-100 text-[10px] font-bold border border-purple-500/50 cursor-pointer"
+                  >
+                    100% MAX
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="space-y-1.5">
               <label className="text-xs text-slate-300 font-bold block">
                 Select Deposit Amount ($NOM Credits):
@@ -235,7 +337,7 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
                     key={amt}
                     type="button"
                     onClick={() => setDepositAmount(amt)}
-                    className={`py-2 rounded-xl text-xs font-bold border transition-all ${
+                    className={`py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                       depositAmount === amt
                         ? "bg-emerald-500/20 border-emerald-400 text-emerald-300"
                         : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
@@ -281,7 +383,7 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
                     key={idx}
                     type="button"
                     onClick={() => setWithdrawAmount(amt)}
-                    className={`py-2 rounded-xl text-xs font-bold border transition-all ${
+                    className={`py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                       withdrawAmount === amt
                         ? "bg-cyan-500/20 border-cyan-400 text-cyan-300"
                         : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
@@ -294,7 +396,14 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-300 font-bold block">Destination Solana Address:</label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs text-slate-300 font-bold">Destination Solana Address:</label>
+                {isSolanaConnected && (
+                  <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Auto-filled ({user.provider})
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
                 value={walletAddress}

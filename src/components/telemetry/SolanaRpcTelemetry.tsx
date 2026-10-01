@@ -152,7 +152,7 @@ export const SolanaRpcTelemetry: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400 font-mono mt-0.5">
-              Endpoint: <span className="text-slate-300">api.mainnet-beta.solana.com</span>
+              Endpoint: <span className="text-slate-300">Mainnet-Beta Failover Cluster (Ankr / PublicNode)</span>
             </p>
           </div>
         </div>
