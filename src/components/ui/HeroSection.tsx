@@ -118,22 +118,22 @@ export const HeroSection: React.FC = () => {
               <span>Enter Arcade</span>
             </Link>
 
-            <a
-              href="#tokenomics"
-              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 hover:border-emerald-500/60 hover:scale-105 transition-all text-center"
+            <Link
+              href="/guide"
+              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-teal-300 bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 hover:border-teal-500/50 hover:scale-105 transition-all text-center"
             >
-              <Flame className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Buy $NOM</span>
-            </a>
+              <Sparkles className="w-4 h-4 text-teal-400 shrink-0" />
+              <span>How to Buy</span>
+            </Link>
 
             <a
               href={TOKEN_CONFIG.pumpFunUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 transition-all text-center"
+              className="col-span-1 sm:col-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-3.5 rounded-2xl font-bold text-xs sm:text-sm text-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 hover:border-emerald-500/60 hover:scale-105 transition-all text-center"
             >
-              <Rocket className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span>pump.fun</span>
+              <Flame className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Trade $NOM</span>
             </a>
 
             <a

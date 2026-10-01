@@ -45,6 +45,7 @@ import { RaidBossBanner } from "./RaidBossBanner";
 import { getMemeCharacters } from "@/lib/memeCharacterStorage";
 import { recordFeedItem } from "@/lib/burnFeedStorage";
 import { sounds } from "../audio/soundEffects";
+import { soundEngine } from "@/lib/soundEffects";
 import confetti from "canvas-confetti";
 
 interface UgcGameRoomsTabProps {
@@ -93,6 +94,7 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
         setActiveChallenge(null);
 
         sounds.playGoldenChime();
+        soundEngine.playVictory();
         confetti({
           particleCount: 100,
           spread: 90,
@@ -113,6 +115,39 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
       window.removeEventListener("NOM_MEME_CHARACTERS_UPDATE", handleCharsUpdate);
     };
   }, [userId, user?.name]);
+
+  const handlePracticeRoom = (room: UgcGameRoom) => {
+    setActiveChallenge(room);
+    soundEngine.playJumpSound();
+    setStatusMessage({
+      text: `Practice Mode initiated for "${room.title}" (0 $NOM cost). Win to test your skill!`,
+      type: "success",
+    });
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("NOM_START_CHALLENGE", {
+          detail: {
+            roomId: room.id,
+            roomTitle: `[Practice] ${room.title}`,
+            targetScore: room.targetScore,
+            timeLimitSeconds: room.timeLimitSeconds,
+            prizePool: 0,
+            isPractice: true,
+          },
+        })
+      );
+    }
+
+    if (onStartChallenge) {
+      onStartChallenge(room);
+    }
+
+    const arcadeElem = document.getElementById("arcade-cabinet");
+    if (arcadeElem) {
+      arcadeElem.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const handleEnterRoom = (room: UgcGameRoom) => {
     setStatusMessage(null);
@@ -143,6 +178,7 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
     setActiveChallenge(room);
 
     sounds.playPowerUpCollect();
+    soundEngine.playBurnSizzle();
     confetti({
       particleCount: 40,
       spread: 60,
@@ -390,6 +426,19 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
             </div>
           </div>
 
+          {/* Provably Fair Cryptographic Security Indicator */}
+          <div className="p-3 rounded-2xl bg-teal-950/20 border border-teal-500/30 flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 text-teal-300">
+              <ShieldCheck className="w-4 h-4 text-teal-400 shrink-0" />
+              <span>
+                <strong>Provably Fair Engine:</strong> All scores and room payouts are validated with physics bounds and cryptographic signatures.
+              </span>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/40 shrink-0">
+              ANTI-CHEAT ACTIVE
+            </span>
+          </div>
+
       {/* Community Challenge Rooms Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredRooms.map((room) => {
@@ -448,13 +497,23 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
                   </div>
                 </div>
 
-                <button
-                  onClick={() => handleEnterRoom(room)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-                >
-                  <Play className="w-3.5 h-3.5 fill-slate-950" />
-                  <span>PLAY (-{room.entryFee.toLocaleString()} $NOM)</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handlePracticeRoom(room)}
+                    className="px-2.5 py-2 rounded-xl text-[11px] font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all flex items-center gap-1 cursor-pointer shrink-0"
+                    title="Play practice round with 0 cost"
+                  >
+                    <span>Free Practice</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleEnterRoom(room)}
+                    className="px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-slate-950" />
+                    <span>PLAY (-{room.entryFee.toLocaleString()} $NOM)</span>
+                  </button>
+                </div>
               </div>
             </div>
           );

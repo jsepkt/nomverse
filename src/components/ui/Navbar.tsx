@@ -48,8 +48,53 @@ const NAV_ITEMS: NavItem[] = [
     icon: Gamepad2,
     color: "text-emerald-400",
     glowColor: "group-hover:text-emerald-300",
-    description: "Game Room: 5 stages, more games & dev XP",
-    badge: "Game Room",
+    description: "Game Room: 5 stages, UGC rooms & arcade wagers",
+    badge: "Arcade",
+  },
+  {
+    label: "Guide",
+    href: "/guide",
+    icon: Sparkles,
+    color: "text-teal-400",
+    glowColor: "group-hover:text-teal-300",
+    description: "How to buy, play, and verify official contract",
+    badge: "Start Here",
+  },
+  {
+    label: "Manifesto",
+    href: "/manifesto",
+    icon: BookOpen,
+    color: "text-purple-400",
+    glowColor: "group-hover:text-purple-300",
+    description: "CC0 Whitepaper: Why $NOM is mathematically unruggable",
+    badge: "CC0",
+  },
+  {
+    label: "Tokenomics",
+    href: "/tokenomics",
+    icon: Flame,
+    color: "text-rose-400",
+    glowColor: "group-hover:text-rose-300",
+    description: "Deflation simulator, live burns & zero-tax DEX",
+    badge: "1% Burn",
+  },
+  {
+    label: "Security",
+    href: "/security",
+    icon: ShieldCheck,
+    color: "text-cyan-400",
+    glowColor: "group-hover:text-cyan-300",
+    description: "Revoked authorities & live on-chain contract audit",
+    badge: "Verified",
+  },
+  {
+    label: "Hall of Fame",
+    href: "/hall-of-fame",
+    icon: Coins,
+    color: "text-amber-400",
+    glowColor: "group-hover:text-amber-300",
+    description: "Top token incinerators & arcade champions",
+    badge: "Legends",
   },
   {
     label: "Create",
@@ -60,14 +105,6 @@ const NAV_ITEMS: NavItem[] = [
     description: "In-browser meme studio, vector PFPs & 8-bit beats",
   },
   {
-    label: "Lore",
-    href: "/#lore",
-    icon: BookOpen,
-    color: "text-purple-400",
-    glowColor: "group-hover:text-purple-300",
-    description: "Read community stories & submit canonical PRs",
-  },
-  {
     label: "Wall",
     href: "/#wall",
     icon: MessageSquare,
@@ -75,23 +112,6 @@ const NAV_ITEMS: NavItem[] = [
     glowColor: "group-hover:text-teal-300",
     description: "NomWall quests, high score flex & discussions",
     badge: "Quests",
-  },
-  {
-    label: "Build",
-    href: "/#toolkit",
-    icon: Code2,
-    color: "text-yellow-400",
-    glowColor: "group-hover:text-yellow-300",
-    description: "Open source repository, Phaser scenes & modding",
-  },
-  {
-    label: "$NOM",
-    href: "/#tokenomics",
-    icon: Flame,
-    color: "text-rose-400",
-    glowColor: "group-hover:text-rose-300",
-    description: "Fair launch on pump.fun & Raydium migration",
-    badge: "Fair Launch",
   },
 ];
 
@@ -162,6 +182,46 @@ export const Navbar: React.FC = () => {
               </div>
             </Link>
           </div>
+
+          {/* Desktop Center Navigation Links */}
+          <nav className="hidden xl:flex items-center gap-1 font-mono text-xs font-semibold">
+            <Link
+              href="/play"
+              className="px-3 py-1.5 rounded-lg text-slate-300 hover:text-emerald-400 hover:bg-slate-900/80 transition-colors"
+            >
+              PLAY
+            </Link>
+            <Link
+              href="/guide"
+              className="px-3 py-1.5 rounded-lg text-slate-300 hover:text-teal-400 hover:bg-slate-900/80 transition-colors"
+            >
+              GUIDE
+            </Link>
+            <Link
+              href="/manifesto"
+              className="px-3 py-1.5 rounded-lg text-slate-300 hover:text-purple-400 hover:bg-slate-900/80 transition-colors"
+            >
+              MANIFESTO
+            </Link>
+            <Link
+              href="/tokenomics"
+              className="px-3 py-1.5 rounded-lg text-slate-300 hover:text-rose-400 hover:bg-slate-900/80 transition-colors"
+            >
+              TOKENOMICS
+            </Link>
+            <Link
+              href="/security"
+              className="px-3 py-1.5 rounded-lg text-slate-300 hover:text-cyan-400 hover:bg-slate-900/80 transition-colors"
+            >
+              SECURITY
+            </Link>
+            <Link
+              href="/hall-of-fame"
+              className="px-3 py-1.5 rounded-lg text-slate-300 hover:text-amber-400 hover:bg-slate-900/80 transition-colors"
+            >
+              HALL OF FAME
+            </Link>
+          </nav>
 
           {/* Right Action Buttons & Web3 Controls */}
           <div className="flex items-center gap-2 sm:gap-2.5">
@@ -430,54 +490,6 @@ export const Navbar: React.FC = () => {
           </div>
         )}
       </header>
-
-      {/* Floating App-Like Bottom Dock on Mobile & Tablet (Thumb-Friendly Native Experience) */}
-      <nav
-        aria-label="Mobile Bottom Navigation"
-        className="lg:hidden fixed bottom-3 inset-x-3 z-40 max-w-sm sm:max-w-md mx-auto rounded-3xl bg-slate-950/95 backdrop-blur-2xl border border-emerald-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.85)] px-3 py-1.5 flex items-center justify-around transition-all select-none touch-manipulation"
-      >
-        <button
-          onClick={handlePlayClick}
-          className="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2.5 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-emerald-400 active:scale-90 transition-all cursor-pointer touch-manipulation"
-        >
-          <Gamepad2 className="w-5 h-5 mb-0.5 text-emerald-400" />
-          <span>Play</span>
-        </button>
-
-        <a
-          href="/#wall"
-          className="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2.5 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-teal-300 active:scale-90 transition-all touch-manipulation"
-        >
-          <MessageSquare className="w-5 h-5 mb-0.5 text-teal-400" />
-          <span>Quests</span>
-        </a>
-
-        {/* Center Glow HERO Action Button: Instant 1-Tap Buy $NOM */}
-        <button
-          onClick={() => setIsQuickBuyOpen(true)}
-          className="relative -top-3.5 flex flex-col items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-300 to-solana-green text-slate-950 font-black shadow-[0_0_25px_rgba(20,241,149,0.7)] hover:scale-110 active:scale-90 transition-all border-2 border-slate-950 cursor-pointer touch-manipulation shrink-0"
-          title="Instant Buy $NOM on pump.fun"
-        >
-          <Flame className="w-6 h-6 fill-slate-950 text-slate-950 animate-bounce" />
-          <span className="text-[8px] tracking-tighter leading-none mt-0.5 font-mono">BUY</span>
-        </button>
-
-        <a
-          href="/#tokenomics"
-          className="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2.5 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-amber-300 active:scale-90 transition-all touch-manipulation"
-        >
-          <Coins className="w-5 h-5 mb-0.5 text-amber-400" />
-          <span>Stats</span>
-        </a>
-
-        <a
-          href="/#lore"
-          className="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2.5 rounded-2xl text-[10px] font-mono font-bold text-slate-300 hover:text-purple-300 active:scale-90 transition-all touch-manipulation"
-        >
-          <BookOpen className="w-5 h-5 mb-0.5 text-purple-400" />
-          <span>Lore</span>
-        </a>
-      </nav>
 
       {/* Quick Buy SOL Modal */}
       <QuickBuyModal

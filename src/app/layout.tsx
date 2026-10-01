@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
+import { QuickActionHUD } from "@/components/ui/QuickActionHUD";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -57,7 +58,10 @@ export default function RootLayout({
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          {children}
+          <QuickActionHUD />
+        </AppProviders>
       </body>
     </html>
   );
