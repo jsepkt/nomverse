@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 export const NomWall: React.FC = () => {
-  const { user } = useAuth();
+  const { user, openAuthModal } = useAuth();
   const [activeMainTab, setActiveMainTab] = useState<"wall" | "leaderboard" | "bounties">("wall");
   const [posts, setPosts] = useState<WallPost[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -303,8 +303,22 @@ export const NomWall: React.FC = () => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
+  const handleCreateFirstPost = () => {
+    if (!user) {
+      openAuthModal();
+    } else {
+      const composer = document.getElementById("wall-composer");
+      if (composer) {
+        composer.scrollIntoView({ behavior: "smooth" });
+        const input = composer.querySelector("input, textarea") as HTMLElement | null;
+        input?.focus();
+      }
+    }
+  };
+
   return (
-    <section id="wall" className="w-full py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-800/80 bg-slate-950/20">
+    <section id="community" className="scroll-mt-20 w-full py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-800/80 bg-slate-950/20">
+      <div id="wall" className="sr-only" />
       <div className="max-w-4xl mx-auto">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
@@ -371,7 +385,9 @@ export const NomWall: React.FC = () => {
         ) : (
           <>
             {/* Post Composer */}
-            <PostComposer onPostCreated={handlePostCreated} />
+            <div id="wall-composer">
+              <PostComposer onPostCreated={handlePostCreated} />
+            </div>
 
         {/* Filter, Sort & Search Toolbar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-800/80">
@@ -478,12 +494,27 @@ export const NomWall: React.FC = () => {
             <div className="text-xs font-mono text-emerald-400">CONNECTING TO THE NOMWALL...</div>
           </div>
         ) : filteredPosts.length === 0 ? (
-          <div className="py-16 text-center rounded-2xl bg-surface border border-slate-800 p-8 space-y-3">
-            <div className="text-3xl">🌱</div>
-            <h4 className="text-base font-bold text-white">No thoughts found</h4>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Be the first verified builder to post on this topic. Share your thoughts or ideas with the community!
-            </p>
+          <div className="py-16 text-center rounded-2xl bg-surface/90 border border-slate-800 p-8 space-y-4 shadow-xl">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Sparkles className="w-7 h-7" />
+            </div>
+            <div className="space-y-1.5">
+              <h4 className="text-base sm:text-lg font-bold text-white">
+                The community is waiting for its first legends
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+                Be the first person to submit an idea, create lore, share an achievement, or discuss $NOM.
+              </p>
+            </div>
+            <div>
+              <button
+                onClick={handleCreateFirstPost}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer min-h-[44px] touch-manipulation"
+              >
+                <Sparkles className="w-4 h-4 fill-slate-950" />
+                <span>CREATE FIRST POST</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-5">

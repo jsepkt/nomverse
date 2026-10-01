@@ -1,63 +1,143 @@
 "use client";
 
 import React from "react";
-import { Flame, ShieldCheck, Zap, Lock, Sparkles } from "lucide-react";
+import Link from "next/link";
+import {
+  Flame,
+  ShieldCheck,
+  Zap,
+  Lock,
+  Sparkles,
+  ArrowRight,
+  TrendingUp,
+  FileText,
+} from "lucide-react";
 import { InstantBuyTerminal } from "../tokenomics/InstantBuyTerminal";
+import { BondingMilestonesCard } from "../game/BondingMilestonesCard";
+import { TOKEN_CONFIG } from "@/config/token";
 
 export const Tokenomics: React.FC = () => {
   return (
-    <section id="tokenomics" className="w-full py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-800/80">
-      <div className="max-w-6xl mx-auto space-y-12">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium bg-rose-500/10 text-rose-400 border border-rose-500/30 mb-4">
+    <section
+      id="tokenomics"
+      className="scroll-mt-20 w-full py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-800/80"
+    >
+      <div className="max-w-[1360px] mx-auto space-y-12">
+        {/* Section Header (Section 7 & 18 UX Audit) */}
+        <div className="text-center max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30">
             <Flame className="w-3.5 h-3.5" />
-            <span>PUMP.FUN FAIR LAUNCH</span>
+            <span>ECOSYSTEM TOKENOMICS</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-3">
-            The Sovereign Economic Engine of NomVerse
+
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
+            <span className="text-emerald-400">$NOM</span> Token &amp; Fair Launch
           </h2>
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
-            While GitHub is the builder hub, our token launched on <strong className="text-emerald-400">pump.fun</strong> powers community attention, arcade revives, and deflationary burn events. 100% fair launch with zero presale, zero team allocations, and renounced authorities.
+
+          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+            $NOM is the native utility and fuel of the NomVerse. 100% fair launched on pump.fun with zero private sales, zero team allocations, and permanently revoked authorities.
           </p>
         </div>
 
-        {/* The Star: High-Converting 1-Click Buy Terminal */}
-        <InstantBuyTerminal />
-
-        {/* 4 Pillars Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="rounded-2xl bg-slate-950/80 border border-slate-800/90 p-5 space-y-2">
-            <div className="text-2xl font-black font-mono text-emerald-400">0% TAX</div>
-            <div className="text-sm sm:text-base font-bold text-white">Zero Friction</div>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              No buy taxes, no sell taxes, no team skim. Complete sovereign trading freedom for community holders.
-            </p>
+        {/* 4 Core Essential Facts Cards (Section 7 UX Audit: Simple essential facts) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="rounded-2xl bg-surface/80 border border-slate-800 p-5 space-y-1.5">
+            <div className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">
+              Total Supply
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+              1,000,000,000
+            </div>
+            <p className="text-xs text-slate-400">Fixed hardcap. No inflation.</p>
           </div>
 
-          <div className="rounded-2xl bg-slate-950/80 border border-slate-800/90 p-5 space-y-2">
-            <div className="text-2xl font-black font-mono text-solana-green">100% FAIR</div>
-            <div className="text-sm sm:text-base font-bold text-white">Bonding Curve Launch</div>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Every token purchased through the pump.fun bonding curve. Zero VCs, zero presale discounts, zero team tokens.
-            </p>
+          <div className="rounded-2xl bg-surface/80 border border-slate-800 p-5 space-y-1.5">
+            <div className="text-xs font-mono text-teal-400 font-bold uppercase tracking-wider">
+              Trading Tax
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+              0% / 0%
+            </div>
+            <p className="text-xs text-slate-400">Zero buy tax. Zero sell tax.</p>
           </div>
 
-          <div className="rounded-2xl bg-slate-950/80 border border-slate-800/90 p-5 space-y-2">
-            <div className="text-2xl font-black font-mono text-teal-300">TOKEN-2022</div>
-            <div className="text-sm sm:text-base font-bold text-white">Next-Gen Security</div>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Mint authority renounced (`null`). Freeze authority renounced (`null`). Total supply fixed at 1 Billion $NOM forever.
-            </p>
+          <div className="rounded-2xl bg-surface/80 border border-slate-800 p-5 space-y-1.5">
+            <div className="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider">
+              Arcade Auto-Burn
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+              1% Fee
+            </div>
+            <p className="text-xs text-slate-400">Burns permanently on games.</p>
           </div>
 
-          <div className="rounded-2xl bg-slate-950/80 border border-slate-800/90 p-5 space-y-2">
-            <div className="text-2xl font-black font-mono text-solana-purple">RAYDIUM</div>
-            <div className="text-sm sm:text-base font-bold text-white">Automated Migration</div>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Upon reaching 85 SOL in the bonding curve, liquidity is burned and migrated automatically to Raydium DEX.
-            </p>
+          <div className="rounded-2xl bg-surface/80 border border-slate-800 p-5 space-y-1.5">
+            <div className="text-xs font-mono text-solana-purple font-bold uppercase tracking-wider">
+              Blockchain
+            </div>
+            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+              Solana
+            </div>
+            <p className="text-xs text-slate-400">Token-2022 speed &amp; security.</p>
           </div>
+        </div>
+
+        {/* The Star: 1-Click Instant Buy Terminal */}
+        <div className="max-w-4xl mx-auto">
+          <InstantBuyTerminal />
+        </div>
+
+        {/* Straightforward $NOM Bonding Curve Milestones (Section 7 UX Audit) */}
+        <div>
+          <BondingMilestonesCard />
+        </div>
+
+        {/* Deep Dive Utility Links */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+          <Link
+            href="/guide"
+            className="group p-5 rounded-2xl bg-surface/70 border border-slate-800 hover:border-teal-500/40 transition-all flex items-center justify-between"
+          >
+            <div className="space-y-1">
+              <span className="text-xs font-mono font-bold text-teal-400 uppercase">
+                Step-by-Step
+              </span>
+              <h4 className="text-sm font-bold text-white group-hover:text-teal-300 transition-colors">
+                How to Buy Guide &amp; Scam Shield
+              </h4>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-transform group-hover:translate-x-1" />
+          </Link>
+
+          <Link
+            href="/tokenomics"
+            className="group p-5 rounded-2xl bg-surface/70 border border-slate-800 hover:border-rose-500/40 transition-all flex items-center justify-between"
+          >
+            <div className="space-y-1">
+              <span className="text-xs font-mono font-bold text-rose-400 uppercase">
+                Live Simulator
+              </span>
+              <h4 className="text-sm font-bold text-white group-hover:text-rose-300 transition-colors">
+                Interactive Deflation &amp; Supply Model
+              </h4>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-transform group-hover:translate-x-1" />
+          </Link>
+
+          <Link
+            href="/security"
+            className="group p-5 rounded-2xl bg-surface/70 border border-slate-800 hover:border-cyan-500/40 transition-all flex items-center justify-between"
+          >
+            <div className="space-y-1">
+              <span className="text-xs font-mono font-bold text-cyan-400 uppercase">
+                On-Chain Audit
+              </span>
+              <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+                Contract Verification &amp; Mint Safety
+              </h4>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
       </div>
     </section>

@@ -6,6 +6,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import { TOKEN_CONFIG } from "@/config/token";
 import { getTotalNomBurned } from "@/lib/arcadeVault";
+import { MissionControl } from "@/components/telemetry/MissionControl";
 import {
   Flame,
   PieChart,
@@ -173,6 +174,11 @@ export default function TokenomicsPage() {
             💡 <strong>The Deflation Rule:</strong> All game room entry fees enforce a hardcoded 1% burn fee. Unlike traditional memecoins that rely on hype, $NOM supply naturally tightens the more people play.
           </div>
         </div>
+      </section>
+
+      {/* SpaceX-Grade Raydium Mission Control */}
+      <section className="py-6 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+        <MissionControl />
       </section>
 
       {/* On-Chain Verification Links */}

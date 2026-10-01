@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
 import { TOKEN_CONFIG } from "@/config/token";
+import { SolanaRpcTelemetry } from "@/components/telemetry/SolanaRpcTelemetry";
 import {
   ShieldCheck,
   Lock,
@@ -174,6 +175,11 @@ export default function SecurityPage() {
             </div>
           )}
         </div>
+      </section>
+
+      {/* Live Solana Mainnet-Beta Multi-RPC Telemetry */}
+      <section className="py-6 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+        <SolanaRpcTelemetry />
       </section>
 
       {/* External Verifications */}

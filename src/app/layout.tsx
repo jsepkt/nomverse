@@ -16,9 +16,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nomverse.org"),
-  title: "NomVerse — The Hungry Open-Source Mascot of Web3 (CC0)",
+  title: "NomVerse — The Open-Source Mascot of Web3 (CC0)",
   description:
-    "An open-source, 100% CC0 public domain mascot universe backing a community coin launched on pump.fun. Feed Nomster Solana candies in the interactive arcade mini-game and submit living lore via GitHub PRs.",
+    "NomVerse is the open-source CC0 home of Nomster — play the arcade game, create memes and skins, explore the lore, and build with the NomVerse community on Solana.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -34,15 +34,16 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
   },
   openGraph: {
-    title: "NomVerse — The Hungry Open-Source Mascot of Web3 (CC0)",
+    title: "NomVerse — The Open-Source Mascot of Web3 (CC0)",
     description:
-      "100% CC0 public domain mascot universe, interactive Phaser physics mini-game, and community lore engine for pump.fun.",
+      "NomVerse is the open-source CC0 home of Nomster — play the arcade game, create memes and skins, explore the lore, and build with the NomVerse community on Solana.",
     images: ["/mascot.svg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "NomVerse — The Hungry Open-Source Mascot of Web3",
-    description: "100% CC0 Public Domain Web3 Mascot Universe ready for pump.fun fair launch.",
+    title: "NomVerse — The Open-Source Mascot of Web3",
+    description:
+      "NomVerse is the open-source CC0 home of Nomster — play the arcade game, create memes and skins, explore the lore, and build with the NomVerse community on Solana.",
     images: ["/mascot.svg"],
   },
 };
