@@ -289,3 +289,48 @@ export function awardChallengePrize(
 
   return { success: true, newBalance: state.balance };
 }
+
+// Directly incinerate / burn $NOM from Arcade Vault
+export function burnNomDirectly(
+  userId: string,
+  amount: number,
+  playerName?: string
+): { success: boolean; newBalance: number; burnedAmount: number; error?: string } {
+  if (amount <= 0) {
+    return { success: false, newBalance: 0, burnedAmount: 0, error: "Please enter a valid burn amount." };
+  }
+  const state = getUserVault(userId);
+  if (amount > state.balance) {
+    return {
+      success: false,
+      newBalance: state.balance,
+      burnedAmount: 0,
+      error: `Insufficient vault balance. You have ${state.balance.toLocaleString()} $NOM available.`,
+    };
+  }
+
+  state.balance -= amount;
+  state.totalSpent += amount;
+  recordGlobalBurn(amount);
+
+  state.transactions.unshift({
+    id: `burn_${Date.now()}`,
+    type: "burn",
+    amount,
+    timestamp: Date.now(),
+    description: `🔥 Permanently Incinerated ${amount.toLocaleString()} $NOM!`,
+    txHash: `burn_inc_${Math.random().toString(36).substring(2, 10)}`,
+  });
+
+  saveUserVault(userId, state);
+
+  recordFeedItem({
+    type: "burn",
+    playerName: playerName || (userId === "guest" ? "Incinerator Anon" : userId.substring(0, 10)),
+    amountNom: amount,
+    burnedNom: amount,
+    highlight: amount >= 5000,
+  });
+
+  return { success: true, newBalance: state.balance, burnedAmount: amount };
+}

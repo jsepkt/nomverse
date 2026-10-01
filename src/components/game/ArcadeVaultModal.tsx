@@ -15,11 +15,14 @@ import {
   Wallet,
   Zap,
   RefreshCw,
+  Share2,
+  Send,
 } from "lucide-react";
 import {
   getUserVault,
   depositToVault,
   withdrawFromVault,
+  burnNomDirectly,
   getTotalNomBurned,
   BURN_FEE_PERCENT,
   UserVaultState,
@@ -52,9 +55,11 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
   const userId = user?.id || "guest";
 
   const [vaultState, setVaultState] = useState<UserVaultState>(getUserVault(userId));
-  const [activeTab, setActiveTab] = useState<"deposit" | "withdraw" | "history">("deposit");
+  const [activeTab, setActiveTab] = useState<"deposit" | "withdraw" | "burn" | "history">("deposit");
   const [depositAmount, setDepositAmount] = useState<number>(2500);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(1000);
+  const [burnAmount, setBurnAmount] = useState<number>(1000);
+  const [lastBurned, setLastBurned] = useState<number | null>(null);
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -123,6 +128,36 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
       if (onBalanceUpdated) onBalanceUpdated(res.newBalance);
     } else {
       setActionError(res.error || "Withdrawal failed.");
+    }
+  };
+
+  const handleDirectBurn = () => {
+    if (burnAmount <= 0) {
+      setActionError("Please select a valid burn amount.");
+      return;
+    }
+    if (burnAmount > vaultState.balance) {
+      setActionError(`Insufficient balance. You have ${vaultState.balance.toLocaleString()} $NOM.`);
+      return;
+    }
+
+    const res = burnNomDirectly(userId, burnAmount, user?.name);
+    if (res.success) {
+      setVaultState(getUserVault(userId));
+      setTotalBurned(getTotalNomBurned());
+      setLastBurned(burnAmount);
+      setActionSuccess(`🔥 Successfully incinerated ${burnAmount.toLocaleString()} $NOM! Permanent supply reduced.`);
+      setActionError(null);
+      sounds.playGoldenChime();
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.5 },
+        colors: ["#F43F5E", "#F59E0B", "#EF4444"],
+      });
+      if (onBalanceUpdated) onBalanceUpdated(res.newBalance);
+    } else {
+      setActionError(res.error || "Burn failed.");
     }
   };
 
@@ -245,16 +280,16 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
         </div>
 
         {/* Tab Switcher */}
-        <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 mb-4 text-xs font-bold">
+        <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800 mb-4 text-xs font-bold">
           <button
             onClick={() => {
               setActiveTab("deposit");
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
               activeTab === "deposit"
-                ? "bg-emerald-500 text-slate-950 shadow-md"
+                ? "bg-emerald-500 text-slate-950 shadow-md font-black"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -268,9 +303,9 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
               activeTab === "withdraw"
-                ? "bg-cyan-500 text-slate-950 shadow-md"
+                ? "bg-cyan-500 text-slate-950 shadow-md font-black"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -280,17 +315,33 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
 
           <button
             onClick={() => {
+              setActiveTab("burn");
+              setActionSuccess(null);
+              setActionError(null);
+            }}
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              activeTab === "burn"
+                ? "bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-md font-black"
+                : "text-rose-400 hover:text-rose-300"
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5" />
+            <span>🔥 Burn</span>
+          </button>
+
+          <button
+            onClick={() => {
               setActiveTab("history");
               setActionSuccess(null);
               setActionError(null);
             }}
-            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`py-2 rounded-lg transition-all flex items-center justify-center gap-1 cursor-pointer ${
               activeTab === "history"
-                ? "bg-slate-800 text-white border border-slate-700"
+                ? "bg-slate-800 text-white border border-slate-700 font-black"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <span>History ({vaultState.transactions.length})</span>
+            <span>History</span>
           </button>
         </div>
 
@@ -367,6 +418,20 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
               <ArrowDownCircle className="w-4 h-4 text-slate-950" />
               <span>Confirm Deposit &amp; Credit Vault</span>
             </button>
+
+            {/* Direct pump.fun Buy Link */}
+            <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+              <span className="text-slate-400">Need more $NOM tokens?</span>
+              <a
+                href={TOKEN_CONFIG.pumpFunUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-bold hover:underline"
+              >
+                <span>Buy on pump.fun</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         )}
 
@@ -438,7 +503,91 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
           </div>
         )}
 
-        {/* Tab 3: History */}
+        {/* Tab 3: Burn / Incinerate */}
+        {activeTab === "burn" && (
+          <div className="space-y-4">
+            <div className="p-3 rounded-2xl bg-rose-950/20 border border-rose-500/30 text-xs space-y-1">
+              <div className="font-bold text-rose-300 flex items-center gap-1.5">
+                <Flame className="w-4 h-4 text-rose-400 animate-pulse" />
+                <span>Voluntary Token Incineration</span>
+              </div>
+              <p className="text-[11px] text-slate-300 font-sans leading-relaxed">
+                Incinerated tokens are permanently destroyed and subtracted from the 1 Billion $NOM supply. Burns rank your address in the Burn Hall of Fame and broadcast a Whale Incineration announcement to the entire community.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs text-slate-300 font-bold block">
+                Select Amount to Incinerate ($NOM):
+              </label>
+              <div className="grid grid-cols-4 gap-2">
+                {[500, 1000, 5000, vaultState.balance].map((amt, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setBurnAmount(amt)}
+                    className={`py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      burnAmount === amt
+                        ? "bg-rose-500/25 border-rose-400 text-rose-300 shadow-md font-black"
+                        : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    {idx === 3 ? "MAX" : `🔥 ${amt.toLocaleString()}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-300 space-y-1">
+              <div className="flex justify-between">
+                <span>Burn Destination:</span>
+                <span className="text-rose-400 font-bold font-mono">Permanent Null Burn Sink</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Supply Impact:</span>
+                <span className="text-white font-bold">-{burnAmount.toLocaleString()} $NOM Forever</span>
+              </div>
+            </div>
+
+            <button
+              onClick={handleDirectBurn}
+              className="w-full py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-rose-500 via-red-500 to-amber-500 text-white shadow-[0_0_25px_rgba(244,63,94,0.4)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Flame className="w-4 h-4 fill-white text-white animate-pulse" />
+              <span>Incinerate {burnAmount.toLocaleString()} $NOM Forever 🔥</span>
+            </button>
+
+            {lastBurned && (
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                    `🔥 I just permanently incinerated ${lastBurned.toLocaleString()} $NOM in the @Nomverse Arcade!\n\nDeflation in action. Come play & burn: https://nomverse.org/play\nMint: ${TOKEN_CONFIG.mintAddress}\n\n#NOM #Solana #pumpfun #burn`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Flex Burn on X</span>
+                </a>
+
+                <a
+                  href={`https://t.me/share/url?url=${encodeURIComponent("https://nomverse.org/play")}&text=${encodeURIComponent(
+                    `🔥 Just burned ${lastBurned.toLocaleString()} $NOM on Nomverse Arcade! Supply is shrinking daily: mint ${TOKEN_CONFIG.mintAddress}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="py-2 px-3 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+                >
+                  <Send className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Telegram</span>
+                </a>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab 4: History */}
         {activeTab === "history" && (
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
             {vaultState.transactions.length === 0 ? (
