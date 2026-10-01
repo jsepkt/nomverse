@@ -118,7 +118,7 @@ export const InstantBuyTerminal: React.FC = () => {
   };
 
   return (
-    <div className="w-full relative rounded-3xl bg-slate-950/90 border border-emerald-500/40 p-5 sm:p-8 shadow-[0_0_50px_rgba(20,241,149,0.15)] overflow-hidden">
+    <div className="w-full relative rounded-3xl bg-slate-950/90 border border-emerald-500/40 p-3.5 sm:p-6 lg:p-8 shadow-[0_0_50px_rgba(20,241,149,0.15)] overflow-hidden">
       {/* Background ambient lighting */}
       <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-solana-purple/10 rounded-full blur-3xl pointer-events-none" />
@@ -250,7 +250,7 @@ export const InstantBuyTerminal: React.FC = () => {
                       setSolInput(amount);
                       setCustomInput("");
                     }}
-                    className={`py-2 sm:py-2.5 px-0.5 sm:px-1 rounded-xl font-mono text-[11px] sm:text-sm font-bold border transition-all touch-manipulation cursor-pointer ${
+                    className={`py-2 sm:py-2.5 px-0.5 sm:px-1 rounded-xl font-mono text-[10px] xs:text-[11px] sm:text-sm font-bold border transition-all touch-manipulation cursor-pointer ${
                       isSelected
                         ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(20,241,149,0.3)] scale-[1.02]"
                         : "bg-slate-900/90 text-slate-300 border-slate-800 hover:border-slate-700 hover:text-white"

@@ -109,7 +109,7 @@ export const HeroSection: React.FC = () => {
               {/* Floating Speech Bubble */}
               {speechVisible && (
                 <div
-                  className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap px-3.5 py-1.5 rounded-2xl glass-card text-xs font-mono font-bold text-white border border-emerald-400/40 shadow-[0_0_25px_rgba(20,241,149,0.3)] animate-in fade-in zoom-in duration-200 cursor-pointer pointer-events-auto"
+                  className="absolute -top-12 left-1/2 -translate-x-1/2 w-max max-w-[85vw] px-3.5 py-1.5 rounded-2xl glass-card text-xs font-mono font-bold text-white border border-emerald-400/40 shadow-[0_0_25px_rgba(20,241,149,0.3)] animate-in fade-in zoom-in duration-200 cursor-pointer pointer-events-auto leading-snug text-center"
                   onClick={handleMascotPoke}
                 >
                   <span className="text-emerald-400 font-black">Nomster: </span>
@@ -120,18 +120,18 @@ export const HeroSection: React.FC = () => {
 
               {/* Orbiting Collectible Candies */}
               <div
-                className="absolute -top-3 -left-8 w-10 h-10 rounded-full glass-card p-1.5 flex items-center justify-center border border-amber-400/40 animate-bounce duration-1000 shadow-[0_0_15px_rgba(245,158,11,0.3)] cursor-pointer"
+                className="absolute -top-2 -left-3 sm:-left-8 w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-card p-1.5 flex items-center justify-center border border-amber-400/40 animate-bounce duration-1000 shadow-[0_0_15px_rgba(245,158,11,0.3)] cursor-pointer"
                 onClick={handleMascotPoke}
                 title="Tap to feed Nomster"
               >
-                <span className="text-lg">🍬</span>
+                <span className="text-base sm:text-lg">🍬</span>
               </div>
               <div
-                className="absolute -bottom-2 -right-8 w-10 h-10 rounded-full glass-card p-1.5 flex items-center justify-center border border-purple-400/40 animate-pulse duration-700 shadow-[0_0_15px_rgba(168,85,247,0.3)] cursor-pointer"
+                className="absolute -bottom-2 -right-3 sm:-right-8 w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-card p-1.5 flex items-center justify-center border border-purple-400/40 animate-pulse duration-700 shadow-[0_0_15px_rgba(168,85,247,0.3)] cursor-pointer"
                 onClick={handleMascotPoke}
                 title="Tap to feed Nomster"
               >
-                <span className="text-lg">⭐</span>
+                <span className="text-base sm:text-lg">⭐</span>
               </div>
 
               {/* Main Mascot Button */}
@@ -160,30 +160,30 @@ export const HeroSection: React.FC = () => {
             </div>
 
             {/* Kinetic Typography */}
-            <div className="space-y-3">
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.05]">
+            <div className="space-y-3 px-2">
+              <h1 className="text-3xl xs:text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08]">
                 NOMVERSE
-                <span className="block text-2xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-cyan bg-clip-text text-transparent mt-1">
+                <span className="block text-xl xs:text-2xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-cyan bg-clip-text text-transparent mt-1">
                   The Open-Source Mascot of Web3
                 </span>
               </h1>
-              <p className="text-lg sm:text-2xl font-bold text-slate-100 font-mono tracking-tight">
+              <p className="text-base sm:text-2xl font-bold text-slate-100 font-mono tracking-tight">
                 Meet Nomster. Play. Create. Remix. Build.
               </p>
             </div>
 
             {/* Subtitle Positioning */}
-            <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed font-normal">
+            <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed font-normal px-2">
               NomVerse is an open-source universe built around Nomster. Play retro physics games with zero wallet friction, compose 8-bit beats, design custom skins, and hold{" "}
               <strong className="text-emerald-400 font-black">$NOM</strong> for sovereign ecosystem perks.
             </p>
 
             {/* 3D Tactile CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 w-full max-w-sm sm:max-w-none pt-2">
               {/* Primary PLAY NOW */}
               <button
                 onClick={scrollToArcade}
-                className="tactile-button inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl font-black text-sm sm:text-base text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.45)] hover:shadow-[0_0_45px_rgba(20,241,149,0.7)] cursor-pointer min-h-[52px] touch-manipulation"
+                className="tactile-button inline-flex items-center justify-center gap-2 px-7 py-3.5 sm:py-4 rounded-2xl font-black text-sm sm:text-base text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.45)] hover:shadow-[0_0_45px_rgba(20,241,149,0.7)] cursor-pointer min-h-[48px] sm:min-h-[52px] touch-manipulation"
               >
                 <Gamepad2 className="w-5 h-5 fill-slate-950 text-slate-950" />
                 <span>PLAY NOW</span>
@@ -192,7 +192,7 @@ export const HeroSection: React.FC = () => {
               {/* Secondary EXPLORE NOMVERSE */}
               <button
                 onClick={scrollToWhatIs}
-                className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-slate-200 glass-card hover:border-slate-500 hover:text-white transition-all cursor-pointer min-h-[52px] touch-manipulation"
+                className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:py-4 rounded-2xl font-bold text-sm sm:text-base text-slate-200 glass-card hover:border-slate-500 hover:text-white transition-all cursor-pointer min-h-[48px] sm:min-h-[52px] touch-manipulation"
               >
                 <Layers className="w-4 h-4 text-teal-400" />
                 <span>EXPLORE NOMVERSE</span>
@@ -204,80 +204,83 @@ export const HeroSection: React.FC = () => {
                   sounds.playGoldenChime();
                   setIsQuickBuyOpen(true);
                 }}
-                className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-mono font-bold text-sm sm:text-base text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 hover:border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.25)] cursor-pointer min-h-[52px] touch-manipulation"
+                className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:py-4 rounded-2xl font-mono font-bold text-sm sm:text-base text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 hover:border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.25)] cursor-pointer min-h-[48px] sm:min-h-[52px] touch-manipulation"
               >
                 <Zap className="w-4 h-4 text-amber-400" />
                 <span>BUY $NOM</span>
               </button>
             </div>
 
-            {/* Verified Contract Bar (Apple Pill Style) */}
-            <div className="w-full max-w-lg p-2.5 sm:p-3 rounded-2xl glass-card flex items-center justify-between gap-3 text-left">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-solana-green/15 border border-solana-green/30 flex items-center justify-center text-solana-green shrink-0">
-                  <Coins className="w-4 h-4" />
+            {/* Verified Contract Bar (Mobile-Optimized Responsive Card) */}
+            <div className="w-full max-w-lg p-3 sm:p-3.5 rounded-2xl glass-card space-y-2 text-left">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-7 h-7 rounded-xl bg-solana-green/15 border border-solana-green/30 flex items-center justify-center text-solana-green shrink-0">
+                    <Coins className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <span>Official Mint (Token-2022)</span>
+                      <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold shrink-0">
+                        VERIFIED
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                    <span>Official Mint (Token-2022)</span>
-                    <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-bold">
-                      VERIFIED
-                    </span>
-                  </div>
-                  <div className="text-xs sm:text-sm font-mono text-slate-100 font-semibold truncate select-all">
-                    {TOKEN_CONFIG.mintAddress}
-                  </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={handleCopyMint}
+                    className="tactile-button inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 min-h-[34px] touch-manipulation cursor-pointer"
+                    title="Copy Mint Address"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+
+                  <a
+                    href={`https://solscan.io/token/${TOKEN_CONFIG.mintAddress}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition-colors min-h-[34px] min-w-[34px] flex items-center justify-center cursor-pointer"
+                    title="View on Solscan"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  onClick={handleCopyMint}
-                  className="tactile-button inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 min-h-[40px] touch-manipulation"
-                  title="Copy Mint Address"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-emerald-400">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-slate-400" />
-                      <span>Copy</span>
-                    </>
-                  )}
-                </button>
-
-                <a
-                  href={`https://solscan.io/token/${TOKEN_CONFIG.mintAddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition-colors"
-                  title="View on Solscan"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+              <div className="text-xs sm:text-sm font-mono text-slate-200 font-semibold truncate bg-slate-900/80 px-2.5 py-1.5 rounded-xl border border-slate-800 select-all">
+                {TOKEN_CONFIG.mintAddress}
               </div>
             </div>
 
             {/* Quick 4 Trust Highlights Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-3xl pt-2">
-              <div className="p-3 rounded-2xl glass-card text-center">
-                <div className="text-xs font-mono text-slate-400">TOTAL SUPPLY</div>
-                <div className="text-lg font-black font-mono text-white">1,000,000,000</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full max-w-3xl pt-2">
+              <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
+                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">TOTAL SUPPLY</div>
+                <div className="text-base sm:text-lg font-black font-mono text-white truncate">1,000,000,000</div>
               </div>
-              <div className="p-3 rounded-2xl glass-card text-center">
-                <div className="text-xs font-mono text-slate-400">TRADING TAX</div>
-                <div className="text-lg font-black font-mono text-emerald-400">0% BUY / SELL</div>
+              <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
+                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">TRADING TAX</div>
+                <div className="text-base sm:text-lg font-black font-mono text-emerald-400 truncate">0% BUY / SELL</div>
               </div>
-              <div className="p-3 rounded-2xl glass-card text-center">
-                <div className="text-xs font-mono text-slate-400">ARCADE BURN</div>
-                <div className="text-lg font-black font-mono text-rose-400">1% PER WAGER</div>
+              <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
+                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">ARCADE BURN</div>
+                <div className="text-base sm:text-lg font-black font-mono text-rose-400 truncate">1% PER WAGER</div>
               </div>
-              <div className="p-3 rounded-2xl glass-card text-center">
-                <div className="text-xs font-mono text-slate-400">INTELLECTUAL PROPERTY</div>
-                <div className="text-lg font-black font-mono text-solana-purple">100% CC0</div>
+              <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
+                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">INTELLECTUAL PROPERTY</div>
+                <div className="text-base sm:text-lg font-black font-mono text-solana-purple truncate">100% CC0</div>
               </div>
             </div>
           </div>

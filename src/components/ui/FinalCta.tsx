@@ -51,10 +51,10 @@ export const FinalCta: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 w-full max-w-sm sm:max-w-none mx-auto pt-2">
             <button
               onClick={scrollToArcade}
-              className="tactile-button inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl font-black text-sm sm:text-base text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.45)] hover:shadow-[0_0_40px_rgba(20,241,149,0.7)] cursor-pointer min-h-[52px] touch-manipulation"
+              className="tactile-button inline-flex items-center justify-center gap-2 px-7 py-3.5 sm:py-4 rounded-2xl font-black text-sm sm:text-base text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.45)] hover:shadow-[0_0_40px_rgba(20,241,149,0.7)] cursor-pointer min-h-[48px] sm:min-h-[52px] touch-manipulation"
             >
               <Gamepad2 className="w-5 h-5 fill-slate-950 text-slate-950" />
               <span>PLAY NOMSTER NOW</span>
@@ -65,7 +65,7 @@ export const FinalCta: React.FC = () => {
                 sounds.playGoldenChime();
                 setIsQuickBuyOpen(true);
               }}
-              className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-mono font-bold text-sm sm:text-base text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 hover:border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.25)] cursor-pointer min-h-[52px] touch-manipulation"
+              className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:py-4 rounded-2xl font-mono font-bold text-sm sm:text-base text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 hover:border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.25)] cursor-pointer min-h-[48px] sm:min-h-[52px] touch-manipulation"
             >
               <Zap className="w-4 h-4 text-amber-400" />
               <span>BUY $NOM</span>
@@ -74,7 +74,7 @@ export const FinalCta: React.FC = () => {
             <Link
               href="#community"
               onClick={() => sounds.playButtonClick()}
-              className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-slate-200 glass-card hover:border-slate-500 hover:text-white transition-all cursor-pointer min-h-[52px] touch-manipulation"
+              className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:py-4 rounded-2xl font-bold text-sm sm:text-base text-slate-200 glass-card hover:border-slate-500 hover:text-white transition-all cursor-pointer min-h-[48px] sm:min-h-[52px] touch-manipulation"
             >
               <MessageSquare className="w-4 h-4 text-teal-400" />
               <span>JOIN COMMUNITY</span>

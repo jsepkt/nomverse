@@ -108,8 +108,8 @@ export const CreateWithNomster: React.FC = () => {
           </p>
         </div>
 
-        {/* Clean Studio Switcher Tabs */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {/* Clean Studio Switcher Tabs - Mobile Swipe Strip & Desktop Bento Grid */}
+        <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar pb-1 px-0.5">
           {TOOLS.map((tool) => {
             const Icon = tool.icon;
             const isActive = activeTab === tool.id;
@@ -118,30 +118,30 @@ export const CreateWithNomster: React.FC = () => {
               <button
                 key={tool.id}
                 onClick={() => handleSelectTab(tool.id)}
-                className={`tactile-button p-3.5 sm:p-4 rounded-2xl text-left border transition-all duration-200 cursor-pointer min-h-[110px] flex flex-col justify-between touch-manipulation ${
+                className={`tactile-button p-3 sm:p-4 rounded-2xl text-left border transition-all duration-200 cursor-pointer min-h-[96px] sm:min-h-[110px] w-[140px] sm:w-auto shrink-0 flex flex-col justify-between touch-manipulation ${
                   isActive
                     ? `bg-slate-900 ${tool.activeBorder} ring-1 ring-white/20`
                     : "glass-card hover:border-slate-600"
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Icon className={`w-5 h-5 ${tool.color}`} />
-                    <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-950 px-2 py-0.5 rounded-full border border-slate-800">
+                  <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${tool.color}`} />
+                    <span className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 bg-slate-950 px-1.5 py-0.5 rounded-full border border-slate-800">
                       {tool.badge}
                     </span>
                   </div>
-                  <h3 className="text-xs sm:text-sm font-bold text-white">
+                  <h3 className="text-xs sm:text-sm font-bold text-white truncate">
                     {tool.title}
                   </h3>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] font-mono">
+                <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[10px] sm:text-[11px] font-mono">
                   <span className={isActive ? "text-amber-400 font-bold" : "text-slate-400"}>
-                    {isActive ? "Active Studio" : "Open Tool"}
+                    {isActive ? "Active" : "Open"}
                   </span>
                   <ChevronRight
-                    className={`w-3.5 h-3.5 transition-transform ${
+                    className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${
                       isActive ? "text-amber-400 translate-x-1" : "text-slate-500"
                     }`}
                   />
@@ -152,7 +152,7 @@ export const CreateWithNomster: React.FC = () => {
         </div>
 
         {/* Studio Workspace Canvas Frame */}
-        <div className="rounded-3xl glass-card p-4 sm:p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+        <div className="rounded-3xl glass-card p-3.5 sm:p-6 lg:p-8 shadow-2xl relative overflow-hidden">
           {activeTab === "memes" && <MemeStudio />}
           {activeTab === "skins" && <PixelSkinWorkshop />}
           {activeTab === "beats" && <ChiptuneStudio />}

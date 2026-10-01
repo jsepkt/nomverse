@@ -138,24 +138,24 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Right Action Island */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Primary PLAY NOW 3D Tactile Button */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
+            {/* Primary PLAY NOW 3D Tactile Button - Compact on mobile */}
             <button
               onClick={handlePlayClick}
-              className="tactile-button relative group inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.65)] shrink-0 cursor-pointer"
+              className="tactile-button relative group inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.65)] shrink-0 cursor-pointer min-h-[36px]"
               title="Launch Retro Arcade"
             >
               <Gamepad2 className="w-3.5 h-3.5 fill-slate-950 text-slate-950 group-hover:scale-110 transition-transform" />
-              <span>PLAY NOW</span>
+              <span>PLAY<span className="hidden xs:inline"> NOW</span></span>
             </button>
 
-            {/* Quick Buy Gold Pill */}
+            {/* Quick Buy Gold Pill - Hidden on small mobile to prevent navbar squeezing */}
             <button
               onClick={() => {
                 sounds.playGoldenChime();
                 setIsQuickBuyOpen(true);
               }}
-              className="tactile-button inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full text-xs font-mono font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 hover:border-amber-500/60 shadow-[0_0_15px_rgba(245,158,11,0.2)] shrink-0 cursor-pointer"
+              className="hidden sm:inline-flex tactile-button items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-full text-xs font-mono font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 hover:border-amber-500/60 shadow-[0_0_15px_rgba(245,158,11,0.2)] shrink-0 cursor-pointer min-h-[36px]"
               title="Instant Buy $NOM"
             >
               <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -188,7 +188,7 @@ export const Navbar: React.FC = () => {
                   sounds.playButtonClick();
                   openAuthModal();
                 }}
-                className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:py-2 rounded-full text-xs font-bold bg-slate-900/80 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/60 transition-all cursor-pointer shrink-0"
+                className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:py-2 rounded-full text-xs font-bold bg-slate-900/80 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500/60 transition-all cursor-pointer shrink-0 min-h-[36px]"
               >
                 <Wallet className="w-3.5 h-3.5" />
                 <span>Connect</span>
@@ -202,7 +202,7 @@ export const Navbar: React.FC = () => {
                 setIsMobileMenuOpen(!isMobileMenuOpen);
               }}
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              className="relative md:hidden p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white transition-all active:scale-95 shrink-0"
+              className="relative md:hidden p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white transition-all active:scale-95 shrink-0 min-w-[38px] min-h-[38px] flex items-center justify-center"
             >
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5 text-rose-400 animate-in spin-in-90 duration-150" />
@@ -215,47 +215,69 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Frosted Glass Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-2 rounded-3xl border border-white/10 bg-slate-950/95 backdrop-blur-2xl shadow-2xl p-4 space-y-4 animate-in slide-in-from-top-3 duration-200 max-h-[calc(100vh-6rem)] overflow-y-auto">
-            {/* Quick Header Actions */}
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-800">
-              {!user ? (
+          <div className="md:hidden mt-2 rounded-3xl border border-white/10 bg-slate-950/95 backdrop-blur-2xl shadow-2xl p-4 space-y-4 animate-in slide-in-from-top-3 duration-200 max-h-[calc(100dvh-5.5rem)] overflow-y-auto overscroll-contain pb-6">
+            {/* Quick Header Actions: Wallet & Buy Card */}
+            <div className="space-y-2.5 pb-3 border-b border-slate-800">
+              {/* High-Impact Gold Buy $NOM Card */}
+              <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border border-amber-500/40 flex items-center justify-between gap-3 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                <div className="space-y-0.5 min-w-0">
+                  <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-300">
+                    <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    <span>Instant Buy $NOM</span>
+                  </div>
+                  <p className="text-[10px] text-slate-300 truncate">
+                    0% Tax • 1% Arcade Burn • Solana
+                  </p>
+                </div>
                 <button
                   onClick={() => {
+                    sounds.playGoldenChime();
                     setIsMobileMenuOpen(false);
-                    openAuthModal();
+                    setIsQuickBuyOpen(true);
                   }}
-                  className="flex-1 min-h-[46px] py-2.5 px-3 rounded-2xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 flex items-center justify-center gap-2 touch-manipulation"
+                  className="tactile-button px-3.5 py-2 rounded-xl text-xs font-mono font-black bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 shrink-0 shadow-md active:scale-95 cursor-pointer"
                 >
-                  <Wallet className="w-4 h-4 text-emerald-400" />
-                  <span>Connect Wallet</span>
+                  Buy Now
                 </button>
-              ) : (
-                <div className="flex-1 flex items-center justify-between p-2 rounded-2xl bg-slate-900 border border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <UserBadge provider={user.provider} showText={false} />
-                    <span className="text-xs font-bold text-white truncate max-w-[140px]">
-                      {user.name}
-                    </span>
-                  </div>
-                  <button
-                    onClick={logout}
-                    className="px-2.5 py-1 text-xs font-mono text-rose-400 bg-rose-500/10 rounded-lg border border-rose-500/20 min-h-[36px]"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              )}
+              </div>
 
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsQuickBuyOpen(true);
-                }}
-                className="min-h-[46px] py-2.5 px-4 rounded-2xl font-mono text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 touch-manipulation"
-              >
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>Buy $NOM</span>
-              </button>
+              {/* Wallet Connect / User Info Bar */}
+              <div>
+                {!user ? (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      openAuthModal();
+                    }}
+                    className="w-full min-h-[46px] py-2.5 px-4 rounded-2xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 flex items-center justify-center gap-2 touch-manipulation cursor-pointer"
+                  >
+                    <Wallet className="w-4 h-4 text-emerald-400" />
+                    <span>Connect Phantom / Solflare / Google</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-900 border border-slate-800">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <UserBadge provider={user.provider} showText={false} />
+                      <div className="min-w-0">
+                        <span className="text-xs font-bold text-white block truncate max-w-[140px]">
+                          {user.name}
+                        </span>
+                        {["phantom", "solflare", "backpack"].includes(user.provider) && (
+                          <span className="text-[10px] font-mono text-emerald-400">
+                            {realNomBalance.toLocaleString()} $NOM
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={logout}
+                      className="px-2.5 py-1 text-xs font-mono text-rose-400 bg-rose-500/10 rounded-lg border border-rose-500/20 min-h-[32px] cursor-pointer"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Core Destinations */}

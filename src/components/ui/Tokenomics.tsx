@@ -41,45 +41,45 @@ export const Tokenomics: React.FC = () => {
         </div>
 
         {/* 4 Core Essential Facts Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="rounded-3xl glass-card glass-card-hover p-6 space-y-2">
-            <div className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="rounded-3xl glass-card glass-card-hover p-4 sm:p-6 space-y-1.5 sm:space-y-2">
+            <div className="text-[10px] sm:text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider truncate">
               Total Supply
             </div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-white truncate">
               1,000,000,000
             </div>
-            <p className="text-xs text-slate-400">Fixed hardcap. No inflation.</p>
+            <p className="text-[11px] sm:text-xs text-slate-400">Fixed hardcap. No inflation.</p>
           </div>
 
-          <div className="rounded-3xl glass-card glass-card-hover p-6 space-y-2">
-            <div className="text-xs font-mono text-teal-400 font-bold uppercase tracking-wider">
+          <div className="rounded-3xl glass-card glass-card-hover p-4 sm:p-6 space-y-1.5 sm:space-y-2">
+            <div className="text-[10px] sm:text-xs font-mono text-teal-400 font-bold uppercase tracking-wider truncate">
               Trading Tax
             </div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-white truncate">
               0% / 0%
             </div>
-            <p className="text-xs text-slate-400">Zero buy tax. Zero sell tax.</p>
+            <p className="text-[11px] sm:text-xs text-slate-400">Zero buy tax. Zero sell tax.</p>
           </div>
 
-          <div className="rounded-3xl glass-card glass-card-hover p-6 space-y-2">
-            <div className="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider">
+          <div className="rounded-3xl glass-card glass-card-hover p-4 sm:p-6 space-y-1.5 sm:space-y-2">
+            <div className="text-[10px] sm:text-xs font-mono text-rose-400 font-bold uppercase tracking-wider truncate">
               Arcade Auto-Burn
             </div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-white truncate">
               1% Fee
             </div>
-            <p className="text-xs text-slate-400">Burns permanently on games.</p>
+            <p className="text-[11px] sm:text-xs text-slate-400">Burns permanently on games.</p>
           </div>
 
-          <div className="rounded-3xl glass-card glass-card-hover p-6 space-y-2">
-            <div className="text-xs font-mono text-solana-purple font-bold uppercase tracking-wider">
+          <div className="rounded-3xl glass-card glass-card-hover p-4 sm:p-6 space-y-1.5 sm:space-y-2">
+            <div className="text-[10px] sm:text-xs font-mono text-solana-purple font-bold uppercase tracking-wider truncate">
               Blockchain
             </div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black font-mono text-white truncate">
               Solana
             </div>
-            <p className="text-xs text-slate-400">Token-2022 speed &amp; security.</p>
+            <p className="text-[11px] sm:text-xs text-slate-400">Token-2022 speed &amp; security.</p>
           </div>
         </div>
 

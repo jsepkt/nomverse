@@ -394,7 +394,7 @@ export const MemeStudio: React.FC<MemeStudioProps> = ({ onPostToWall }) => {
   };
 
   return (
-    <div className="w-full bg-surface border border-slate-800/80 rounded-2xl p-4 sm:p-6 shadow-2xl">
+    <div className="w-full bg-surface border border-slate-800/80 rounded-2xl p-3.5 sm:p-6 shadow-2xl">
       <div className="flex flex-col md:flex-row gap-6 items-center">
         {/* Left: Interactive Canvas Preview */}
         <div className="flex flex-col items-center w-full md:w-auto">

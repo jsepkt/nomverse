@@ -221,7 +221,7 @@ export const PixelSkinWorkshop: React.FC = () => {
   };
 
   return (
-    <div className="w-full rounded-3xl bg-slate-950/80 border border-slate-800 p-5 sm:p-6 shadow-2xl space-y-6 relative overflow-hidden font-mono">
+    <div className="w-full rounded-3xl bg-slate-950/80 border border-slate-800 p-3.5 sm:p-6 shadow-2xl space-y-6 relative overflow-hidden font-mono">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
         <div className="flex items-center gap-3">
@@ -277,7 +277,7 @@ export const PixelSkinWorkshop: React.FC = () => {
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(16, minmax(0, 1fr))",
-              width: "min(100%, 320px)",
+              width: "min(100%, 300px)",
               aspectRatio: "1/1",
             }}
           >

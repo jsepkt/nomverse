@@ -138,7 +138,7 @@ export const ChiptuneStudio: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-surface border border-slate-800/80 rounded-2xl p-5 sm:p-7 shadow-2xl select-none">
+    <div className="w-full bg-surface border border-slate-800/80 rounded-2xl p-3.5 sm:p-6 lg:p-7 shadow-2xl select-none">
       {/* Studio Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 pb-5 border-b border-slate-800">
         <div>
@@ -204,8 +204,13 @@ export const ChiptuneStudio: React.FC = () => {
         </div>
       </div>
 
+      {/* Mobile Swipe Hint */}
+      <div className="text-[10px] font-mono text-emerald-400/90 block sm:hidden mb-2">
+        👆 Swipe horizontally to program all 16 audio steps
+      </div>
+
       {/* Sequencer Grid (16 Steps) */}
-      <div className="space-y-2.5 sm:space-y-3 mb-6 overflow-x-auto pb-2">
+      <div className="space-y-2.5 sm:space-y-3 mb-6 overflow-x-auto pb-2 overscroll-contain">
         {grid.map((trackRow, trackIdx) => {
           const trackInfo = TRACK_NAMES[trackIdx];
 

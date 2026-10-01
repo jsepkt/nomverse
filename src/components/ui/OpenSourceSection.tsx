@@ -33,25 +33,25 @@ export const OpenSourceSection: React.FC = () => {
     >
       <div className="max-w-[1360px] mx-auto space-y-12">
         {/* SECTION 11 UX AUDIT: CC0 POSITIONING */}
-        <div className="relative rounded-3xl bg-gradient-to-br from-emerald-950/40 via-slate-950 to-purple-950/30 border border-emerald-500/30 p-6 sm:p-10 lg:p-12 shadow-2xl text-center space-y-6">
+        <div className="relative rounded-3xl bg-gradient-to-br from-emerald-950/40 via-slate-950 to-purple-950/30 border border-emerald-500/30 p-5 sm:p-10 lg:p-12 shadow-2xl text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono font-bold glass-pill text-emerald-400 border border-emerald-500/30">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>CREATIVE COMMONS ZERO 1.0 (CC0)</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-5xl font-black text-white tracking-tight leading-tight">
             NOMSTER BELONGS TO EVERYONE.
           </h2>
 
-          <p className="text-slate-200 text-sm sm:text-lg max-w-3xl mx-auto leading-relaxed">
+          <p className="text-slate-200 text-xs sm:text-lg max-w-3xl mx-auto leading-relaxed">
             No copyright claims. No trademark litigation. No royalty fees. Nomster and all associated vector assets, audio algorithms, and story chapters have been dedicated to the public domain worldwide.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 w-full max-w-sm sm:max-w-none mx-auto pt-2">
             <Link
               href="/manifesto"
               onClick={() => sounds.playButtonClick()}
-              className="tactile-button inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 to-solana-green text-slate-950 shadow-lg shadow-emerald-950/50 cursor-pointer min-h-[46px] touch-manipulation"
+              className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 to-solana-green text-slate-950 shadow-lg shadow-emerald-950/50 cursor-pointer min-h-[46px] touch-manipulation"
             >
               <ShieldCheck className="w-4 h-4 fill-slate-950" />
               <span>Read the CC0 Manifesto</span>
@@ -62,7 +62,7 @@ export const OpenSourceSection: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => sounds.playButtonClick()}
-              className="tactile-button inline-flex items-center gap-1.5 px-5 py-3.5 rounded-2xl font-mono text-xs sm:text-sm text-slate-300 hover:text-white glass-card hover:border-slate-600 transition-all min-h-[46px] touch-manipulation"
+              className="tactile-button inline-flex items-center justify-center gap-1.5 px-5 py-3.5 rounded-2xl font-mono text-xs sm:text-sm text-slate-300 hover:text-white glass-card hover:border-slate-600 transition-all min-h-[46px] touch-manipulation"
             >
               <span>CC0 Legal Deed</span>
               <ExternalLink className="w-3.5 h-3.5" />

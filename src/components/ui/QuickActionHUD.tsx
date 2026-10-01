@@ -50,19 +50,19 @@ export const QuickActionHUD: React.FC = () => {
 
   return (
     <>
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 max-w-[95vw] sm:max-w-max">
+      <div className="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-40 max-w-[96vw] sm:max-w-max pointer-events-auto pb-[env(safe-area-inset-bottom,0px)]">
         <nav
           aria-label="Quick Action HUD"
-          className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-full glass-pill border border-emerald-500/30 shadow-[0_10px_35px_rgba(0,0,0,0.8),0_0_20px_rgba(20,241,149,0.15)]"
+          className="flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded-full glass-pill border border-emerald-500/30 shadow-[0_10px_35px_rgba(0,0,0,0.85),0_0_20px_rgba(20,241,149,0.15)]"
         >
           {/* Quick Play */}
           <Link
             href="/play"
             onClick={() => sounds.playJumpSound()}
-            className="tactile-button flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold font-mono transition-all group"
+            className="tactile-button flex items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold font-mono transition-all group shrink-0 min-h-[34px]"
           >
-            <Gamepad2 className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span className="hidden xs:inline">PLAY</span>
+            <Gamepad2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <span>PLAY</span>
           </Link>
 
           {/* Quick Buy $NOM */}
@@ -71,10 +71,10 @@ export const QuickActionHUD: React.FC = () => {
               sounds.playGoldenChime();
               setIsQuickBuyOpen(true);
             }}
-            className="tactile-button flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 text-xs font-black font-mono shadow-[0_0_15px_rgba(20,241,149,0.3)] cursor-pointer"
+            className="tactile-button flex items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 text-xs font-black font-mono shadow-[0_0_15px_rgba(20,241,149,0.3)] cursor-pointer shrink-0 min-h-[34px]"
           >
-            <Zap className="w-4 h-4 fill-slate-950 text-slate-950" />
-            <span>BUY $NOM</span>
+            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-slate-950 text-slate-950" />
+            <span>BUY<span className="hidden xs:inline"> $NOM</span></span>
           </button>
 
           {/* Arcade Vault */}
@@ -83,10 +83,10 @@ export const QuickActionHUD: React.FC = () => {
               sounds.playButtonClick();
               setIsVaultOpen(true);
             }}
-            className="tactile-button flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono transition-all cursor-pointer"
+            className="tactile-button flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono transition-all cursor-pointer shrink-0 min-h-[34px]"
             title="Arcade Vault & Gasless Bank"
           >
-            <Wallet className="w-4 h-4 text-amber-400" />
+            <Wallet className="w-3.5 h-3.5 text-amber-400" />
             <span className="hidden sm:inline">VAULT</span>
           </button>
 
@@ -94,17 +94,17 @@ export const QuickActionHUD: React.FC = () => {
           <Link
             href="/guide"
             onClick={() => sounds.playButtonClick()}
-            className="tactile-button flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono transition-all"
+            className="tactile-button hidden xs:flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono transition-all shrink-0 min-h-[34px]"
             title="Verify Mint & Guide"
           >
-            <ShieldCheck className="w-4 h-4 text-teal-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
             <span className="hidden sm:inline">VERIFY</span>
           </Link>
 
           {/* Web Audio Synthesizer Sound Mute Toggle */}
           <button
             onClick={handleToggleSound}
-            className={`tactile-button p-2 rounded-full border text-xs transition-all cursor-pointer ${
+            className={`tactile-button p-2 rounded-full border text-xs transition-all cursor-pointer shrink-0 min-h-[34px] min-w-[34px] flex items-center justify-center ${
               isMuted
                 ? "bg-rose-500/10 border-rose-500/30 text-rose-400"
                 : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
@@ -113,9 +113,9 @@ export const QuickActionHUD: React.FC = () => {
             aria-label={isMuted ? "Unmute sound" : "Mute sound"}
           >
             {isMuted ? (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5" />
             ) : (
-              <Volume2 className="w-4 h-4 animate-pulse" />
+              <Volume2 className="w-3.5 h-3.5 animate-pulse" />
             )}
           </button>
         </nav>

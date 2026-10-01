@@ -46,7 +46,7 @@ const BENTO_TILES: BentoTile[] = [
     iconBg: "bg-emerald-500/10 border-emerald-500/20",
     href: "/play",
     actionText: "Enter Game Room",
-    colSpanClass: "col-12 col-lg-8",
+    colSpanClass: "col-span-1 md:col-span-2 lg:col-span-8",
   },
   {
     id: "remix",
@@ -61,7 +61,7 @@ const BENTO_TILES: BentoTile[] = [
     iconBg: "bg-solana-green/10 border-solana-green/20",
     href: "/manifesto",
     actionText: "Read CC0 Manifesto",
-    colSpanClass: "col-12 col-lg-4",
+    colSpanClass: "col-span-1 md:col-span-1 lg:col-span-4",
   },
   {
     id: "create",
@@ -76,7 +76,7 @@ const BENTO_TILES: BentoTile[] = [
     iconBg: "bg-amber-500/10 border-amber-500/20",
     href: "#create",
     actionText: "Launch Studio",
-    colSpanClass: "col-12 col-md-6 col-lg-4",
+    colSpanClass: "col-span-1 md:col-span-1 lg:col-span-4",
   },
   {
     id: "write",
@@ -91,7 +91,7 @@ const BENTO_TILES: BentoTile[] = [
     iconBg: "bg-purple-500/10 border-purple-500/20",
     href: "#universe",
     actionText: "Explore Universe",
-    colSpanClass: "col-12 col-md-6 col-lg-4",
+    colSpanClass: "col-span-1 md:col-span-1 lg:col-span-4",
   },
   {
     id: "token",
@@ -106,7 +106,7 @@ const BENTO_TILES: BentoTile[] = [
     iconBg: "bg-rose-500/10 border-rose-500/20",
     href: "/tokenomics",
     actionText: "View Deflation Model",
-    colSpanClass: "col-12 col-md-6 col-lg-4",
+    colSpanClass: "col-span-1 md:col-span-1 lg:col-span-4",
   },
   {
     id: "build",
@@ -122,7 +122,7 @@ const BENTO_TILES: BentoTile[] = [
     href: "https://github.com/jsepkt/nomverse",
     isExternal: true,
     actionText: "Fork on GitHub",
-    colSpanClass: "col-12 col-lg-12",
+    colSpanClass: "col-span-1 md:col-span-2 lg:col-span-12",
   },
 ];
 
@@ -156,14 +156,14 @@ export const WhatIsNomverse: React.FC = () => {
           </p>
         </div>
 
-        {/* Bento Grid (2026 Layout Standard) */}
-        <div className="row g-4">
+        {/* Bento Grid (2026 Mobile & Desktop Layout Standard) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6">
           {BENTO_TILES.map((tile) => {
             const Icon = tile.icon;
 
             return (
               <div key={tile.id} className={tile.colSpanClass}>
-                <div className="h-100 p-6 sm:p-8 rounded-3xl glass-card glass-card-hover flex flex-col justify-between space-y-6">
+                <div className="h-full p-5 sm:p-7 lg:p-8 rounded-3xl glass-card glass-card-hover flex flex-col justify-between space-y-6">
                   <div className="space-y-4">
                     {/* Header Row */}
                     <div className="flex items-center justify-between">

@@ -51,7 +51,7 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
           onPointerUp={endHold}
           onPointerLeave={endHold}
           disabled={disabled}
-          className="flex-1 py-3.5 sm:py-4 px-3 sm:px-4 rounded-2xl bg-slate-900 active:bg-solana-green/25 border border-slate-700/80 active:border-solana-green text-slate-200 active:text-solana-green font-mono font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all active:scale-95 disabled:opacity-40 touch-manipulation cursor-pointer"
+          className="flex-1 min-h-[48px] sm:min-h-[54px] py-3 px-3 sm:px-4 rounded-2xl bg-slate-900 active:bg-solana-green/25 border border-slate-700/80 active:border-solana-green text-slate-200 active:text-solana-green font-mono font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all active:scale-95 disabled:opacity-40 touch-manipulation cursor-pointer select-none"
         >
           <ChevronLeft className="w-5 h-5 text-solana-green shrink-0" />
           <span>LEFT</span>
@@ -63,14 +63,14 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
             type="button"
             onClick={handleDash}
             disabled={disabled || !dashReady}
-            className={`py-3.5 sm:py-4 px-4 sm:px-6 rounded-2xl font-mono font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all active:scale-90 touch-manipulation cursor-pointer ${
+            className={`min-h-[48px] sm:min-h-[54px] py-3 px-4 sm:px-6 rounded-2xl font-mono font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all active:scale-90 touch-manipulation cursor-pointer select-none ${
               dashReady && !disabled
                 ? "bg-gradient-to-r from-cyan-500 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.5)] active:brightness-125"
                 : "bg-slate-800 text-slate-500 border border-slate-700/60 opacity-60"
             }`}
           >
             <Zap className="w-4 h-4 fill-current shrink-0" />
-            <span>{dashReady ? "DASH" : "RECHARGING"}</span>
+            <span>{dashReady ? "DASH" : "WAIT"}</span>
           </button>
         )}
 
@@ -81,7 +81,7 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
           onPointerUp={endHold}
           onPointerLeave={endHold}
           disabled={disabled}
-          className="flex-1 py-3.5 sm:py-4 px-3 sm:px-4 rounded-2xl bg-slate-900 active:bg-solana-green/25 border border-slate-700/80 active:border-solana-green text-slate-200 active:text-solana-green font-mono font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all active:scale-95 disabled:opacity-40 touch-manipulation cursor-pointer"
+          className="flex-1 min-h-[48px] sm:min-h-[54px] py-3 px-3 sm:px-4 rounded-2xl bg-slate-900 active:bg-solana-green/25 border border-slate-700/80 active:border-solana-green text-slate-200 active:text-solana-green font-mono font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg transition-all active:scale-95 disabled:opacity-40 touch-manipulation cursor-pointer select-none"
         >
           <span>RIGHT</span>
           <ChevronRight className="w-5 h-5 text-solana-green shrink-0" />
