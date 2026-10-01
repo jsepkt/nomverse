@@ -218,17 +218,17 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
       </div>
 
       {/* MAIN GAME ROOM ARENA */}
-      <div className="flex-1 w-full max-w-7xl mx-auto p-3 sm:p-5 lg:p-6 flex flex-col justify-start">
+      <div className="container-fluid container-xxl flex-1 w-100 p-2 p-sm-3 p-lg-4 d-flex flex-column justify-start">
         {/* VIEW 1: HALF SIZE (SPLIT CONSOLE / THEATER MODE) */}
         {screenSize === "half" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left 5-6 Columns: Game Arcade Cabinet */}
-            <div id="arcade-cabinet" className="lg:col-span-6 xl:col-span-5 flex flex-col items-center justify-start sticky top-20">
+          <div className="row g-4 items-start">
+            {/* Left 5 Columns: Game Arcade Cabinet */}
+            <div id="arcade-cabinet" className="col-12 col-lg-5 d-flex flex-column align-items-center justify-content-start sticky top-20">
               <GameContainer />
             </div>
 
-            {/* Right 6-7 Columns: Companion Console Tabs */}
-            <div className="lg:col-span-6 xl:col-span-7 flex flex-col gap-4">
+            {/* Right 7 Columns: Companion Console Tabs */}
+            <div className="col-12 col-lg-7 d-flex flex-column gap-4">
               {/* Tab Switcher Ribbon */}
               <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-lg overflow-x-auto">
                 {TABS.map((tab) => {

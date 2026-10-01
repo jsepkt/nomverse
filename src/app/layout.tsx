@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { QuickActionHUD } from "@/components/ui/QuickActionHUD";
@@ -52,8 +53,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body suppressHydrationWarning className="bg-background text-foreground antialiased min-h-screen flex flex-col w-full max-w-[100vw] overflow-x-hidden">
+    <html lang="en" className="dark" data-bs-theme="dark">
+      <body suppressHydrationWarning className="bg-background text-foreground antialiased min-vh-100 d-flex flex-column w-100 overflow-x-hidden">
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"

@@ -42,80 +42,88 @@ export default function SecurityPage() {
       </section>
 
       {/* On-Chain Security Matrix */}
-      <section className="py-6 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-2xl bg-gray-900/60 border border-gray-800 flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
-              <Lock className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-bold text-white text-base">Mint Authority Revoked</h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  VERIFIED
-                </span>
+      <section className="container-fluid container-xl py-6 px-3 px-sm-4 mx-auto w-100">
+        <div className="row g-4">
+          <div className="col-12 col-md-6 d-flex">
+            <div className="w-100 p-4 sm:p-6 rounded-2xl bg-gray-900/60 border border-gray-800 flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                <Lock className="w-6 h-6" />
               </div>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                The mint key is permanently disabled. No new $NOM tokens can ever be minted, printed, or inflated by anyone.
-              </p>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-bold text-white text-base">Mint Authority Revoked</h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    VERIFIED
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  The mint key is permanently disabled. No new $NOM tokens can ever be minted, printed, or inflated by anyone.
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-gray-900/60 border border-gray-800 flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
-              <KeyRound className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-bold text-white text-base">Freeze Authority Disabled</h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  VERIFIED
-                </span>
+          <div className="col-12 col-md-6 d-flex">
+            <div className="w-100 p-4 sm:p-6 rounded-2xl bg-gray-900/60 border border-gray-800 flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                <KeyRound className="w-6 h-6" />
               </div>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                No developer, validator, or entity can blacklist your wallet or freeze your funds. You maintain 100% sovereign custody.
-              </p>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-bold text-white text-base">Freeze Authority Disabled</h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    VERIFIED
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  No developer, validator, or entity can blacklist your wallet or freeze your funds. You maintain 100% sovereign custody.
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-gray-900/60 border border-gray-800 flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shrink-0">
-              <Server className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-bold text-white text-base">Multi-RPC Failover Cluster</h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                  ACTIVE
-                </span>
+          <div className="col-12 col-md-6 d-flex">
+            <div className="w-100 p-4 sm:p-6 rounded-2xl bg-gray-900/60 border border-gray-800 flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shrink-0">
+                <Server className="w-6 h-6" />
               </div>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                NomVerse routes blockchain telemetry across Ankr, PublicNode, and Solana Mainnet-Beta to ensure zero downtime and zero 403 errors.
-              </p>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-bold text-white text-base">Multi-RPC Failover Cluster</h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                    ACTIVE
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  NomVerse routes blockchain telemetry across Ankr, PublicNode, and Solana Mainnet-Beta to ensure zero downtime and zero 403 errors.
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-gray-900/60 border border-gray-800 flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shrink-0">
-              <EyeOff className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-bold text-white text-base">Non-Custodial Architecture</h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                  SECURE
-                </span>
+          <div className="col-12 col-md-6 d-flex">
+            <div className="w-100 p-4 sm:p-6 rounded-2xl bg-gray-900/60 border border-gray-800 flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shrink-0">
+                <EyeOff className="w-6 h-6" />
               </div>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                NomVerse never asks for or stores private keys or seed phrases. All wallet signatures occur in Phantom, Solflare, or Backpack.
-              </p>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-bold text-white text-base">Non-Custodial Architecture</h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                    SECURE
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  NomVerse never asks for or stores private keys or seed phrases. All wallet signatures occur in Phantom, Solflare, or Backpack.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Interactive On-Chain Contract Inspector */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+      <section className="container-fluid container-lg py-8 px-3 px-sm-4 mx-auto w-100">
         <div className="p-8 rounded-3xl bg-gradient-to-b from-gray-900 to-black border border-teal-500/30 shadow-2xl">
           <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
             <div>

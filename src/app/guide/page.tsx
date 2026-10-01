@@ -95,127 +95,133 @@ export default function GuidePage() {
       </section>
 
       {/* 3-Step Interactive Guide */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className="container-fluid container-xl py-10 px-3 px-sm-4 mx-auto w-100">
+        <div className="row g-4">
           {/* STEP 1 */}
-          <div className="relative p-6 sm:p-8 rounded-3xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/40 transition-all flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xl mb-6">
-                1
+          <div className="col-12 col-md-4 d-flex">
+            <div className="w-100 relative p-6 sm:p-8 rounded-3xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/40 transition-all flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xl mb-6">
+                  1
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Get a Solana Wallet</h3>
+                <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+                  Install a trusted non-custodial Solana wallet. We recommend Phantom, Solflare, or Backpack on mobile or desktop browser extensions.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <a
+                    href="https://phantom.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 border border-gray-700/50 text-xs font-medium text-gray-200 transition-colors"
+                  >
+                    <span>Phantom Wallet</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                  </a>
+                  <a
+                    href="https://solflare.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 border border-gray-700/50 text-xs font-medium text-gray-200 transition-colors"
+                  >
+                    <span>Solflare Wallet</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                  </a>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Get a Solana Wallet</h3>
-              <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-                Install a trusted non-custodial Solana wallet. We recommend Phantom, Solflare, or Backpack on mobile or desktop browser extensions.
-              </p>
-              <div className="space-y-2 mb-6">
-                <a
-                  href="https://phantom.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 border border-gray-700/50 text-xs font-medium text-gray-200 transition-colors"
-                >
-                  <span>Phantom Wallet</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
-                </a>
-                <a
-                  href="https://solflare.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 border border-gray-700/50 text-xs font-medium text-gray-200 transition-colors"
-                >
-                  <span>Solflare Wallet</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
-                </a>
+              <div className="text-xs text-emerald-400/80 font-mono">
+                Fund with a small amount of SOL for gas.
               </div>
-            </div>
-            <div className="text-xs text-emerald-400/80 font-mono">
-              Fund with a small amount of SOL for gas.
             </div>
           </div>
 
           {/* STEP 2 */}
-          <div className="relative p-6 sm:p-8 rounded-3xl bg-gray-900/60 border border-emerald-500/30 hover:border-emerald-500/60 transition-all flex flex-col justify-between shadow-lg shadow-emerald-500/5">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center justify-center font-black text-xl mb-6">
-                2
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">Swap SOL for $NOM</h3>
-              <p className="text-sm text-gray-400 mb-4 leading-relaxed">
-                Acquire $NOM directly on pump.fun bonding curve. No pre-sales, no team allocations, 100% fair launch.
-              </p>
+          <div className="col-12 col-md-4 d-flex">
+            <div className="w-100 relative p-6 sm:p-8 rounded-3xl bg-gray-900/60 border border-emerald-500/30 hover:border-emerald-500/60 transition-all flex flex-col justify-between shadow-lg shadow-emerald-500/5">
+              <div>
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center justify-center font-black text-xl mb-6">
+                  2
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Swap SOL for $NOM</h3>
+                <p className="text-sm text-gray-400 mb-4 leading-relaxed">
+                  Acquire $NOM directly on pump.fun bonding curve. No pre-sales, no team allocations, 100% fair launch.
+                </p>
 
-              {/* Mini Interactive Estimator */}
-              <div className="p-4 rounded-2xl bg-black/40 border border-gray-800 mb-6 space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono text-gray-400">
-                  <span>Input SOL:</span>
-                  <span>~ ${(solNum * solPriceUsd).toFixed(1)} USD</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0.01"
-                    value={solInput}
-                    onChange={(e) => setSolInput(e.target.value)}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
-                  />
-                  <span className="text-xs font-mono text-emerald-400 font-bold">SOL</span>
-                </div>
-                <div className="flex items-center justify-between text-xs font-mono pt-2 border-t border-gray-800">
-                  <span className="text-gray-400">Est. $NOM:</span>
-                  <span className="text-emerald-400 font-bold">~ {estimatedNom.toLocaleString()} $NOM</span>
+                {/* Mini Interactive Estimator */}
+                <div className="p-4 rounded-2xl bg-black/40 border border-gray-800 mb-6 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-mono text-gray-400">
+                    <span>Input SOL:</span>
+                    <span>~ ${(solNum * solPriceUsd).toFixed(1)} USD</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.01"
+                      value={solInput}
+                      onChange={(e) => setSolInput(e.target.value)}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
+                    />
+                    <span className="text-xs font-mono text-emerald-400 font-bold">SOL</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs font-mono pt-2 border-t border-gray-800">
+                    <span className="text-gray-400">Est. $NOM:</span>
+                    <span className="text-emerald-400 font-bold">~ {estimatedNom.toLocaleString()} $NOM</span>
+                  </div>
                 </div>
               </div>
+              <a
+                href={TOKEN_CONFIG.pumpFunUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+              >
+                <span>Trade on pump.fun</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
             </div>
-            <a
-              href={TOKEN_CONFIG.pumpFunUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
-            >
-              <span>Trade on pump.fun</span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
           </div>
 
           {/* STEP 3 */}
-          <div className="relative p-6 sm:p-8 rounded-3xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/40 transition-all flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center font-black text-xl mb-6">
-                3
+          <div className="col-12 col-md-4 d-flex">
+            <div className="w-100 relative p-6 sm:p-8 rounded-3xl bg-gray-900/60 border border-gray-800 hover:border-emerald-500/40 transition-all flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center font-black text-xl mb-6">
+                  3
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Play in the Game Room</h3>
+                <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+                  Connect your wallet to NomVerse, deposit tokens into your zero-gas Arcade Vault, challenge community rooms, win prize pools, and watch tokens burn!
+                </p>
+                <div className="p-4 rounded-2xl bg-black/40 border border-gray-800 mb-6 space-y-2 text-xs text-gray-300">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-emerald-400" />
+                    <span>Zero gas fees per arcade move</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Flame className="w-4 h-4 text-rose-400" />
+                    <span>1% auto-burn incinerates supply</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-teal-400" />
+                    <span>1:1 instant wallet withdrawals</span>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Play in the Game Room</h3>
-              <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-                Connect your wallet to NomVerse, deposit tokens into your zero-gas Arcade Vault, challenge community rooms, win prize pools, and watch tokens burn!
-              </p>
-              <div className="p-4 rounded-2xl bg-black/40 border border-gray-800 mb-6 space-y-2 text-xs text-gray-300">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-emerald-400" />
-                  <span>Zero gas fees per arcade move</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-rose-400" />
-                  <span>1% auto-burn incinerates supply</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-teal-400" />
-                  <span>1:1 instant wallet withdrawals</span>
-                </div>
-              </div>
+              <Link
+                href="/play"
+                className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-sm flex items-center justify-center gap-2 border border-gray-700 transition-all active:scale-95"
+              >
+                <Gamepad2 className="w-4 h-4 text-emerald-400" />
+                <span>Enter Game Room</span>
+              </Link>
             </div>
-            <Link
-              href="/play"
-              className="w-full py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-bold text-sm flex items-center justify-center gap-2 border border-gray-700 transition-all active:scale-95"
-            >
-              <Gamepad2 className="w-4 h-4 text-emerald-400" />
-              <span>Enter Game Room</span>
-            </Link>
           </div>
         </div>
       </section>
 
       {/* Official Contract & Scam Guard Checker */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+      <section className="container-fluid container-lg py-8 px-3 px-sm-4 mx-auto w-100">
         <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-gray-900/90 to-gray-950 border border-gray-800 shadow-2xl">
           <div className="flex items-center gap-3 mb-4">
             <ShieldCheck className="w-7 h-7 text-emerald-400" />

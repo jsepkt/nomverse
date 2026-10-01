@@ -22,7 +22,7 @@ export default function HomePage() {
       <HeroSection />
 
       {/* SpaceX-Grade Raydium Mission Control & Real Solana Mainnet-Beta RPC Telemetry */}
-      <section className="w-full py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+      <section className="container-fluid container-xl py-8 px-3 px-sm-4 mx-auto space-y-8">
         <MissionControl />
         <SolanaRpcTelemetry />
       </section>

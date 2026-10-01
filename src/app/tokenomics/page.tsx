@@ -58,43 +58,51 @@ export default function TokenomicsPage() {
       </section>
 
       {/* Live Token Metrics Cards */}
-      <section className="py-6 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-6 rounded-2xl bg-gray-900/60 border border-gray-800">
-            <div className="text-xs font-mono text-gray-400 mb-1">TOTAL MAX SUPPLY</div>
-            <div className="text-2xl font-black text-white font-mono">1,000,000,000</div>
-            <div className="text-xs text-gray-500 mt-2">Fixed standard pump.fun supply</div>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-gray-900/60 border border-rose-500/30">
-            <div className="text-xs font-mono text-rose-400 mb-1 flex items-center gap-1.5">
-              <Flame className="w-3.5 h-3.5" />
-              <span>COMMUNITY BURNED</span>
-            </div>
-            <div className="text-2xl font-black text-rose-300 font-mono">
-              {totalBurned.toLocaleString()} $NOM
-            </div>
-            <div className="text-xs text-rose-400/80 mt-2">
-              Permanently removed from circulation
+      <section className="container-fluid container-xl py-6 px-3 px-sm-4 mx-auto w-100">
+        <div className="row g-3 g-lg-4">
+          <div className="col-12 col-sm-6 col-lg-3 d-flex">
+            <div className="w-100 p-4 sm:p-6 rounded-2xl bg-gray-900/60 border border-gray-800 d-flex flex-column justify-between">
+              <div className="text-xs font-mono text-gray-400 mb-1">TOTAL MAX SUPPLY</div>
+              <div className="text-2xl font-black text-white font-mono">1,000,000,000</div>
+              <div className="text-xs text-gray-500 mt-2">Fixed standard pump.fun supply</div>
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-gray-900/60 border border-gray-800">
-            <div className="text-xs font-mono text-gray-400 mb-1">TEAM / DEV ALLOCATION</div>
-            <div className="text-2xl font-black text-emerald-400 font-mono">0% (ZERO)</div>
-            <div className="text-xs text-gray-500 mt-2">100% fair launch on bonding curve</div>
+          <div className="col-12 col-sm-6 col-lg-3 d-flex">
+            <div className="w-100 p-4 sm:p-6 rounded-2xl bg-gray-900/60 border border-rose-500/30 d-flex flex-column justify-between">
+              <div className="text-xs font-mono text-rose-400 mb-1 flex items-center gap-1.5">
+                <Flame className="w-3.5 h-3.5" />
+                <span>COMMUNITY BURNED</span>
+              </div>
+              <div className="text-2xl font-black text-rose-300 font-mono">
+                {totalBurned.toLocaleString()} $NOM
+              </div>
+              <div className="text-xs text-rose-400/80 mt-2">
+                Permanently removed from circulation
+              </div>
+            </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-gray-900/60 border border-gray-800">
-            <div className="text-xs font-mono text-gray-400 mb-1">DEX TRADING TAX</div>
-            <div className="text-2xl font-black text-emerald-400 font-mono">0% BUY / 0% SELL</div>
-            <div className="text-xs text-gray-500 mt-2">Pure decentralized trading</div>
+          <div className="col-12 col-sm-6 col-lg-3 d-flex">
+            <div className="w-100 p-4 sm:p-6 rounded-2xl bg-gray-900/60 border border-gray-800 d-flex flex-column justify-between">
+              <div className="text-xs font-mono text-gray-400 mb-1">TEAM / DEV ALLOCATION</div>
+              <div className="text-2xl font-black text-emerald-400 font-mono">0% (ZERO)</div>
+              <div className="text-xs text-gray-500 mt-2">100% fair launch on bonding curve</div>
+            </div>
+          </div>
+
+          <div className="col-12 col-sm-6 col-lg-3 d-flex">
+            <div className="w-100 p-4 sm:p-6 rounded-2xl bg-gray-900/60 border border-gray-800 d-flex flex-column justify-between">
+              <div className="text-xs font-mono text-gray-400 mb-1">DEX TRADING TAX</div>
+              <div className="text-2xl font-black text-emerald-400 font-mono">0% BUY / 0% SELL</div>
+              <div className="text-xs text-gray-500 mt-2">Pure decentralized trading</div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Interactive Deflation Simulator */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+      <section className="container-fluid container-lg py-8 px-3 px-sm-4 mx-auto w-100">
         <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-gray-900/90 to-black border border-rose-500/30 shadow-2xl">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-xl bg-rose-500/20 text-rose-400">

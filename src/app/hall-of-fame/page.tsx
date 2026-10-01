@@ -38,15 +38,16 @@ export default function HallOfFamePage() {
       </section>
 
       {/* Main Burn Hall of Fame Component */}
-      <section className="py-6 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+      <section className="container-fluid container-xl py-6 px-3 px-sm-4 mx-auto w-100">
         <BurnHallOfFame />
       </section>
 
       {/* Arcade Champions & Lore Creators Trophies */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section className="container-fluid container-xl py-8 px-3 px-sm-4 mx-auto w-100">
+        <div className="row g-4">
           {/* Arcade Champions */}
-          <div className="p-8 rounded-3xl bg-gray-900/60 border border-gray-800 space-y-4">
+          <div className="col-12 col-md-6 d-flex">
+            <div className="w-100 p-6 sm:p-8 rounded-3xl bg-gray-900/60 border border-gray-800 space-y-4">
             <div className="flex items-center gap-3">
               <Crown className="w-7 h-7 text-amber-400" />
               <h3 className="text-xl font-bold text-white">Top Room Champions</h3>
@@ -85,9 +86,11 @@ export default function HallOfFamePage() {
               <span>→</span>
             </Link>
           </div>
+        </div>
 
-          {/* Top Meme Creators */}
-          <div className="p-8 rounded-3xl bg-gray-900/60 border border-gray-800 space-y-4">
+        {/* Top Meme Creators */}
+        <div className="col-12 col-md-6 d-flex">
+          <div className="w-100 p-6 sm:p-8 rounded-3xl bg-gray-900/60 border border-gray-800 space-y-4">
             <div className="flex items-center gap-3">
               <Sparkles className="w-7 h-7 text-purple-400" />
               <h3 className="text-xl font-bold text-white">Legendary Meme Creators</h3>
@@ -127,7 +130,8 @@ export default function HallOfFamePage() {
             </Link>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       <Footer />
     </main>

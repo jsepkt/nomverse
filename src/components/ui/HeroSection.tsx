@@ -45,9 +45,9 @@ export const HeroSection: React.FC = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-1/3 right-10 w-[450px] h-[450px] bg-solana-purple/10 rounded-full blur-[130px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-between gap-10 lg:gap-12">
+      <div className="container-fluid container-xl mx-auto row align-items-center align-items-lg-start g-4 g-lg-5">
         {/* Left Column: Vision, Pitch & Verified CA */}
-        <div className="flex-1 text-center lg:text-left space-y-6 max-w-2xl">
+        <div className="col-12 col-lg-7 text-center text-lg-start space-y-6">
           {/* Live Status Badges */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
@@ -165,13 +165,13 @@ export const HeroSection: React.FC = () => {
         </div>
 
         {/* Right Column: Playable Interactive Game Arena */}
-        <div className="w-full lg:w-auto flex-1 flex justify-center">
+        <div className="col-12 col-lg-5 d-flex justify-content-center">
           <GameContainer showGameRoomButton={true} />
         </div>
       </div>
 
       {/* Real-Data Raydium Bonding Milestones */}
-      <div className="max-w-7xl mx-auto mt-10 sm:mt-12">
+      <div className="container-fluid container-xl mx-auto mt-4 mt-lg-5">
         <BondingMilestonesCard />
       </div>
     </section>
