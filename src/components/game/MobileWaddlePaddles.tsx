@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
+import { triggerTelegramHaptic } from "@/context/AuthContext";
 
 interface MobileWaddlePaddlesProps {
   onWaddle: (direction: "left" | "right") => void;
@@ -20,13 +21,7 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
 
   const startHold = (dir: "left" | "right") => {
     if (disabled) return;
-    try {
-      if (typeof navigator !== "undefined" && navigator.vibrate) {
-        navigator.vibrate(15);
-      }
-    } catch {
-      // ignore
-    }
+    triggerTelegramHaptic("light");
     onWaddle(dir);
     intervalRef.current = setInterval(() => {
       onWaddle(dir);
@@ -42,13 +37,7 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
 
   const handleDash = () => {
     if (disabled || !dashReady || !onDash) return;
-    try {
-      if (typeof navigator !== "undefined" && navigator.vibrate) {
-        navigator.vibrate([25, 40]);
-      }
-    } catch {
-      // ignore
-    }
+    triggerTelegramHaptic("heavy");
     onDash();
   };
 

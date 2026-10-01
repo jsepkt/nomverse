@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
-export type AuthProviderType = "phantom" | "solflare" | "backpack" | "metamask" | "google";
+export type AuthProviderType = "phantom" | "solflare" | "backpack" | "metamask" | "google" | "telegram";
 
 export interface AuthUser {
   id: string;
@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Restore saved session on client mount
+  // Restore saved session on client mount + auto-detect Telegram WebApp
   useEffect(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -110,6 +110,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Re-verify on-chain balance fresh
         if (["phantom", "solflare", "backpack"].includes(parsed.provider)) {
           fetchHolderData(parsed.addressOrEmail);
+        }
+      } else if (typeof window !== "undefined") {
+        // Auto-detect Telegram WebApp user if running inside Telegram with no prior session
+        const tg = (window as any)?.Telegram?.WebApp;
+        if (tg) {
+          tg.ready?.();
+          tg.expand?.();
+          if (tg.isVersionAtLeast && tg.isVersionAtLeast("6.1")) {
+            try {
+              tg.setHeaderColor?.("#030712");
+              tg.setBackgroundColor?.("#030712");
+            } catch {
+              // ignore
+            }
+          }
+          const tgUser = tg.initDataUnsafe?.user;
+          if (tgUser) {
+            const name = tgUser.username ? `@${tgUser.username}` : `${tgUser.first_name || "Telegram"} ${tgUser.last_name || ""}`.trim();
+            const tgAuthUser: AuthUser = {
+              id: `tg_${tgUser.id}`,
+              name,
+              addressOrEmail: tgUser.username ? `@${tgUser.username}` : `tg_user_${tgUser.id}`,
+              provider: "telegram",
+              avatar: tgUser.photo_url || "/mascot.svg",
+              verifiedAt: new Date().toISOString(),
+            };
+            setUser(tgAuthUser);
+            saveUserSession(tgAuthUser);
+          }
         }
       }
     } catch {
@@ -365,3 +394,23 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+export function triggerTelegramHaptic(
+  type: "light" | "medium" | "heavy" | "success" | "error" = "medium"
+) {
+  if (typeof window === "undefined") return;
+  try {
+    const tg = (window as any)?.Telegram?.WebApp;
+    if (tg?.HapticFeedback) {
+      if (type === "success" || type === "error") {
+        tg.HapticFeedback.notificationOccurred(type);
+      } else {
+        tg.HapticFeedback.impactOccurred(type);
+      }
+    } else if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(type === "heavy" ? 40 : 20);
+    }
+  } catch {
+    // ignore
+  }
+}

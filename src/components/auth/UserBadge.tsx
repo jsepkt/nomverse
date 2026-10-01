@@ -64,6 +64,16 @@ export const UserBadge: React.FC<UserBadgeProps> = ({
           {showText && <span>Google</span>}
         </span>
       );
+    case "telegram":
+      return (
+        <span
+          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-sky-500/10 text-sky-300 border border-sky-500/30 ${className}`}
+          title="Verified Telegram User"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+          {showText && <span>Telegram</span>}
+        </span>
+      );
     default:
       return null;
   }

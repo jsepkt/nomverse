@@ -41,6 +41,7 @@ import { CreateRoomModal } from "./CreateRoomModal";
 import { BurnTicker } from "./BurnTicker";
 import { BurnHallOfFame } from "./BurnHallOfFame";
 import { MemeCharacterBazaar } from "./MemeCharacterBazaar";
+import { RaidBossBanner } from "./RaidBossBanner";
 import { getMemeCharacters } from "@/lib/memeCharacterStorage";
 import { recordFeedItem } from "@/lib/burnFeedStorage";
 import { sounds } from "../audio/soundEffects";
@@ -350,6 +351,9 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
       ) : (
         /* VIEW 3: COMMUNITY CHALLENGE ROOMS GRID */
         <div className="space-y-4">
+          {/* Pinned Global World Boss Raid Banner */}
+          <RaidBossBanner userId={userId} userName={user?.name} />
+
           {/* Filter and Search Bar */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
