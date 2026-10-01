@@ -14,7 +14,10 @@ import {
   ArrowUpRight,
   Clock,
   Filter,
+  Share2,
+  Send,
 } from "lucide-react";
+import { TOKEN_CONFIG } from "@/config/token";
 import {
   getCommunityFeed,
   getTopBurners,
@@ -137,6 +140,35 @@ export const BurnHallOfFame: React.FC = () => {
             <div className="text-[10px] text-emerald-400 font-bold mt-1 flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
               <span>Permanently Removed from Supply</span>
+            </div>
+
+            {/* 1-Click Raid on X & Telegram */}
+            <div className="grid grid-cols-2 gap-2 mt-3 pt-2.5 border-t border-rose-500/20">
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                  `🔥 ${totalBurned.toLocaleString()} $NOM has been permanently burned through the @Nomverse Arcade!\n\n1% of every transaction is incinerated forever. Come play & burn: https://nomverse.org/play\nMint: ${TOKEN_CONFIG.mintAddress}\n\n#NOM #Solana #pumpfun #burn`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 border border-rose-500/40 text-rose-300 text-[10px] font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
+                title="Post Deflationary Burn to X"
+              >
+                <Share2 className="w-3 h-3 text-rose-400" />
+                <span>Raid on X</span>
+              </a>
+
+              <a
+                href={`https://t.me/share/url?url=${encodeURIComponent("https://nomverse.org/play")}&text=${encodeURIComponent(
+                  `🔥 Over ${totalBurned.toLocaleString()} $NOM burned forever on Nomverse Arcade! Supply is shrinking daily: mint ${TOKEN_CONFIG.mintAddress}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 text-[10px] font-bold flex items-center justify-center gap-1 transition-all active:scale-95"
+                title="Raid in Telegram Groups"
+              >
+                <Send className="w-3 h-3 text-blue-400" />
+                <span>Telegram</span>
+              </a>
             </div>
           </div>
         </div>

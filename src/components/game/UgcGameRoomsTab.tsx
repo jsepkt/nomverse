@@ -19,7 +19,10 @@ import {
   AlertCircle,
   Play,
   Palette,
+  Share2,
+  Send,
 } from "lucide-react";
+import { TOKEN_CONFIG } from "@/config/token";
 import {
   getUgcRooms,
   UgcGameRoom,
@@ -492,6 +495,33 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
         >
           Collect Rewards &amp; Continue
         </button>
+
+        {/* Viral Brag & Flex Buttons */}
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <a
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+              `🏆 Just beat the "${victoryRoom.room.title}" target on @Nomverse Arcade and won ${victoryRoom.prizeWon.toLocaleString()} $NOM!\n\nCan you beat my high score? Play here: https://nomverse.org/play\n$NOM on pump.fun: ${TOKEN_CONFIG.mintAddress}\n\n#NOM #Solana #pumpfun #web3gaming`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95"
+          >
+            <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Flex on X</span>
+          </a>
+
+          <a
+            href={`https://t.me/share/url?url=${encodeURIComponent("https://nomverse.org/play")}&text=${encodeURIComponent(
+              `🔥 Smashed the challenge in "${victoryRoom.room.title}" and won ${victoryRoom.prizeWon.toLocaleString()} $NOM! Challenge me on Nomverse Arcade: mint ${TOKEN_CONFIG.mintAddress}`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="py-2.5 px-3 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95"
+          >
+            <Send className="w-3.5 h-3.5 text-blue-400" />
+            <span>Telegram</span>
+          </a>
+        </div>
       </div>
     </div>
   )}

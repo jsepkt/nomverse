@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import { Download, Copy, CheckCircle2, Share2, Sparkles, Trophy } from "lucide-react";
+import { Download, Copy, CheckCircle2, Share2, Sparkles, Trophy, Send } from "lucide-react";
 import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -267,31 +267,57 @@ export const ShareableScoreCard: React.FC<ShareableScoreCardProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <button
           onClick={handleDownload}
-          className="py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-mono text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95"
+          className="py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-mono text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
         >
           <Download className="w-3.5 h-3.5 text-emerald-400" />
-          <span>Download</span>
+          <span>Save PNG</span>
         </button>
 
         <button
           onClick={handleCopyImage}
-          className="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-mono text-xs font-black transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-lg shadow-emerald-500/20"
+          className="py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-mono text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
         >
           {copied ? (
             <>
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Copied Card!</span>
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Copied!</span>
             </>
           ) : (
             <>
-              <Copy className="w-3.5 h-3.5" />
-              <span>Copy Meme Card</span>
+              <Copy className="w-3.5 h-3.5 text-slate-300" />
+              <span>Copy Card</span>
             </>
           )}
         </button>
+
+        {/* Share to X (Twitter) */}
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            `🔥 Smashed ${score.toLocaleString()} points eating candies on @Nomverse Arcade!\n\n🎮 Play free: https://nomverse.org/play\n💎 $NOM on pump.fun: ${TOKEN_CONFIG.mintAddress}\n\n#NOM #Solana #pumpfun #web3gaming`
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/40 text-cyan-300 hover:text-white font-mono text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+        >
+          <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+          <span>Post on X</span>
+        </a>
+
+        {/* Share to Telegram */}
+        <a
+          href={`https://t.me/share/url?url=${encodeURIComponent("https://nomverse.org/play")}&text=${encodeURIComponent(
+            `🍭 Just scored ${score.toLocaleString()} on Nomverse Arcade! Can you beat me? $NOM pump.fun mint: ${TOKEN_CONFIG.mintAddress}`
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="py-2 px-2.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 hover:text-white font-mono text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+        >
+          <Send className="w-3.5 h-3.5 text-blue-400" />
+          <span>Telegram</span>
+        </a>
       </div>
     </div>
   );
