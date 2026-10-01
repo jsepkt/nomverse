@@ -11,16 +11,19 @@ import {
   VolumeX,
   Wallet,
   Sparkles,
-  ExternalLink,
+  Zap,
 } from "lucide-react";
 import { TOKEN_CONFIG } from "@/config/token";
 import { soundEngine } from "@/lib/soundEffects";
+import { sounds } from "../audio/soundEffects";
 import { ArcadeVaultModal } from "../game/ArcadeVaultModal";
+import { QuickBuyModal } from "../wallet/QuickBuyModal";
 
 export const QuickActionHUD: React.FC = () => {
   const router = useRouter();
   const [isMuted, setIsMuted] = useState(false);
   const [isVaultOpen, setIsVaultOpen] = useState(false);
+  const [isQuickBuyOpen, setIsQuickBuyOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -50,33 +53,38 @@ export const QuickActionHUD: React.FC = () => {
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 max-w-[95vw] sm:max-w-max">
         <nav
           aria-label="Quick Action HUD"
-          className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-2xl bg-gray-950/85 border border-emerald-500/30 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.8)] shadow-emerald-500/10"
+          className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-full glass-pill border border-emerald-500/30 shadow-[0_10px_35px_rgba(0,0,0,0.8),0_0_20px_rgba(20,241,149,0.15)]"
         >
           {/* Quick Play */}
           <Link
             href="/play"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold font-mono transition-all active:scale-95 group"
+            onClick={() => sounds.playJumpSound()}
+            className="tactile-button flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold font-mono transition-all group"
           >
-            <Gamepad2 className="w-4 h-4 text-emerald-400 group-hover:rotate-12 transition-transform" />
+            <Gamepad2 className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
             <span className="hidden xs:inline">PLAY</span>
           </Link>
 
-          {/* Trade on pump.fun */}
-          <a
-            href={TOKEN_CONFIG.pumpFunUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black text-xs font-black font-mono transition-all active:scale-95 shadow-md shadow-emerald-500/20"
+          {/* Quick Buy $NOM */}
+          <button
+            onClick={() => {
+              sounds.playGoldenChime();
+              setIsQuickBuyOpen(true);
+            }}
+            className="tactile-button flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 text-xs font-black font-mono shadow-[0_0_15px_rgba(20,241,149,0.3)] cursor-pointer"
           >
-            <Flame className="w-4 h-4 fill-black" />
+            <Zap className="w-4 h-4 fill-slate-950 text-slate-950" />
             <span>BUY $NOM</span>
-          </a>
+          </button>
 
           {/* Arcade Vault */}
           <button
-            onClick={() => setIsVaultOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-900/80 hover:bg-gray-800 border border-gray-700/80 text-gray-200 text-xs font-mono transition-all active:scale-95"
-            title="Arcade Bank & Vault"
+            onClick={() => {
+              sounds.playButtonClick();
+              setIsVaultOpen(true);
+            }}
+            className="tactile-button flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono transition-all cursor-pointer"
+            title="Arcade Vault & Gasless Bank"
           >
             <Wallet className="w-4 h-4 text-amber-400" />
             <span className="hidden sm:inline">VAULT</span>
@@ -85,7 +93,8 @@ export const QuickActionHUD: React.FC = () => {
           {/* Verify Mint */}
           <Link
             href="/guide"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-900/80 hover:bg-gray-800 border border-gray-700/80 text-gray-200 text-xs font-mono transition-all active:scale-95"
+            onClick={() => sounds.playButtonClick()}
+            className="tactile-button flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono transition-all"
             title="Verify Mint & Guide"
           >
             <ShieldCheck className="w-4 h-4 text-teal-400" />
@@ -95,22 +104,33 @@ export const QuickActionHUD: React.FC = () => {
           {/* Web Audio Synthesizer Sound Mute Toggle */}
           <button
             onClick={handleToggleSound}
-            className={`p-2 rounded-xl border text-xs transition-all active:scale-95 ${
+            className={`tactile-button p-2 rounded-full border text-xs transition-all cursor-pointer ${
               isMuted
                 ? "bg-rose-500/10 border-rose-500/30 text-rose-400"
                 : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
             }`}
-            title={isMuted ? "Unmute 8-Bit Audio" : "Mute 8-Bit Audio"}
+            title={isMuted ? "Unmute 8-Bit Web Audio" : "Mute 8-Bit Web Audio"}
+            aria-label={isMuted ? "Unmute sound" : "Mute sound"}
           >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            {isMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 animate-pulse" />
+            )}
           </button>
         </nav>
       </div>
 
-      {/* Embedded Arcade Vault Modal */}
+      {/* Arcade Vault Modal */}
       <ArcadeVaultModal
         isOpen={isVaultOpen}
         onClose={() => setIsVaultOpen(false)}
+      />
+
+      {/* Quick Buy SOL Modal */}
+      <QuickBuyModal
+        isOpen={isQuickBuyOpen}
+        onClose={() => setIsQuickBuyOpen(false)}
       />
     </>
   );

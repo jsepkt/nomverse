@@ -33,6 +33,7 @@ import { ArcadeVaultModal } from "./ArcadeVaultModal";
 import { getUserVault, getTotalNomBurned } from "@/lib/arcadeVault";
 import { useAuth } from "@/context/AuthContext";
 import { Coins, Flame } from "lucide-react";
+import { sounds } from "../audio/soundEffects";
 
 interface GameRoomProps {
   initialMode?: "half" | "full";
@@ -177,10 +178,13 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
           {/* Half Size (Split Console) Toggle Button */}
           <button
-            onClick={() => setScreenSize("half")}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
+            onClick={() => {
+              sounds.playButtonClick();
+              setScreenSize("half");
+            }}
+            className={`tactile-button px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
               screenSize === "half"
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-[0_0_15px_rgba(20,241,149,0.25)]"
+                ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 shadow-[0_0_15px_rgba(20,241,149,0.3)]"
                 : "bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:bg-slate-800"
             }`}
             title="Half Size: Split screen with Stages & Companion Tabs (Press T)"
@@ -192,10 +196,13 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
           {/* Full Size (Ultra Arcade) Toggle Button */}
           <button
-            onClick={() => setScreenSize("full")}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
+            onClick={() => {
+              sounds.playButtonClick();
+              setScreenSize("full");
+            }}
+            className={`tactile-button px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
               screenSize === "full"
-                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.25)]"
+                ? "bg-cyan-500/25 text-cyan-300 border border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
                 : "bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:bg-slate-800"
             }`}
             title="Full Size: Expanded Ultra Arcade view for maximum immersion"
@@ -206,8 +213,11 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
           {/* 1-Click Buy $NOM Button */}
           <button
-            onClick={() => setIsQuickBuyOpen(true)}
-            className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 flex items-center gap-1 sm:gap-1.5 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+            onClick={() => {
+              sounds.playGoldenChime();
+              setIsQuickBuyOpen(true);
+            }}
+            className="tactile-button px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 flex items-center gap-1 sm:gap-1.5 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
             title="Instant Buy $NOM on pump.fun"
           >
             <Rocket className="w-3.5 h-3.5 text-slate-950 shrink-0" />
@@ -237,8 +247,11 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-1.5 py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 ${
+                      onClick={() => {
+                        sounds.playButtonClick();
+                        setActiveTab(tab.id);
+                      }}
+                      className={`tactile-button flex items-center gap-1.5 py-2 px-3 rounded-xl text-xs font-mono font-bold transition-all shrink-0 cursor-pointer ${
                         isActive
                           ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
                           : "text-slate-400 hover:text-white hover:bg-slate-900/60"

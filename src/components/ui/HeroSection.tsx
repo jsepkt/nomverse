@@ -12,8 +12,11 @@ import {
   Check,
   Coins,
   Zap,
-  ArrowDown,
   Layers,
+  Flame,
+  Volume2,
+  ExternalLink,
+  ChevronDown,
 } from "lucide-react";
 import { TOKEN_CONFIG } from "@/config/token";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -21,9 +24,37 @@ import { sounds } from "../audio/soundEffects";
 import confetti from "canvas-confetti";
 import { QuickBuyModal } from "../wallet/QuickBuyModal";
 
+const MASCOT_QUOTES = [
+  "NOM! Block confirmed in 400ms! ⚡",
+  "100% CC0! You own me! 💚",
+  "Zero team allocation! Pure fair launch! 🚀",
+  "1% of all arcade games burned forever! 🔥",
+  "Delicious Solana candies! Nom nom nom! 🍬",
+  "Mathematically unruggable! 🛡️",
+];
+
 export const HeroSection: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
+  const [quoteIndex, setQuoteIndex] = useState<number>(0);
+  const [isChomping, setIsChomping] = useState<boolean>(false);
+  const [speechVisible, setSpeechVisible] = useState<boolean>(true);
+
+  const handleMascotPoke = () => {
+    setIsChomping(true);
+    sounds.playGoldenChime();
+    setQuoteIndex((prev) => (prev + 1) % MASCOT_QUOTES.length);
+    setSpeechVisible(true);
+
+    confetti({
+      particleCount: 30,
+      spread: 60,
+      origin: { y: 0.4 },
+      colors: ["#14F195", "#9945FF", "#F59E0B", "#00C2FF"],
+    });
+
+    setTimeout(() => setIsChomping(false), 300);
+  };
 
   const handleCopyMint = async () => {
     await copyToClipboard(TOKEN_CONFIG.mintAddress);
@@ -40,6 +71,7 @@ export const HeroSection: React.FC = () => {
 
   const scrollToArcade = (e: React.MouseEvent) => {
     e.preventDefault();
+    sounds.playJumpSound();
     const el = document.getElementById("arcade-play");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
@@ -48,6 +80,7 @@ export const HeroSection: React.FC = () => {
 
   const scrollToWhatIs = (e: React.MouseEvent) => {
     e.preventDefault();
+    sounds.playButtonClick();
     const el = document.getElementById("what-is-nomverse");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
@@ -56,93 +89,140 @@ export const HeroSection: React.FC = () => {
 
   return (
     <>
-      <section className="relative w-full pt-6 sm:pt-10 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Background Ambient Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute top-1/3 right-10 w-[450px] h-[450px] bg-solana-purple/10 rounded-full blur-[130px] pointer-events-none" />
+      <section className="relative w-full pt-8 sm:pt-14 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Ambient Celestial Neon Halos */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-emerald-500/15 via-teal-500/10 to-solana-purple/15 rounded-full blur-[160px] pointer-events-none" />
+        <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-solana-purple/10 rounded-full blur-[140px] pointer-events-none" />
 
-        {/* Constrain main content to 1200-1400px (Section 6 UX Audit) */}
-        <div className="max-w-[1360px] mx-auto space-y-10 sm:space-y-12">
-          {/* SECTION 02: HERO (Section 2 & 18 UX Audit) */}
-          <div className="flex flex-col items-center text-center space-y-5 max-w-4xl mx-auto">
-            {/* Quick Proof Line (Section 2 & 18: CC0 • Open Source • Solana • Arcade) */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+        {/* Max constrained container (1200-1400px) */}
+        <div className="max-w-[1360px] mx-auto space-y-12 sm:space-y-16">
+          {/* TOP HERO STAGE: Living Mascot + Kinetic Typography */}
+          <div className="flex flex-col items-center text-center space-y-6 max-w-4xl mx-auto relative z-10">
+            {/* Proof Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-bold glass-pill text-emerald-300 border border-emerald-500/30 shadow-[0_0_20px_rgba(20,241,149,0.2)]">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>CC0 • Open Source • Solana • Arcade</span>
+              <span>CC0 • Open Source • Solana Token-2022 • Arcade</span>
             </div>
 
-            {/* Mascot Visual + Hero Headline */}
-            <div className="relative group cursor-pointer" onClick={scrollToArcade}>
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto rounded-3xl bg-emerald-500/15 border-2 border-emerald-400/60 p-2 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:border-emerald-400 group-hover:shadow-[0_0_35px_rgba(20,241,149,0.45)]">
-                <div className="absolute inset-0 rounded-3xl bg-emerald-400/20 animate-ping opacity-25 pointer-events-none" />
+            {/* Living Mascot Character Stage (Nintendo / Pudgy Penguins) */}
+            <div className="relative my-2 select-none">
+              {/* Floating Speech Bubble */}
+              {speechVisible && (
+                <div
+                  className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap px-3.5 py-1.5 rounded-2xl glass-card text-xs font-mono font-bold text-white border border-emerald-400/40 shadow-[0_0_25px_rgba(20,241,149,0.3)] animate-in fade-in zoom-in duration-200 cursor-pointer pointer-events-auto"
+                  onClick={handleMascotPoke}
+                >
+                  <span className="text-emerald-400 font-black">Nomster: </span>
+                  <span>{MASCOT_QUOTES[quoteIndex]}</span>
+                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900 rotate-45 border-r border-b border-emerald-400/40" />
+                </div>
+              )}
+
+              {/* Orbiting Collectible Candies */}
+              <div
+                className="absolute -top-3 -left-8 w-10 h-10 rounded-full glass-card p-1.5 flex items-center justify-center border border-amber-400/40 animate-bounce duration-1000 shadow-[0_0_15px_rgba(245,158,11,0.3)] cursor-pointer"
+                onClick={handleMascotPoke}
+                title="Tap to feed Nomster"
+              >
+                <span className="text-lg">🍬</span>
+              </div>
+              <div
+                className="absolute -bottom-2 -right-8 w-10 h-10 rounded-full glass-card p-1.5 flex items-center justify-center border border-purple-400/40 animate-pulse duration-700 shadow-[0_0_15px_rgba(168,85,247,0.3)] cursor-pointer"
+                onClick={handleMascotPoke}
+                title="Tap to feed Nomster"
+              >
+                <span className="text-lg">⭐</span>
+              </div>
+
+              {/* Main Mascot Button */}
+              <button
+                onClick={handleMascotPoke}
+                className={`relative w-28 h-28 sm:w-36 sm:h-36 mx-auto rounded-3xl glass-card p-3 flex items-center justify-center transition-all duration-300 cursor-pointer group focus:outline-none ${
+                  isChomping
+                    ? "scale-90 rotate-3 border-emerald-300 shadow-[0_0_40px_rgba(20,241,149,0.7)]"
+                    : "animate-float-gentle hover:scale-105 hover:border-emerald-400/70 hover:shadow-[0_0_40px_rgba(20,241,149,0.45)]"
+                }`}
+                title="Click Nomster to feed!"
+              >
+                <div className="absolute inset-0 rounded-3xl bg-emerald-400/15 animate-ping opacity-20 pointer-events-none" />
                 <Image
                   src="/mascot.svg"
                   alt="Nomster Mascot"
-                  width={96}
-                  height={96}
+                  width={120}
+                  height={120}
                   priority
-                  className="object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                  className="object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform"
                 />
+              </button>
+              <div className="text-[10px] font-mono text-emerald-400/80 mt-2 font-bold tracking-wider">
+                👆 TAP NOMSTER TO FEED
               </div>
             </div>
 
-            {/* Headline: NOMVERSE — The Open-Source Mascot of Web3 */}
-            <div className="space-y-2">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
+            {/* Kinetic Typography */}
+            <div className="space-y-3">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.05]">
                 NOMVERSE
-                <span className="block text-2xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green bg-clip-text text-transparent mt-1">
+                <span className="block text-2xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-cyan bg-clip-text text-transparent mt-1">
                   The Open-Source Mascot of Web3
                 </span>
               </h1>
-              <p className="text-base sm:text-xl font-bold text-slate-100 font-mono tracking-tight">
+              <p className="text-lg sm:text-2xl font-bold text-slate-100 font-mono tracking-tight">
                 Meet Nomster. Play. Create. Remix. Build.
               </p>
             </div>
 
-            {/* Subtitle / Core Positioning (Section 21 UX Audit) */}
-            <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-              NomVerse is an open-source universe built around Nomster. Play retro physics games with zero wallet friction, compose 8-bit beats, design custom skins, and hold <strong className="text-emerald-400">$NOM</strong> for sovereign ecosystem perks.
+            {/* Subtitle Positioning */}
+            <p className="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed font-normal">
+              NomVerse is an open-source universe built around Nomster. Play retro physics games with zero wallet friction, compose 8-bit beats, design custom skins, and hold{" "}
+              <strong className="text-emerald-400 font-black">$NOM</strong> for sovereign ecosystem perks.
             </p>
 
-            {/* Primary Action Buttons (Section 14: Button Hierarchy) */}
+            {/* 3D Tactile CTA Buttons */}
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              {/* Primary: PLAY NOW */}
+              {/* Primary PLAY NOW */}
               <button
                 onClick={scrollToArcade}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-black text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.45)] hover:shadow-[0_0_40px_rgba(20,241,149,0.7)] hover:scale-105 active:scale-95 transition-all cursor-pointer min-h-[48px] touch-manipulation"
+                className="tactile-button inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl font-black text-sm sm:text-base text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.45)] hover:shadow-[0_0_45px_rgba(20,241,149,0.7)] cursor-pointer min-h-[52px] touch-manipulation"
               >
                 <Gamepad2 className="w-5 h-5 fill-slate-950 text-slate-950" />
                 <span>PLAY NOW</span>
               </button>
 
-              {/* Secondary: EXPLORE NOMVERSE */}
+              {/* Secondary EXPLORE NOMVERSE */}
               <button
                 onClick={scrollToWhatIs}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm text-slate-200 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-slate-500 hover:text-white transition-all hover:scale-105 active:scale-95 cursor-pointer min-h-[48px] touch-manipulation"
+                className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-bold text-sm sm:text-base text-slate-200 glass-card hover:border-slate-500 hover:text-white transition-all cursor-pointer min-h-[52px] touch-manipulation"
               >
                 <Layers className="w-4 h-4 text-teal-400" />
                 <span>EXPLORE NOMVERSE</span>
               </button>
 
-              {/* Crypto Action: BUY $NOM */}
+              {/* Crypto BUY $NOM */}
               <button
-                onClick={() => setIsQuickBuyOpen(true)}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl font-mono font-bold text-sm text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 hover:border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.25)] hover:scale-105 active:scale-95 transition-all cursor-pointer min-h-[48px] touch-manipulation"
+                onClick={() => {
+                  sounds.playGoldenChime();
+                  setIsQuickBuyOpen(true);
+                }}
+                className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-mono font-bold text-sm sm:text-base text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 hover:border-amber-500/60 shadow-[0_0_20px_rgba(245,158,11,0.25)] cursor-pointer min-h-[52px] touch-manipulation"
               >
                 <Zap className="w-4 h-4 text-amber-400" />
                 <span>BUY $NOM</span>
               </button>
             </div>
 
-            {/* 1-Click Verified Mint Address Bar */}
-            <div className="w-full max-w-lg p-2.5 sm:p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2.5 text-left shadow-lg">
-              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-solana-green/15 border border-solana-green/30 flex items-center justify-center text-solana-green shrink-0">
-                  <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            {/* Verified Contract Bar (Apple Pill Style) */}
+            <div className="w-full max-w-lg p-2.5 sm:p-3 rounded-2xl glass-card flex items-center justify-between gap-3 text-left">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-solana-green/15 border border-solana-green/30 flex items-center justify-center text-solana-green shrink-0">
+                  <Coins className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[9px] sm:text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider">
-                    Official Solana Mint (Token-2022)
+                  <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                    <span>Official Mint (Token-2022)</span>
+                    <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-bold">
+                      VERIFIED
+                    </span>
                   </div>
                   <div className="text-xs sm:text-sm font-mono text-slate-100 font-semibold truncate select-all">
                     {TOKEN_CONFIG.mintAddress}
@@ -150,65 +230,98 @@ export const HeroSection: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                onClick={handleCopyMint}
-                className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-emerald-500/50 transition-all shrink-0 active:scale-95 min-h-[44px] touch-manipulation"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-emerald-400">Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Copy CA</span>
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  onClick={handleCopyMint}
+                  className="tactile-button inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 min-h-[40px] touch-manipulation"
+                  title="Copy Mint Address"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-emerald-400">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+
+                <a
+                  href={`https://solscan.io/token/${TOKEN_CONFIG.mintAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition-colors"
+                  title="View on Solscan"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
+            {/* Quick 4 Trust Highlights Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-3xl pt-2">
+              <div className="p-3 rounded-2xl glass-card text-center">
+                <div className="text-xs font-mono text-slate-400">TOTAL SUPPLY</div>
+                <div className="text-lg font-black font-mono text-white">1,000,000,000</div>
+              </div>
+              <div className="p-3 rounded-2xl glass-card text-center">
+                <div className="text-xs font-mono text-slate-400">TRADING TAX</div>
+                <div className="text-lg font-black font-mono text-emerald-400">0% BUY / SELL</div>
+              </div>
+              <div className="p-3 rounded-2xl glass-card text-center">
+                <div className="text-xs font-mono text-slate-400">ARCADE BURN</div>
+                <div className="text-lg font-black font-mono text-rose-400">1% PER WAGER</div>
+              </div>
+              <div className="p-3 rounded-2xl glass-card text-center">
+                <div className="text-xs font-mono text-slate-400">INTELLECTUAL PROPERTY</div>
+                <div className="text-lg font-black font-mono text-solana-purple">100% CC0</div>
+              </div>
             </div>
           </div>
 
-          {/* SECTION 04: PLAY NOMSTER (Section 4 & 18 UX Audit) */}
+          {/* FEATURED ARCADE CONSOLE ARENA (Section 04) */}
           <div
             id="arcade-play"
-            className="scroll-mt-20 rounded-3xl bg-slate-950/70 border border-emerald-500/20 p-4 sm:p-6 lg:p-8 shadow-2xl backdrop-blur-sm space-y-6"
+            className="scroll-mt-20 rounded-3xl glass-card p-4 sm:p-6 lg:p-8 shadow-2xl relative overflow-hidden space-y-6"
           >
-            {/* Header Framing (Section 4: PLAY NOMSTER — No wallet. No signup. Just play.) */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+            {/* Handheld / Cabinet Status Trim */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/10">
               <div className="space-y-1">
                 <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-400">
-                  <Gamepad2 className="w-4 h-4" />
-                  <span className="uppercase tracking-wider">FEATURED RETRO ARCADE</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="uppercase tracking-wider">RETRO PHYSICS CONSOLE • 60 FPS • 0ms AUDIO</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white">
                   PLAY NOMSTER — <span className="text-emerald-400">No wallet. No signup. Just play.</span>
                 </h2>
               </div>
 
-              {/* Progression Badge (Section 4 UX Audit: Guest Play → Connect Wallet → Save Score) */}
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-2xl">
+              {/* 3-Step Progression Badge */}
+              <div className="flex flex-wrap items-center gap-2 text-xs font-mono glass-pill px-3.5 py-2 rounded-full">
                 <span className="text-emerald-300 font-bold">1. Guest Play</span>
-                <span className="text-slate-600">→</span>
+                <span className="text-slate-500">→</span>
                 <span className="text-teal-300 font-bold">2. Connect Wallet</span>
-                <span className="text-slate-600">→</span>
-                <span className="text-candy-gold font-bold">3. Save Score &amp; Badges</span>
+                <span className="text-slate-500">→</span>
+                <span className="text-candy-gold font-bold">3. Save Scores &amp; Badges</span>
               </div>
             </div>
 
-            {/* Mobile vs Desktop Control Hints (Section 5 UX Audit) */}
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-slate-300 bg-emerald-500/5 border border-emerald-500/15 px-3.5 py-2 rounded-xl">
-              <div className="flex items-center gap-1.5">
-                <span className="text-emerald-400 font-bold">📱 Mobile:</span>
+            {/* Mobile vs Desktop Gesture Hints */}
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-slate-300 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-xl">
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-400 font-bold">📱 Mobile Controls:</span>
                 <span>Swipe / Tap to move • Tap DASH to boost</span>
               </div>
-              <div className="hidden sm:flex items-center gap-1.5">
-                <span className="text-teal-400 font-bold">⌨️ Desktop:</span>
-                <span>Arrow Keys / WASD • SPACE to Dash</span>
+              <div className="hidden sm:flex items-center gap-2">
+                <span className="text-teal-400 font-bold">⌨️ Keyboard:</span>
+                <span>[A][D] or [←][→] to Move • [SPACE] to Dash</span>
               </div>
             </div>
 
-            {/* Centered Arcade Arena (Section 6 UX Audit) */}
+            {/* Centered Arcade Screen Container */}
             <div className="flex justify-center items-center w-full">
               <GameContainer showGameRoomButton={true} />
             </div>

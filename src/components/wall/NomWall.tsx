@@ -21,6 +21,7 @@ import {
   Trophy,
   Award,
 } from "lucide-react";
+import { sounds } from "../audio/soundEffects";
 
 export const NomWall: React.FC = () => {
   const { user, openAuthModal } = useAuth();
@@ -336,44 +337,51 @@ export const NomWall: React.FC = () => {
 
         {/* Main Section Navigation Switcher */}
         <div className="flex justify-center mb-8 px-2">
-          <div className="p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 backdrop-blur-xl flex items-center gap-1.5 max-w-full overflow-x-auto no-scrollbar shadow-xl">
+          <div className="p-1.5 rounded-full glass-pill flex items-center gap-1.5 max-w-full overflow-x-auto no-scrollbar shadow-2xl">
             <button
-              onClick={() => setActiveMainTab("wall")}
-              className={`inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveMainTab("wall");
+              }}
+              className={`tactile-button inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all shrink-0 cursor-pointer ${
                 activeMainTab === "wall"
-                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-[0_0_20px_rgba(34,197,94,0.25)]"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+                  ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 shadow-[0_0_20px_rgba(34,197,94,0.3)]"
+                  : "text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent"
               }`}
             >
               <MessageSquare className="w-4 h-4 text-emerald-400" />
-              <span className="hidden sm:inline">Community Feed &amp; Discussions</span>
+              <span className="hidden sm:inline">Community Feed</span>
               <span className="sm:hidden">Feed</span>
             </button>
 
             <button
-              onClick={() => setActiveMainTab("leaderboard")}
-              className={`inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveMainTab("leaderboard");
+              }}
+              className={`tactile-button inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all shrink-0 cursor-pointer ${
                 activeMainTab === "leaderboard"
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.25)]"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+                  ? "bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+                  : "text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent"
               }`}
             >
               <Trophy className="w-4 h-4 text-amber-400" />
-              <span className="hidden sm:inline">🏆 Hall of Fame</span>
-              <span className="sm:hidden">🏆 Hall of Fame</span>
+              <span>Hall of Fame</span>
             </button>
 
             <button
-              onClick={() => setActiveMainTab("bounties")}
-              className={`inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveMainTab("bounties");
+              }}
+              className={`tactile-button inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all shrink-0 cursor-pointer ${
                 activeMainTab === "bounties"
-                  ? "bg-purple-500/20 text-purple-300 border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.25)]"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent"
+                  ? "bg-purple-500/25 text-purple-300 border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+                  : "text-slate-400 hover:text-white hover:bg-white/[0.06] border border-transparent"
               }`}
             >
               <Award className="w-4 h-4 text-purple-400" />
-              <span className="hidden sm:inline">📜 Bounties &amp; Quests</span>
-              <span className="sm:hidden">📜 Quests</span>
+              <span>Quests</span>
             </button>
           </div>
         </div>
