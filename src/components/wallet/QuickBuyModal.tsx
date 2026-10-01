@@ -25,7 +25,7 @@ interface QuickBuyModalProps {
   onClose: () => void;
 }
 
-const SOL_PRESETS = [0.1, 0.5, 1.0, 2.5, 5.0];
+const SOL_PRESETS = [0.1, 0.5, 1, 2.5, 5];
 
 export const QuickBuyModal: React.FC<QuickBuyModalProps> = ({ isOpen, onClose }) => {
   const [selectedSol, setSelectedSol] = useState<number>(0.5);
@@ -137,7 +137,7 @@ export const QuickBuyModal: React.FC<QuickBuyModalProps> = ({ isOpen, onClose })
                     : "bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800"
                 }`}
               >
-                {sol} SOL
+                <span>{sol} <span className="hidden xs:inline">SOL</span></span>
               </button>
             ))}
           </div>
@@ -193,8 +193,8 @@ export const QuickBuyModal: React.FC<QuickBuyModalProps> = ({ isOpen, onClose })
 
         {/* Contract Address Copy */}
         <div className="mb-4 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-[11px] font-mono">
-          <div className="text-slate-400 truncate mr-2">
-            Mint: <span className="text-slate-200">{TOKEN_CONFIG.mintAddress}</span>
+          <div className="flex-1 min-w-0 text-slate-400 truncate mr-2 text-[10px] sm:text-[11px]">
+            Mint: <span className="text-slate-200 select-all">{TOKEN_CONFIG.mintAddress}</span>
           </div>
           <button
             onClick={handleCopyMint}

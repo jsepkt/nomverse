@@ -42,7 +42,7 @@ export const MobileWaddlePaddles: React.FC<MobileWaddlePaddlesProps> = ({
   };
 
   return (
-    <div className="w-full max-w-[440px] sm:max-w-[500px] flex flex-col items-center gap-1.5 px-2 pt-2 lg:hidden select-none touch-none">
+    <div className="w-full max-w-[440px] sm:max-w-[500px] flex flex-col items-center gap-1.5 px-2 pt-2 lg:hidden select-none touch-manipulation">
       <div className="flex items-center justify-between w-full gap-2 sm:gap-3">
         {/* Waddle Left Paddle */}
         <button

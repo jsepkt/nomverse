@@ -71,7 +71,7 @@ export const BondingMilestonesCard: React.FC = () => {
                 85 SOL / $69k Goal
               </span>
             </h3>
-            <p className="text-xs font-mono text-slate-300 mt-0.5">
+            <p className="text-xs font-mono text-slate-300 mt-0.5 break-words leading-relaxed">
               Current: <strong className="text-emerald-400">{bondingProgress}%</strong> • <strong className="text-white">{solCollected} SOL</strong> / 85 SOL • MCap: <strong className="text-candy-gold">${marketCap.toLocaleString()}</strong>
             </p>
           </div>
@@ -81,7 +81,7 @@ export const BondingMilestonesCard: React.FC = () => {
           href={TOKEN_CONFIG.pumpFunUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(20,241,149,0.25)] shrink-0"
+          className="self-stretch sm:self-auto px-3.5 py-2 sm:py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-[0_0_15px_rgba(20,241,149,0.25)] shrink-0"
         >
           <span>PUSH ON PUMP.FUN</span>
           <ExternalLink className="w-3 h-3" />

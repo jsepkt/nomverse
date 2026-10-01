@@ -269,12 +269,15 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
         </div>
 
         {/* Global Deflationary Burn Ticker Strip */}
-        <div className="flex items-center justify-between p-2.5 rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs mb-4">
-          <div className="flex items-center gap-2 text-rose-300">
-            <Flame className="w-4 h-4 text-rose-400 animate-pulse" />
-            <span>TOTAL $NOM BURNED VIA ARCADE:</span>
+        <div className="flex flex-wrap items-center justify-between gap-1.5 p-2.5 rounded-xl bg-rose-950/20 border border-rose-500/30 text-xs mb-4">
+          <div className="flex items-center gap-1.5 text-rose-300">
+            <Flame className="w-4 h-4 text-rose-400 animate-pulse shrink-0" />
+            <span>
+              <span className="hidden sm:inline">TOTAL $NOM BURNED VIA ARCADE:</span>
+              <span className="sm:hidden">BURNED:</span>
+            </span>
           </div>
-          <strong className="text-rose-400 text-sm font-black">
+          <strong className="text-rose-400 text-xs sm:text-sm font-black font-mono shrink-0">
             {totalBurned.toLocaleString()} $NOM 🔥
           </strong>
         </div>

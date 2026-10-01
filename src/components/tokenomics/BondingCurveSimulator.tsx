@@ -51,8 +51,8 @@ export const BondingCurveSimulator: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <div className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-right font-mono">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 text-left sm:text-right font-mono w-full sm:w-auto">
             <div className="text-[10px] text-slate-400 uppercase">Bonding Threshold</div>
             <div className="text-sm sm:text-base font-bold text-solana-green">
               85 SOL • $69k Raydium Migration
@@ -62,7 +62,7 @@ export const BondingCurveSimulator: React.FC = () => {
             href={TOKEN_CONFIG.pumpFunUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs font-mono shadow-lg shadow-emerald-500/20 hover:scale-[1.02] transition-all"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs font-mono shadow-lg shadow-emerald-500/20 hover:scale-[1.02] transition-all w-full sm:w-auto"
           >
             <Rocket className="w-4 h-4" />
             <span>TRADE ON PUMP.FUN</span>

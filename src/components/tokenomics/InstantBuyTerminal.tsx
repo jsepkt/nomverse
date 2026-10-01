@@ -41,7 +41,7 @@ interface LiveStats {
   dataSource: string;
 }
 
-const PRESETS = [0.1, 0.5, 1.0, 2.0, 5.0];
+const PRESETS = [0.1, 0.5, 1, 2, 5];
 
 export const InstantBuyTerminal: React.FC = () => {
   const [solInput, setSolInput] = useState<number>(0.5);
@@ -152,8 +152,8 @@ export const InstantBuyTerminal: React.FC = () => {
 
         {/* Real Live Metrics Box */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5">
-            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold">Live Price</div>
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5 min-w-0">
+            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold truncate">Live Price</div>
             <div className="text-emerald-400 font-bold text-xs sm:text-sm truncate">
               ${stats.priceUsd < 0.0001 ? stats.priceUsd.toFixed(8) : stats.priceUsd.toFixed(5)}
             </div>
@@ -162,29 +162,29 @@ export const InstantBuyTerminal: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5">
-            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold">Market Cap</div>
-            <div className="text-white font-bold text-xs sm:text-sm">
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5 min-w-0">
+            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold truncate">Market Cap</div>
+            <div className="text-white font-bold text-xs sm:text-sm truncate">
               ${stats.marketCapUsd.toLocaleString()}
             </div>
-            <div className="text-[10px] sm:text-[11px] text-slate-300">
+            <div className="text-[10px] sm:text-[11px] text-slate-300 truncate">
               Goal: $69,000
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5">
-            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold">Curve SOL</div>
-            <div className="text-teal-300 font-bold text-xs sm:text-sm">
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5 min-w-0">
+            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold truncate">Curve SOL</div>
+            <div className="text-teal-300 font-bold text-xs sm:text-sm truncate">
               {stats.solCollected.toFixed(2)} SOL
             </div>
-            <div className="text-[10px] sm:text-[11px] text-slate-300">
+            <div className="text-[10px] sm:text-[11px] text-slate-300 truncate">
               Target: 85 SOL
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5">
-            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold">Curve Bonded</div>
-            <div className="text-solana-green font-bold text-xs sm:text-sm">
+          <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-0.5 min-w-0">
+            <div className="text-[11px] sm:text-xs text-slate-300 uppercase font-semibold truncate">Curve Bonded</div>
+            <div className="text-solana-green font-bold text-xs sm:text-sm truncate">
               {stats.bondingProgressPercent}%
             </div>
             <div className="text-[10px] sm:text-[11px] text-emerald-300 font-medium truncate">
@@ -256,7 +256,7 @@ export const InstantBuyTerminal: React.FC = () => {
                         : "bg-slate-900/90 text-slate-300 border-slate-800 hover:border-slate-700 hover:text-white"
                     }`}
                   >
-                    {amount} SOL
+                    <span>{amount} <span className="hidden xs:inline">SOL</span></span>
                   </button>
                 );
               })}

@@ -187,7 +187,10 @@ export const NomverseUniverse: React.FC<NomverseUniverseProps> = ({ stories }) =
               className="tactile-button inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30 hover:bg-purple-500/25 transition-all"
             >
               <GitPullRequest className="w-3.5 h-3.5 text-purple-400" />
-              <span>+ Submit Chapter via PR</span>
+              <span>
+                <span className="hidden xs:inline">+ Submit Chapter via PR</span>
+                <span className="xs:hidden">+ Submit PR</span>
+              </span>
             </button>
           </div>
 

@@ -145,17 +145,17 @@ export const DailyLootboxModal: React.FC<DailyLootboxModalProps> = ({
           </div>
 
           {/* Holder 2x Perk Banner */}
-          <div className="mb-5 p-2.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-purple-500/10 border border-emerald-500/25 flex items-center justify-between text-left text-xs font-mono">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+          <div className="mb-5 p-2.5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-purple-500/10 border border-emerald-500/25 flex flex-col xs:flex-row xs:items-center justify-between gap-2 text-left text-xs font-mono">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold shrink-0">
                 2x
               </div>
-              <div>
-                <div className="font-bold text-white">Hold 100k+ $NOM: 2X Rewards</div>
-                <div className="text-[10px] text-slate-400">Double candies, extra lives & streak shield</div>
+              <div className="min-w-0">
+                <div className="font-bold text-white truncate">Hold 100k+ $NOM: 2X Rewards</div>
+                <div className="text-[10px] text-slate-400 truncate">Double candies, extra lives &amp; streak shield</div>
               </div>
             </div>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${claimStatus.isHolderDouble ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" : "bg-slate-800 text-slate-400"}`}>
+            <span className={`px-2 py-0.5 rounded text-[10px] font-bold self-start xs:self-auto shrink-0 ${claimStatus.isHolderDouble ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" : "bg-slate-800 text-slate-400"}`}>
               {claimStatus.isHolderDouble ? "ACTIVE ✓" : "STANDARD"}
             </span>
           </div>

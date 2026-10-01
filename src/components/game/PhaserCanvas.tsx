@@ -142,6 +142,11 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
           width: 440,
           height: 520,
           transparent: true,
+          input: {
+            touch: {
+              capture: false,
+            },
+          },
           physics: {
             default: "arcade",
             arcade: {
@@ -383,7 +388,7 @@ export const PhaserCanvas: React.FC<PhaserCanvasProps> = ({
       {/* Phaser Canvas Mount Point */}
       <div
         ref={containerRef}
-        className="w-full h-full flex items-center justify-center cursor-crosshair touch-none select-none"
+        className="w-full h-full flex items-center justify-center cursor-crosshair touch-manipulation select-none"
       />
     </div>
   );

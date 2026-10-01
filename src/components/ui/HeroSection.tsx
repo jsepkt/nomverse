@@ -101,7 +101,7 @@ export const HeroSection: React.FC = () => {
             {/* Proof Pill Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-bold glass-pill text-emerald-300 border border-emerald-500/30 shadow-[0_0_20px_rgba(20,241,149,0.2)]">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>CC0 • Open Source • Solana Token-2022 • Arcade</span>
+              <span><span className="hidden sm:inline">CC0 • Open Source • </span>Solana Token-2022 • Arcade</span>
             </div>
 
             {/* Living Mascot Character Stage (Nintendo / Pudgy Penguins) */}
@@ -271,15 +271,24 @@ export const HeroSection: React.FC = () => {
                 <div className="text-base sm:text-lg font-black font-mono text-white truncate">1,000,000,000</div>
               </div>
               <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
-                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">TRADING TAX</div>
+                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">
+                  <span className="hidden sm:inline">TRADING TAX</span>
+                  <span className="sm:hidden">TAX</span>
+                </div>
                 <div className="text-base sm:text-lg font-black font-mono text-emerald-400 truncate">0% BUY / SELL</div>
               </div>
               <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
-                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">ARCADE BURN</div>
+                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">
+                  <span className="hidden sm:inline">ARCADE BURN</span>
+                  <span className="sm:hidden">BURN</span>
+                </div>
                 <div className="text-base sm:text-lg font-black font-mono text-rose-400 truncate">1% PER WAGER</div>
               </div>
               <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
-                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">INTELLECTUAL PROPERTY</div>
+                <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">
+                  <span className="hidden sm:inline">INTELLECTUAL PROPERTY</span>
+                  <span className="sm:hidden">LICENSE</span>
+                </div>
                 <div className="text-base sm:text-lg font-black font-mono text-solana-purple truncate">100% CC0</div>
               </div>
             </div>
@@ -295,7 +304,10 @@ export const HeroSection: React.FC = () => {
               <div className="space-y-1">
                 <div className="inline-flex items-center gap-2 text-xs font-mono font-bold text-emerald-400">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="uppercase tracking-wider">RETRO PHYSICS CONSOLE • 60 FPS • 0ms AUDIO</span>
+                  <span className="uppercase tracking-wider">
+                    <span className="hidden sm:inline">RETRO PHYSICS CONSOLE • 60 FPS • 0ms AUDIO</span>
+                    <span className="sm:hidden">RETRO PHYSICS • 60 FPS</span>
+                  </span>
                 </div>
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white">
                   PLAY NOMSTER — <span className="text-emerald-400">No wallet. No signup. Just play.</span>
