@@ -73,7 +73,7 @@ export const QuickActionHUD: React.FC = () => {
       {/* ============================================================== */}
       <nav
         aria-label="Mobile Bottom App Dock"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#050914]/95 backdrop-blur-2xl border-t border-slate-800/90 shadow-[0_-10px_35px_rgba(0,0,0,0.85)] pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] pt-1.5 px-2 select-none"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#050914]/95 backdrop-blur-2xl border-t border-slate-800/90 shadow-[0_-10px_35px_rgba(0,0,0,0.85)] pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] pt-1.5 px-2 select-none"
       >
         <div className="flex items-center justify-around w-full max-w-md mx-auto">
           {/* Tab 1: Home */}

@@ -37,8 +37,9 @@ export default function ManifestoPage() {
       {/* Hero Header */}
       <section className="relative pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-xs font-mono mb-4">
-          <BookOpen className="w-3.5 h-3.5" />
-          <span>OFFICIAL CC0 1.0 UNIVERSAL WHITEPAPER & ANTI-RUG MANIFESTO</span>
+          <BookOpen className="w-3.5 h-3.5 shrink-0" />
+          <span className="hidden sm:inline">OFFICIAL CC0 1.0 UNIVERSAL WHITEPAPER & ANTI-RUG MANIFESTO</span>
+          <span className="sm:hidden">OFFICIAL CC0 WHITEPAPER</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6">
           The <span className="text-purple-400">NomVerse</span> Manifesto

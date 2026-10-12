@@ -31,8 +31,9 @@ export default function SecurityPage() {
       {/* Header */}
       <section className="relative pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 text-teal-400 text-xs font-mono mb-4">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>CRYPTOGRAPHIC IMMUTABILITY & AUDIT PROOF</span>
+          <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+          <span className="hidden sm:inline">CRYPTOGRAPHIC IMMUTABILITY & AUDIT PROOF</span>
+          <span className="sm:hidden">IMMUTABILITY & AUDIT PROOF</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6">
           Enterprise <span className="text-teal-400">Security</span> & Trust

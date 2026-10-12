@@ -251,8 +251,9 @@ export const Navbar: React.FC = () => {
                     }}
                     className="w-full min-h-[46px] py-2.5 px-4 rounded-2xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 flex items-center justify-center gap-2 touch-manipulation cursor-pointer"
                   >
-                    <Wallet className="w-4 h-4 text-emerald-400" />
-                    <span>Connect Phantom / Solflare / Google</span>
+                    <Wallet className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="hidden xs:inline">Connect Phantom / Solflare / Google</span>
+                    <span className="xs:hidden">Connect Wallet</span>
                   </button>
                 ) : (
                   <div className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-900 border border-slate-800">

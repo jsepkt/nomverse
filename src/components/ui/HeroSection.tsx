@@ -213,14 +213,15 @@ export const HeroSection: React.FC = () => {
 
             {/* Verified Contract Bar (Mobile-Optimized Responsive Card) */}
             <div className="w-full max-w-lg p-3 sm:p-3.5 rounded-2xl glass-card space-y-2 text-left">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="w-7 h-7 rounded-xl bg-solana-green/15 border border-solana-green/30 flex items-center justify-center text-solana-green shrink-0">
                     <Coins className="w-3.5 h-3.5" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <span>Official Mint (Token-2022)</span>
+                    <div className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1.5 flex-wrap">
+                      <span className="hidden xs:inline">Official Mint (Token-2022)</span>
+                      <span className="xs:hidden">Mint (Token-2022)</span>
                       <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold shrink-0">
                         VERIFIED
                       </span>
@@ -236,12 +237,12 @@ export const HeroSection: React.FC = () => {
                   >
                     {copied ? (
                       <>
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <span className="text-emerald-400">Copied</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="w-3.5 h-3.5 text-slate-400" />
+                        <Copy className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span>Copy</span>
                       </>
                     )}
@@ -251,7 +252,7 @@ export const HeroSection: React.FC = () => {
                     href={`https://solscan.io/token/${TOKEN_CONFIG.mintAddress}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition-colors min-h-[34px] min-w-[34px] flex items-center justify-center cursor-pointer"
+                    className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 transition-colors min-h-[34px] min-w-[34px] flex items-center justify-center cursor-pointer shrink-0"
                     title="View on Solscan"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -268,28 +269,28 @@ export const HeroSection: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full max-w-3xl pt-2">
               <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
                 <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">TOTAL SUPPLY</div>
-                <div className="text-base sm:text-lg font-black font-mono text-white truncate">1,000,000,000</div>
+                <div className="text-sm xs:text-base sm:text-lg font-black font-mono text-white truncate">1,000,000,000</div>
               </div>
               <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
                 <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">
                   <span className="hidden sm:inline">TRADING TAX</span>
                   <span className="sm:hidden">TAX</span>
                 </div>
-                <div className="text-base sm:text-lg font-black font-mono text-emerald-400 truncate">0% BUY / SELL</div>
+                <div className="text-sm xs:text-base sm:text-lg font-black font-mono text-emerald-400 truncate">0% BUY / SELL</div>
               </div>
               <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
                 <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">
                   <span className="hidden sm:inline">ARCADE BURN</span>
                   <span className="sm:hidden">BURN</span>
                 </div>
-                <div className="text-base sm:text-lg font-black font-mono text-rose-400 truncate">1% PER WAGER</div>
+                <div className="text-sm xs:text-base sm:text-lg font-black font-mono text-rose-400 truncate">1% PER WAGER</div>
               </div>
               <div className="p-2.5 sm:p-3 rounded-2xl glass-card text-center">
                 <div className="text-[10px] sm:text-xs font-mono text-slate-400 truncate">
                   <span className="hidden sm:inline">INTELLECTUAL PROPERTY</span>
                   <span className="sm:hidden">LICENSE</span>
                 </div>
-                <div className="text-base sm:text-lg font-black font-mono text-solana-purple truncate">100% CC0</div>
+                <div className="text-sm xs:text-base sm:text-lg font-black font-mono text-solana-purple truncate">100% CC0</div>
               </div>
             </div>
           </div>
@@ -315,12 +316,12 @@ export const HeroSection: React.FC = () => {
               </div>
 
               {/* 3-Step Progression Badge */}
-              <div className="flex flex-wrap items-center gap-2 text-xs font-mono glass-pill px-3.5 py-2 rounded-full">
-                <span className="text-emerald-300 font-bold">1. Guest Play</span>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono glass-pill px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl sm:rounded-full">
+                <span className="text-emerald-300 font-bold whitespace-nowrap">1. Guest Play</span>
                 <span className="text-slate-500">→</span>
-                <span className="text-teal-300 font-bold">2. Connect Wallet</span>
+                <span className="text-teal-300 font-bold whitespace-nowrap">2. Connect Wallet</span>
                 <span className="text-slate-500">→</span>
-                <span className="text-candy-gold font-bold">3. Save Scores &amp; Badges</span>
+                <span className="text-candy-gold font-bold whitespace-nowrap">3. Save Scores &amp; Badges</span>
               </div>
             </div>
 

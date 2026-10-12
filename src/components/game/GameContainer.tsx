@@ -1105,118 +1105,127 @@ export const GameContainer: React.FC<GameContainerProps> = ({
 
         {/* Mobile Master-Tier Control Dock (< 640px) - 100% Fit with ZERO Overflow */}
         <div className="sm:hidden flex flex-col gap-2 pt-2 border-t border-slate-800/80 w-full select-none">
-          {/* Row 1: 7 Arcade Features & Modes Pills */}
-          <div className="flex items-center justify-between gap-1 w-full">
-            {/* Story Episodes */}
-            <button
-              onClick={() => setIsEpisodeModalOpen(true)}
-              aria-label="Story Episodes"
-              className={`flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border flex items-center justify-center active:scale-95 ${
-                currentEpisodeId
-                  ? "bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.4)]"
-                  : "bg-slate-900 border-slate-800 text-slate-300 hover:text-white"
-              }`}
-              title="Story Episodes"
-            >
-              <Film className="w-4 h-4 text-amber-400" />
-            </button>
+          {/* Row 1: Horizontal Swipeable Action Pills Strip (Native Touch Momentum) */}
+          <div className="relative w-full overflow-hidden">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x py-0.5 px-0.5">
+              {/* Story Episodes Pill */}
+              <button
+                onClick={() => setIsEpisodeModalOpen(true)}
+                aria-label="Story Episodes"
+                className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border flex items-center gap-1.5 shrink-0 whitespace-nowrap active:scale-95 ${
+                  currentEpisodeId
+                    ? "bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.4)]"
+                    : "bg-slate-900 border-slate-800 text-slate-300 hover:text-white"
+                }`}
+              >
+                <Film className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>
+                  {currentEpisodeId
+                    ? `EP 0${EPISODES.find((e) => e.id === currentEpisodeId)?.number || 1}`
+                    : "Story"}
+                </span>
+              </button>
 
-            {/* Proof of Bag Perks */}
-            <button
-              onClick={() => setIsHolderModalOpen(true)}
-              aria-label="Proof of Bag"
-              className="flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border flex items-center justify-center active:scale-95"
-              style={{
-                backgroundColor: `${holderPerks.accentColor}18`,
-                borderColor: `${holderPerks.accentColor}50`,
-                color: holderPerks.accentColor,
-              }}
-              title={`Perks: ${holderPerks.label}`}
-            >
-              <Coins className="w-4 h-4" />
-            </button>
+              {/* Proof of Bag Perks Pill */}
+              <button
+                onClick={() => setIsHolderModalOpen(true)}
+                aria-label="Proof of Bag"
+                className="min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border flex items-center gap-1.5 shrink-0 whitespace-nowrap active:scale-95"
+                style={{
+                  backgroundColor: `${holderPerks.accentColor}18`,
+                  borderColor: `${holderPerks.accentColor}50`,
+                  color: holderPerks.accentColor,
+                }}
+              >
+                <Coins className="w-3.5 h-3.5 shrink-0" />
+                <span>{holderPerks.badge}</span>
+                {holderPerks.hasCrown && <Crown className="w-3 h-3 text-amber-400 shrink-0" />}
+              </button>
 
-            {/* CC0 Closet */}
-            <button
-              onClick={() => setIsSkinModalOpen(true)}
-              aria-label="Nomster Closet"
-              className="flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border bg-purple-500/15 border-purple-500/40 text-purple-300 flex items-center justify-center active:scale-95"
-              title="CC0 Closet"
-            >
-              <Shirt className="w-4 h-4 text-purple-400" />
-            </button>
+              {/* Daily Loot Crate Pill */}
+              <button
+                onClick={() => setIsDailyLootboxOpen(true)}
+                aria-label="Daily Crate"
+                className="relative min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border bg-amber-500/15 border-amber-500/40 text-amber-300 flex items-center gap-1.5 shrink-0 whitespace-nowrap active:scale-95 cursor-pointer"
+              >
+                <Gift className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>Crate</span>
+                {canClaimCrate && (
+                  <span className="w-2 h-2 bg-amber-400 rounded-full animate-ping shrink-0" />
+                )}
+              </button>
 
-            {/* Daily Loot Crate */}
-            <button
-              onClick={() => setIsDailyLootboxOpen(true)}
-              aria-label="Daily Crate"
-              className="relative flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border bg-amber-500/15 border-amber-500/40 text-amber-300 flex items-center justify-center active:scale-95 cursor-pointer"
-              title="Daily Loot Crate"
-            >
-              <Gift className="w-4 h-4 text-amber-400" />
-              {canClaimCrate && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-amber-400 rounded-full animate-ping" />
-              )}
-            </button>
+              {/* CC0 Closet Pill */}
+              <button
+                onClick={() => setIsSkinModalOpen(true)}
+                aria-label="Nomster Closet"
+                className="min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border bg-purple-500/15 border-purple-500/40 text-purple-300 flex items-center gap-1.5 shrink-0 whitespace-nowrap active:scale-95"
+              >
+                <Shirt className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                <span>Closet</span>
+              </button>
 
-            {/* Viral Squad */}
-            <button
-              onClick={() => setIsReferralModalOpen(true)}
-              aria-label="Invite Squad"
-              className="flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 flex items-center justify-center active:scale-95 cursor-pointer"
-              title="Invite Squad"
-            >
-              <Users className="w-4 h-4 text-emerald-400" />
-            </button>
+              {/* Viral Squad Pill */}
+              <button
+                onClick={() => setIsReferralModalOpen(true)}
+                aria-label="Invite Squad"
+                className="min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 flex items-center gap-1.5 shrink-0 whitespace-nowrap active:scale-95 cursor-pointer"
+              >
+                <Users className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>Squad</span>
+              </button>
 
-            {/* Toddler Mode Toggle */}
-            <button
-              onClick={handleToggleToddlerMode}
-              aria-label={toddlerMode ? "Disable Kid Mode" : "Enable Kid Mode"}
-              className={`flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border flex items-center justify-center active:scale-95 cursor-pointer ${
-                toddlerMode
-                  ? "bg-amber-500/30 border-amber-400 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
-                  : "bg-slate-900 border-slate-800 text-slate-400"
-              }`}
-              title="Kid Mode (Age 3-5)"
-            >
-              <span className="text-base leading-none">🧸</span>
-            </button>
+              {/* Toddler Mode Toggle Pill */}
+              <button
+                onClick={handleToggleToddlerMode}
+                aria-label={toddlerMode ? "Disable Kid Mode" : "Enable Kid Mode"}
+                className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border flex items-center gap-1.5 shrink-0 whitespace-nowrap active:scale-95 cursor-pointer ${
+                  toddlerMode
+                    ? "bg-amber-500/30 border-amber-400 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                    : "bg-slate-900 border-slate-800 text-slate-400"
+                }`}
+              >
+                <span className="text-sm leading-none shrink-0">🧸</span>
+                <span>Kid: {toddlerMode ? "ON" : "OFF"}</span>
+              </button>
 
-            {/* DeepNom AI Toggle */}
-            <button
-              onClick={handleCycleDeepNom}
-              aria-label="DeepNom AI"
-              className={`flex-1 min-h-[38px] p-2 rounded-xl text-xs font-mono transition-all border flex items-center justify-center active:scale-95 cursor-pointer ${
-                deepNomMode === "autopilot"
-                  ? "bg-cyan-500/30 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
-                  : deepNomMode === "duel"
-                  ? "bg-pink-500/30 border-pink-400 text-pink-300 shadow-[0_0_15px_rgba(244,63,94,0.5)]"
-                  : "bg-slate-900 border-slate-800 text-slate-400"
-              }`}
-              title="DeepNom AI Autopilot & Duel"
-            >
-              <Bot className={`w-4 h-4 ${
-                deepNomMode === "autopilot" ? "text-cyan-400" :
-                deepNomMode === "duel" ? "text-pink-400 animate-pulse" : "text-slate-400"
-              }`} />
-            </button>
+              {/* DeepNom AI Toggle Pill */}
+              <button
+                onClick={handleCycleDeepNom}
+                aria-label="DeepNom AI"
+                className={`min-h-[36px] px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border flex items-center gap-1.5 shrink-0 whitespace-nowrap active:scale-95 cursor-pointer ${
+                  deepNomMode === "autopilot"
+                    ? "bg-cyan-500/30 border-cyan-400 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
+                    : deepNomMode === "duel"
+                    ? "bg-pink-500/30 border-pink-400 text-pink-300 shadow-[0_0_15px_rgba(244,63,94,0.5)]"
+                    : "bg-slate-900 border-slate-800 text-slate-400"
+                }`}
+              >
+                <Bot className={`w-3.5 h-3.5 shrink-0 ${
+                  deepNomMode === "autopilot" ? "text-cyan-400" :
+                  deepNomMode === "duel" ? "text-pink-400 animate-pulse" : "text-slate-400"
+                }`} />
+                <span>
+                  AI: {deepNomMode === "off" ? "OFF" : deepNomMode === "autopilot" ? "AUTO" : "DUEL"}
+                </span>
+              </button>
+            </div>
           </div>
 
-          {/* Row 2: Tactile Hardware & Quick Play Controls */}
-          <div className="flex items-center justify-between gap-1.5 w-full">
+          {/* Row 2: Tactile Hardware & Quick Play Controls Grid (Guaranteed Zero Overflow) */}
+          <div className={`grid gap-1.5 w-full ${showGameRoomButton ? "grid-cols-4" : "grid-cols-3"}`}>
             {/* Sound Toggle */}
             <button
               onClick={handleToggleMute}
               aria-label={isMuted ? "Unmute audio" : "Mute audio"}
-              className={`flex-1 min-h-[38px] py-2 px-2 rounded-xl text-xs font-mono font-bold transition-all border flex items-center justify-center gap-1.5 active:scale-95 ${
+              className={`min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] font-mono font-bold transition-all border flex items-center justify-center gap-1 active:scale-95 ${
                 isMuted
                   ? "bg-rose-500/15 border-rose-500/40 text-rose-400"
                   : "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
               }`}
             >
-              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-              <span>{isMuted ? "Muted" : "Sound"}</span>
+              {isMuted ? <VolumeX className="w-3.5 h-3.5 shrink-0" /> : <Volume2 className="w-3.5 h-3.5 shrink-0" />}
+              <span className="whitespace-nowrap">{isMuted ? "Mute" : "Audio"}</span>
             </button>
 
             {/* Reset / Restart Drop Button */}
@@ -1224,24 +1233,24 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               onClick={handleManualReset}
               disabled={lives <= 0}
               aria-label="Restart drop"
-              className="flex-1 min-h-[38px] py-2 px-2 rounded-xl text-xs font-mono font-bold bg-slate-900 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-40"
+              className="min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] font-mono font-bold bg-slate-900 border border-slate-700/80 text-slate-300 hover:text-white flex items-center justify-center gap-1 active:scale-95 disabled:opacity-40"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
-              <span>Reset</span>
+              <RotateCcw className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span className="whitespace-nowrap">Reset</span>
             </button>
 
             {/* Fullscreen / Full Window Toggle */}
             <button
               onClick={toggleFullWindow}
               aria-label={isFullWindow ? "Exit Fullscreen" : "Fullscreen"}
-              className={`flex-1 min-h-[38px] py-2 px-2 rounded-xl text-xs font-mono font-bold transition-all border flex items-center justify-center gap-1.5 active:scale-95 ${
+              className={`min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] font-mono font-bold transition-all border flex items-center justify-center gap-1 active:scale-95 ${
                 isFullWindow
                   ? "bg-rose-500/20 border-rose-500/40 text-rose-300"
                   : "bg-cyan-500/15 border-cyan-500/40 text-cyan-300"
               }`}
             >
-              {isFullWindow ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-              <span>{isFullWindow ? "Exit" : "Full"}</span>
+              {isFullWindow ? <Minimize2 className="w-3.5 h-3.5 shrink-0" /> : <Maximize2 className="w-3.5 h-3.5 shrink-0" />}
+              <span className="whitespace-nowrap">{isFullWindow ? "Exit" : "Full"}</span>
             </button>
 
             {/* Dedicated Game Room Link Button (if enabled) */}
@@ -1249,10 +1258,10 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               <Link
                 href="/play"
                 aria-label="Enter Game Room"
-                className="flex-1 min-h-[38px] py-2 px-2 rounded-xl text-xs font-mono font-bold border bg-emerald-500/20 border-emerald-500/50 text-emerald-300 flex items-center justify-center gap-1.5 active:scale-95"
+                className="min-h-[38px] py-1.5 px-1 rounded-xl text-[11px] font-mono font-bold border bg-emerald-500/20 border-emerald-500/50 text-emerald-300 flex items-center justify-center gap-1 active:scale-95"
               >
-                <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Room</span>
+                <Gamepad2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="whitespace-nowrap">Room</span>
               </Link>
             )}
           </div>
@@ -1589,12 +1598,12 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               <strong>Controls:</strong> Arrow Keys / A &amp; D to move, <strong>Space / Shift</strong> to Super Dash, <strong>Up / W</strong> to Air Juggle!
             </span>
           </div>
-          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
-            <span className="text-rose-400 font-bold">5 Lives Base (Max 10)</span>
-            <span>•</span>
-            <span className="text-pink-400 font-bold">❤️ Drop Every 2 Min</span>
-            <span>•</span>
-            <span className="text-solana-green">Arcade 60 FPS</span>
+          <div className="flex flex-wrap items-center justify-center gap-2 font-mono text-[11px] text-slate-400">
+            <span className="text-rose-400 font-bold whitespace-nowrap">5 Lives Base (Max 10)</span>
+            <span className="hidden xs:inline">•</span>
+            <span className="text-pink-400 font-bold whitespace-nowrap">❤️ Drop Every 2 Min</span>
+            <span className="hidden xs:inline">•</span>
+            <span className="text-solana-green whitespace-nowrap">Arcade 60 FPS</span>
           </div>
         </div>
       )}

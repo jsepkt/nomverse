@@ -313,7 +313,8 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
             }`}
           >
             <ArrowUpCircle className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Withdraw</span>
+            <span className="truncate hidden xs:inline">Withdraw</span>
+            <span className="xs:hidden truncate">Out</span>
           </button>
 
           <button
@@ -328,8 +329,8 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
                 : "text-rose-400 hover:text-rose-300"
             }`}
           >
-            <Flame className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">🔥 Burn</span>
+            <Flame className="w-3.5 h-3.5 shrink-0 text-amber-300" />
+            <span className="truncate">Burn</span>
           </button>
 
           <button

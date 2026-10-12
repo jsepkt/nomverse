@@ -56,8 +56,9 @@ export default function GuidePage() {
       {/* Header Banner */}
       <section className="relative pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-mono mb-4 animate-pulse">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>OFFICIAL VISITOR ONBOARDING & SAFETY GUIDE</span>
+          <Sparkles className="w-3.5 h-3.5 shrink-0" />
+          <span className="hidden sm:inline">OFFICIAL VISITOR ONBOARDING & SAFETY GUIDE</span>
+          <span className="sm:hidden">ONBOARDING & SAFETY GUIDE</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-4">
           How to Buy, Play & Burn <span className="text-emerald-400">$NOM</span>

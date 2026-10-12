@@ -135,26 +135,27 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
   return (
     <div className="min-h-screen bg-[#050914] text-slate-100 flex flex-col pb-24 lg:pb-12">
       {/* Game Room Top Navigation Deck */}
-      <div className="sticky top-0 z-40 bg-slate-950/90 border-b border-slate-800/80 backdrop-blur-xl px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3 shadow-md">
+      <div className="sticky top-0 z-40 bg-slate-950/90 border-b border-slate-800/80 backdrop-blur-xl px-2.5 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-3 shadow-md">
         {/* Left: Breadcrumb & Title */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 hover:text-white transition-all hover:scale-105 active:scale-95"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 hover:text-white transition-all hover:scale-105 active:scale-95 shrink-0"
+            title="Back to NomVerse Homepage"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-emerald-400" />
             <span className="hidden sm:inline">Back to NomVerse</span>
-            <span className="sm:hidden">Back</span>
+            <span className="sm:hidden hidden xs:inline">Back</span>
           </Link>
 
-          <div className="h-4 w-px bg-slate-800 hidden sm:block" />
+          <div className="h-4 w-px bg-slate-800 hidden sm:block shrink-0" />
 
-          <div className="flex items-center gap-2">
-            <span className="text-base sm:text-lg font-black text-white flex items-center gap-1.5 tracking-tight">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-sm xs:text-base sm:text-lg font-black text-white flex items-center gap-1 tracking-tight truncate">
               <span>ARCADE</span>
               <span className="text-solana-green">ROOM</span>
             </span>
-            <span className="hidden md:inline-block text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <span className="hidden md:inline-block text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shrink-0">
               CC0 Gaming Masterpiece
             </span>
           </div>
@@ -169,7 +170,9 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             title="Arcade Vault: Deposit, Withdraw & 1% Deflationary Burn Sink"
           >
             <Coins className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span className="font-mono font-black">{vaultBalance.toLocaleString()}</span>
+            <span className="font-mono font-black">
+              {vaultBalance >= 10000 ? `${(vaultBalance / 1000).toFixed(0)}k` : vaultBalance.toLocaleString()}
+            </span>
             <span className="hidden sm:inline text-[10px] text-amber-400/80">$NOM</span>
             <span className="hidden xl:inline text-[10px] text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/30">
               🔥 {totalBurned.toLocaleString()} Burned
@@ -217,7 +220,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
               sounds.playGoldenChime();
               setIsQuickBuyOpen(true);
             }}
-            className="tactile-button px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 flex items-center gap-1 sm:gap-1.5 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+            className="tactile-button px-2 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 flex items-center gap-1 sm:gap-1.5 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
             title="Instant Buy $NOM on pump.fun"
           >
             <Rocket className="w-3.5 h-3.5 text-slate-950 shrink-0" />
