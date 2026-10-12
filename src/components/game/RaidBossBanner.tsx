@@ -76,8 +76,9 @@ export const RaidBossBanner: React.FC<RaidBossBannerProps> = ({ userId, userName
               <span className="text-xs sm:text-sm font-black text-white tracking-wide">
                 {raid.name}
               </span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                WORLD RAID BOSS
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 whitespace-nowrap shrink-0">
+                <span className="hidden xs:inline">WORLD RAID BOSS</span>
+                <span className="xs:hidden">BOSS</span>
               </span>
             </div>
             <p className="text-[10px] sm:text-xs text-rose-300/80 truncate max-w-[200px] sm:max-w-none">

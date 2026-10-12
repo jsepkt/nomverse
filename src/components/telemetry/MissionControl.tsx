@@ -263,18 +263,19 @@ export const MissionControl: React.FC = () => {
               <span>Simulate SOL Input:</span>
               <strong className="text-emerald-400">{solInput} SOL</strong>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {[0.1, 0.5, 1, 2, 5].map((amt) => (
                 <button
                   key={amt}
                   onClick={() => setSolInput(amt)}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                  className={`flex-1 py-1.5 px-1 rounded-lg text-xs font-mono font-bold transition-all whitespace-nowrap cursor-pointer ${
                     solInput === amt
                       ? "bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/20"
                       : "bg-slate-950 text-slate-300 border border-slate-700 hover:border-slate-500"
                   }`}
                 >
-                  {amt} SOL
+                  <span>{amt}</span>
+                  <span className="hidden xs:inline"> SOL</span>
                 </button>
               ))}
             </div>

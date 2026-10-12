@@ -66,18 +66,22 @@ export const ArcadeLockscreen: React.FC<ArcadeLockscreenProps> = ({ onPlayAsGues
         <div className="space-y-2 pt-1">
           <button
             onClick={onPlayAsGuest}
-            className="w-full py-3.5 px-6 rounded-xl font-black text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 px-4 sm:px-6 rounded-xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_25px_rgba(20,241,149,0.4)] hover:shadow-[0_0_35px_rgba(20,241,149,0.7)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Play className="w-4 h-4 fill-slate-950 text-slate-950" />
-            <span>🎮 PLAY AS GUEST (INSTANT)</span>
+            <Play className="w-4 h-4 fill-slate-950 text-slate-950 shrink-0" />
+            <span>
+              <span className="hidden xs:inline">🎮 PLAY AS GUEST (INSTANT)</span>
+              <span className="xs:hidden">🎮 PLAY AS GUEST</span>
+            </span>
           </button>
 
           <button
             onClick={openAuthModal}
-            className="w-full py-2.5 px-4 rounded-xl font-semibold text-xs bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/80 hover:border-slate-600 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-2.5 px-3 sm:px-4 rounded-xl font-semibold text-xs bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-700/80 hover:border-slate-600 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
           >
-            <Wallet className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Connect Wallet / Sign In to Save Score</span>
+            <Wallet className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="hidden xs:inline">Connect Wallet / Sign In to Save Score</span>
+            <span className="xs:hidden">Connect Wallet to Save</span>
           </button>
         </div>
       </div>

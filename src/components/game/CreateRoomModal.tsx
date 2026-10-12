@@ -279,10 +279,11 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 
           <button
             type="submit"
-            className="w-full py-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3 px-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
           >
-            <PlusCircle className="w-4 h-4 text-slate-950" />
-            <span>Publish Room &amp; Start Collecting Royalties</span>
+            <PlusCircle className="w-4 h-4 text-slate-950 shrink-0" />
+            <span className="hidden xs:inline">Publish Room &amp; Start Collecting Royalties</span>
+            <span className="xs:hidden">Publish Room &amp; Earn 9%</span>
           </button>
         </form>
       </div>

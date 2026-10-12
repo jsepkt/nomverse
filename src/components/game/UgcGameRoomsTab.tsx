@@ -268,18 +268,20 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsVaultOpen(true)}
-            className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+            className="flex-1 sm:flex-initial px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
           >
-            <Coins className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Bank &amp; Deposit</span>
+            <Coins className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <span className="hidden xs:inline">Bank &amp; Deposit</span>
+            <span className="xs:hidden">Vault</span>
           </button>
 
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
           >
-            <PlusCircle className="w-3.5 h-3.5 text-slate-950" />
-            <span>+ Create Room</span>
+            <PlusCircle className="w-3.5 h-3.5 text-slate-950 shrink-0" />
+            <span className="hidden xs:inline">+ Create Room</span>
+            <span className="xs:hidden">+ Create</span>
           </button>
         </div>
       </div>
@@ -489,29 +491,30 @@ export const UgcGameRoomsTab: React.FC<UgcGameRoomsTabProps> = ({ onStartChallen
               </div>
 
               {/* Bottom Strip: Entry Fee & Action */}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-3">
-                <div>
+              <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2.5">
+                <div className="min-w-[100px]">
                   <div className="text-[10px] text-slate-400 uppercase">Prize Bounty:</div>
                   <div className="text-base font-black text-candy-gold">
                     ~{room.prizePool.toLocaleString()} <span className="text-xs text-amber-400">$NOM</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full xs:w-auto justify-end">
                   <button
                     onClick={() => handlePracticeRoom(room)}
-                    className="px-2.5 py-2 rounded-xl text-[11px] font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all flex items-center gap-1 cursor-pointer shrink-0"
+                    className="flex-1 xs:flex-initial px-2.5 py-2 rounded-xl text-[11px] font-bold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 transition-all flex items-center justify-center gap-1 cursor-pointer"
                     title="Play practice round with 0 cost"
                   >
-                    <span>Free Practice</span>
+                    <span className="hidden xs:inline">Free Practice</span>
+                    <span className="xs:hidden">Practice</span>
                   </button>
 
                   <button
                     onClick={() => handleEnterRoom(room)}
-                    className="px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                    className="flex-1 xs:flex-initial px-3 sm:px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
                   >
-                    <Play className="w-3.5 h-3.5 fill-slate-950" />
-                    <span>PLAY (-{room.entryFee.toLocaleString()} $NOM)</span>
+                    <Play className="w-3.5 h-3.5 fill-slate-950 shrink-0" />
+                    <span>PLAY <span className="text-[10px] opacity-80">(-{room.entryFee.toLocaleString()} $NOM)</span></span>
                   </button>
                 </div>
               </div>

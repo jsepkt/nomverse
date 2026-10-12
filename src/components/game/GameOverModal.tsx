@@ -22,6 +22,8 @@ import {
   Coins,
   Rocket,
   Users,
+  Send,
+  Share2,
 } from "lucide-react";
 import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";
@@ -324,28 +326,32 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             <p className="text-[11px] text-slate-300 leading-tight">
               Share your beacon link. When anyone feeds Nomster 1 candy, <strong>BOTH of you get 5 free lives</strong> instantly!
             </p>
-            <div className="flex items-center gap-1.5 pt-1">
+            <div className="space-y-2 pt-1">
               <button
                 onClick={handleCopyBeaconLink}
-                className="flex-1 py-2 px-2.5 rounded-xl font-mono text-xs font-bold bg-pink-600 hover:bg-pink-500 text-white shadow-md transition-all flex items-center justify-center gap-1 cursor-pointer"
+                className="w-full py-2.5 px-3 rounded-xl font-mono text-xs font-bold bg-pink-600 hover:bg-pink-500 text-white shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                {copiedBeacon ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedBeacon ? "Link Copied!" : "Copy Beacon"}</span>
+                {copiedBeacon ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> : <Copy className="w-3.5 h-3.5 shrink-0" />}
+                <span>{copiedBeacon ? "Beacon Link Copied!" : "Copy Revival Beacon Link"}</span>
               </button>
-              <button
-                onClick={handleShareTelegram}
-                className="py-2 px-2.5 rounded-xl font-mono text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white transition-all flex items-center justify-center gap-1 cursor-pointer"
-                title="Share to Telegram Groups"
-              >
-                <span>📲 Telegram</span>
-              </button>
-              <button
-                onClick={handleShareWhatsApp}
-                className="py-2 px-2.5 rounded-xl font-mono text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center justify-center gap-1 cursor-pointer"
-                title="Share to WhatsApp"
-              >
-                <span>💬 WhatsApp</span>
-              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={handleShareTelegram}
+                  className="py-2 px-2.5 rounded-xl font-mono text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  title="Share to Telegram Groups"
+                >
+                  <Send className="w-3.5 h-3.5 shrink-0" />
+                  <span>Telegram</span>
+                </button>
+                <button
+                  onClick={handleShareWhatsApp}
+                  className="py-2 px-2.5 rounded-xl font-mono text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  title="Share to WhatsApp"
+                >
+                  <Share2 className="w-3.5 h-3.5 shrink-0" />
+                  <span>WhatsApp</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -371,10 +377,14 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
                 sounds.playGiftReceived();
                 onLifeRestored();
               }}
-              className="w-full py-2.5 px-3 rounded-xl font-mono font-bold text-xs bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 hover:from-amber-300 hover:to-yellow-200 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all flex items-center justify-center gap-2 hover:scale-[1.02] block text-center"
+              className="w-full py-2.5 px-3 rounded-xl font-mono font-bold text-xs bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 hover:from-amber-300 hover:to-yellow-200 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] cursor-pointer"
             >
-              <span>🚀 BUY $NOM ON PUMP.FUN &amp; REVIVE</span>
-              <ExternalLink className="w-3.5 h-3.5 inline-block" />
+              <Rocket className="w-3.5 h-3.5 shrink-0" />
+              <span>
+                <span className="hidden xs:inline">BUY $NOM ON PUMP.FUN &amp; REVIVE</span>
+                <span className="xs:hidden">BUY $NOM &amp; REVIVE</span>
+              </span>
+              <ExternalLink className="w-3.5 h-3.5 shrink-0" />
             </a>
           </div>
 
@@ -460,17 +470,23 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
           {/* Action 4: Challenge a Rival Button */}
           <button
             onClick={handleCopyChallengeLink}
-            className="w-full py-2.5 px-4 rounded-xl font-mono text-xs bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-orange-500/30 text-amber-300 border border-amber-500/40 transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(245,158,11,0.15)] font-bold"
+            className="w-full py-2.5 px-3 sm:px-4 rounded-xl font-mono text-xs bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 hover:from-amber-500/30 hover:to-orange-500/30 text-amber-300 border border-amber-500/40 transition-all flex items-center justify-center gap-1.5 sm:gap-2 shadow-[0_0_15px_rgba(245,158,11,0.15)] font-bold cursor-pointer"
           >
             {copiedChallenge ? (
               <>
-                <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-                <span>Rival Challenge Copied! Send to Group Chat</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>
+                  <span className="hidden xs:inline">Rival Challenge Copied! Send to Chat</span>
+                  <span className="xs:hidden">Challenge Link Copied!</span>
+                </span>
               </>
             ) : (
               <>
-                <Swords className="w-3.5 h-3.5 text-amber-400" />
-                <span>⚔️ Challenge a Rival (Beat My {score} Pts)</span>
+                <Swords className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>
+                  <span className="hidden xs:inline">⚔️ Challenge a Rival (Beat My {score} Pts)</span>
+                  <span className="xs:hidden">⚔️ Challenge Rival ({score} Pts)</span>
+                </span>
               </>
             )}
           </button>

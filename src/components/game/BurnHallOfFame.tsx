@@ -199,7 +199,7 @@ export const BurnHallOfFame: React.FC = () => {
       </div>
 
       {/* CATEGORY SELECTOR TABS */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800 overflow-x-auto">
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800 overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x flex-nowrap">
         {[
           { id: "burners", label: "🔥 Top Burners", count: burners.length },
           { id: "creators", label: "👑 Top Creators", count: creators.length },

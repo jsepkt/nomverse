@@ -148,14 +148,14 @@ export const ViralReferralModal: React.FC<ViralReferralModalProps> = ({
           </div>
 
           {/* Viral Social Share Buttons */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-4">
             <a
               href={shareUrls.telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="py-3 px-2 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+              className="py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 font-mono text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-all active:scale-95 cursor-pointer"
             >
-              <MessageCircle className="w-4 h-4 text-sky-400" />
+              <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-400 shrink-0" />
               <span>Telegram</span>
             </a>
 
@@ -163,19 +163,22 @@ export const ViralReferralModal: React.FC<ViralReferralModalProps> = ({
               href={shareUrls.twitterUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="py-3 px-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+              className="py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 font-mono text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-all active:scale-95 cursor-pointer"
             >
-              <TwitterXIcon className="w-4 h-4 text-slate-300" />
-              <span>X / Twitter</span>
+              <TwitterXIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-300 shrink-0" />
+              <span>
+                <span className="hidden xs:inline">X / Twitter</span>
+                <span className="xs:hidden">X</span>
+              </span>
             </a>
 
             <a
               href={shareUrls.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="py-3 px-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+              className="py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-all active:scale-95 cursor-pointer"
             >
-              <Share2 className="w-4 h-4 text-emerald-400" />
+              <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 shrink-0" />
               <span>WhatsApp</span>
             </a>
           </div>
@@ -183,10 +186,13 @@ export const ViralReferralModal: React.FC<ViralReferralModalProps> = ({
           {/* Native Mobile Share Button */}
           <button
             onClick={handleNativeShare}
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 font-black font-mono text-xs sm:text-sm shadow-[0_0_25px_rgba(20,241,149,0.3)] hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3 sm:py-3.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 font-black font-mono text-xs sm:text-sm shadow-[0_0_25px_rgba(20,241,149,0.3)] hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Share2 className="w-4 h-4" />
-            <span>SHARE CHALLENGE ON MOBILE</span>
+            <Share2 className="w-4 h-4 shrink-0" />
+            <span>
+              <span className="hidden xs:inline">SHARE CHALLENGE ON MOBILE</span>
+              <span className="xs:hidden">SHARE ON MOBILE</span>
+            </span>
           </button>
         </div>
       </div>

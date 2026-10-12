@@ -110,52 +110,52 @@ export const GameDetailsTab: React.FC<GameDetailsTabProps> = ({ onSelectEpisode 
   return (
     <div className="space-y-6">
       {/* Mini Navigation Pill Filter */}
-      <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800">
+      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x flex-nowrap sm:flex-wrap">
         <button
           onClick={() => setActiveSection("stages")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap cursor-pointer ${
             activeSection === "stages"
               ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
               : "text-slate-400 hover:text-white hover:bg-slate-800"
           }`}
         >
-          <Trophy className="w-3.5 h-3.5" />
+          <Trophy className="w-3.5 h-3.5 shrink-0" />
           <span>Story Episodes ({EPISODES.length})</span>
         </button>
 
         <button
           onClick={() => setActiveSection("candies")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap cursor-pointer ${
             activeSection === "candies"
               ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
               : "text-slate-400 hover:text-white hover:bg-slate-800"
           }`}
         >
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles className="w-3.5 h-3.5 shrink-0" />
           <span>Candy Encyclopedia ({CANDY_ENCYCLOPEDIA.length})</span>
         </button>
 
         <button
           onClick={() => setActiveSection("controls")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap cursor-pointer ${
             activeSection === "controls"
               ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm"
               : "text-slate-400 hover:text-white hover:bg-slate-800"
           }`}
         >
-          <Gamepad2 className="w-3.5 h-3.5" />
+          <Gamepad2 className="w-3.5 h-3.5 shrink-0" />
           <span>Controls &amp; Toddler Mode</span>
         </button>
 
         <button
           onClick={() => setActiveSection("raid")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
+          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shrink-0 whitespace-nowrap cursor-pointer ${
             activeSection === "raid"
               ? "bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm"
               : "text-slate-400 hover:text-white hover:bg-slate-800"
           }`}
         >
-          <Swords className="w-3.5 h-3.5" />
+          <Swords className="w-3.5 h-3.5 shrink-0" />
           <span>World Raid Boss Intel</span>
         </button>
       </div>

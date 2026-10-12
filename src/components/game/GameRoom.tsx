@@ -234,14 +234,14 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
       <div className="container-fluid container-xxl flex-1 w-100 p-2 p-sm-3 p-lg-4 d-flex flex-column justify-start">
         {/* VIEW 1: HALF SIZE (SPLIT CONSOLE / THEATER MODE) */}
         {screenSize === "half" ? (
-          <div className="row g-4 items-start">
+          <div className="row g-3 g-sm-4 items-start mx-0">
             {/* Left 5 Columns: Game Arcade Cabinet */}
-            <div id="arcade-cabinet" className="col-12 col-lg-5 d-flex flex-column align-items-center justify-content-start sticky top-20">
+            <div id="arcade-cabinet" className="col-12 col-lg-5 d-flex flex-column align-items-center justify-content-start lg:sticky lg:top-20 px-0 sm:px-2">
               <GameContainer />
             </div>
 
             {/* Right 7 Columns: Companion Console Tabs */}
-            <div className="col-12 col-lg-7 d-flex flex-column gap-4">
+            <div className="col-12 col-lg-7 d-flex flex-column gap-4 px-0 sm:px-2">
               {/* Tab Switcher Ribbon with Gradient Edge Masks */}
               <div className="relative w-full overflow-hidden">
                 <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-[#050914] to-transparent z-10 sm:hidden" />

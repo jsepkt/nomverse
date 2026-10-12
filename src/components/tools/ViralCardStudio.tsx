@@ -273,16 +273,18 @@ export const ViralCardStudio: React.FC = () => {
             onClick={handleDownloadCard}
             className="w-full sm:w-auto px-4 py-2.5 rounded-xl font-black text-xs bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Download className="w-4 h-4 text-slate-950" />
-            <span>Download 4K Card (.PNG)</span>
+            <Download className="w-4 h-4 text-slate-950 shrink-0" />
+            <span className="hidden xs:inline">Download 4K Card (.PNG)</span>
+            <span className="xs:hidden">Download Card (.PNG)</span>
           </button>
 
           <button
             onClick={handleTweetScore}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-400 transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-white border border-cyan-500/40 hover:border-cyan-400 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Share2 className="w-4 h-4 text-cyan-400" />
-            <span>Share on X / Twitter</span>
+            <Share2 className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span className="hidden xs:inline">Share on X / Twitter</span>
+            <span className="xs:hidden">Share on X</span>
           </button>
         </div>
 

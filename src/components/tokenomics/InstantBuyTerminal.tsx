@@ -212,17 +212,23 @@ export const InstantBuyTerminal: React.FC = () => {
 
         <button
           onClick={handleCopyCA}
-          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-emerald-500/50 transition-all shrink-0 active:scale-95"
+          className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-emerald-500/50 transition-all shrink-0 active:scale-95 cursor-pointer"
         >
           {copied ? (
             <>
-              <Check className="w-4 h-4 text-emerald-400" />
-              <span className="text-emerald-400">Copied to Clipboard!</span>
+              <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span className="text-emerald-400">
+                <span className="hidden xs:inline">Copied to Clipboard!</span>
+                <span className="xs:hidden">Copied!</span>
+              </span>
             </>
           ) : (
             <>
-              <Copy className="w-4 h-4 text-slate-400" />
-              <span>Copy Address</span>
+              <Copy className="w-4 h-4 text-slate-400 shrink-0" />
+              <span>
+                <span className="hidden xs:inline">Copy Address</span>
+                <span className="xs:hidden">Copy CA</span>
+              </span>
             </>
           )}
         </button>
@@ -316,11 +322,14 @@ export const InstantBuyTerminal: React.FC = () => {
                 );
               }
             }}
-            className="w-full py-4 rounded-2xl font-black font-mono text-sm sm:text-base text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.35)] hover:shadow-[0_0_40px_rgba(20,241,149,0.6)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+            className="w-full py-3.5 sm:py-4 px-3 sm:px-4 rounded-2xl font-black font-mono text-xs sm:text-base text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green shadow-[0_0_30px_rgba(20,241,149,0.35)] hover:shadow-[0_0_40px_rgba(20,241,149,0.6)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer"
           >
-            <Rocket className="w-5 h-5" />
-            <span>BUY {tokensReceived.toLocaleString()} $NOM ON PUMP.FUN</span>
-            <ExternalLink className="w-4 h-4" />
+            <Rocket className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+            <span>
+              <span className="hidden xs:inline">BUY {tokensReceived.toLocaleString()} $NOM ON PUMP.FUN</span>
+              <span className="xs:hidden">BUY {tokensReceived.toLocaleString()} $NOM</span>
+            </span>
+            <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
           </a>
         </div>
 

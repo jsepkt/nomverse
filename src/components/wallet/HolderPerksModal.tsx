@@ -186,7 +186,7 @@ export const HolderPerksModal: React.FC<HolderPerksModalProps> = ({
         </div>
 
         {/* Current Status Card */}
-        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 mb-5 flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 mb-5 flex flex-col xs:flex-row xs:items-center justify-between gap-3">
           <div>
             <div className="text-[11px] font-mono text-slate-400 uppercase">Your Active Tier</div>
             <div
@@ -202,14 +202,14 @@ export const HolderPerksModal: React.FC<HolderPerksModalProps> = ({
           </div>
 
           {activeAddress ? (
-            <div className="text-right">
+            <div className="flex xs:flex-col items-center xs:items-end justify-between xs:justify-start gap-2">
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3" />
                 Active
               </span>
               <button
                 onClick={handleDisconnect}
-                className="text-[10px] font-mono text-rose-400 hover:underline mt-1.5 block"
+                className="text-[10px] font-mono text-rose-400 hover:underline cursor-pointer"
               >
                 Disconnect
               </button>
@@ -217,9 +217,9 @@ export const HolderPerksModal: React.FC<HolderPerksModalProps> = ({
           ) : (
             <button
               onClick={handleConnectInjected}
-              className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-[0_0_15px_rgba(20,241,149,0.3)]"
+              className="w-full xs:w-auto px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-all shadow-[0_0_15px_rgba(20,241,149,0.3)] cursor-pointer whitespace-nowrap"
             >
-              <Wallet className="w-3.5 h-3.5" />
+              <Wallet className="w-3.5 h-3.5 shrink-0" />
               <span>Connect Wallet</span>
             </button>
           )}
@@ -337,10 +337,13 @@ export const HolderPerksModal: React.FC<HolderPerksModalProps> = ({
           href={TOKEN_CONFIG.pumpFunUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-mono font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(20,241,149,0.35)] transition-all"
+          className="w-full py-2.5 px-3 sm:px-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-mono font-black text-xs flex items-center justify-center gap-1.5 sm:gap-2 shadow-[0_0_25px_rgba(20,241,149,0.35)] transition-all cursor-pointer"
         >
-          <span>BUY $NOM ON PUMP.FUN TO UPGRADE TIER</span>
-          <ExternalLink className="w-3.5 h-3.5" />
+          <span>
+            <span className="hidden xs:inline">BUY $NOM ON PUMP.FUN TO UPGRADE TIER</span>
+            <span className="xs:hidden">BUY $NOM TO UPGRADE TIER</span>
+          </span>
+          <ExternalLink className="w-3.5 h-3.5 shrink-0" />
         </a>
       </div>
     </div>

@@ -417,10 +417,13 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
 
             <button
               onClick={handleDeposit}
-              className="w-full py-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3 px-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
             >
-              <ArrowDownCircle className="w-4 h-4 text-slate-950" />
-              <span>Confirm Deposit &amp; Credit Vault</span>
+              <ArrowDownCircle className="w-4 h-4 text-slate-950 shrink-0" />
+              <span>
+                <span className="hidden xs:inline">Confirm Deposit &amp; Credit Vault</span>
+                <span className="xs:hidden">Deposit &amp; Credit Vault</span>
+              </span>
             </button>
 
             {/* Direct pump.fun Buy Link */}
@@ -499,10 +502,13 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
 
             <button
               onClick={handleWithdraw}
-              className="w-full py-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3 px-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
             >
-              <ArrowUpCircle className="w-4 h-4 text-slate-950" />
-              <span>Withdraw to Solana Wallet (-1% Burn)</span>
+              <ArrowUpCircle className="w-4 h-4 text-slate-950 shrink-0" />
+              <span>
+                <span className="hidden xs:inline">Withdraw to Solana Wallet (-1% Burn)</span>
+                <span className="xs:hidden">Withdraw to Wallet (-1%)</span>
+              </span>
             </button>
           </div>
         )}
@@ -555,10 +561,13 @@ export const ArcadeVaultModal: React.FC<ArcadeVaultModalProps> = ({
 
             <button
               onClick={handleDirectBurn}
-              className="w-full py-3.5 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-rose-500 via-red-500 to-amber-500 text-white shadow-[0_0_25px_rgba(244,63,94,0.4)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 px-3 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-rose-500 via-red-500 to-amber-500 text-white shadow-[0_0_25px_rgba(244,63,94,0.4)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
             >
-              <Flame className="w-4 h-4 fill-white text-white animate-pulse" />
-              <span>Incinerate {burnAmount.toLocaleString()} $NOM Forever 🔥</span>
+              <Flame className="w-4 h-4 fill-white text-white animate-pulse shrink-0" />
+              <span>
+                <span className="hidden xs:inline">Incinerate {burnAmount.toLocaleString()} $NOM Forever 🔥</span>
+                <span className="xs:hidden">Burn {burnAmount.toLocaleString()} $NOM 🔥</span>
+              </span>
             </button>
 
             {lastBurned && (

@@ -197,10 +197,13 @@ export const DevContributionsTab: React.FC = () => {
           <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 lg:w-64">
             <button
               onClick={() => setIsSubmitModalOpen(true)}
-              className="w-full py-3 px-4 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3 px-3 sm:px-4 rounded-2xl font-black text-xs sm:text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.35)] hover:shadow-[0_0_30px_rgba(20,241,149,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
             >
-              <PlusCircle className="w-4 h-4 text-slate-950" />
-              <span>Log My Mod / PR (+150 XP)</span>
+              <PlusCircle className="w-4 h-4 text-slate-950 shrink-0" />
+              <span>
+                <span className="hidden xs:inline">Log My Mod / PR (+150 XP)</span>
+                <span className="xs:hidden">Log Mod / PR (+150 XP)</span>
+              </span>
             </button>
 
             {!user && (
@@ -313,12 +316,12 @@ export const DevContributionsTab: React.FC = () => {
           </div>
 
           {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800">
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800 overflow-x-auto no-scrollbar scroll-smooth overscroll-x-contain touch-pan-x flex-nowrap sm:flex-wrap w-full sm:w-auto">
             {["all", "engine", "art", "audio", "physics", "infrastructure", "lore"].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-mono uppercase font-bold transition-all ${
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-mono uppercase font-bold transition-all shrink-0 whitespace-nowrap cursor-pointer ${
                   selectedCategory === cat
                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
                     : "text-slate-400 hover:text-white"

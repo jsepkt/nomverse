@@ -392,18 +392,24 @@ export const PixelSkinWorkshop: React.FC = () => {
           <div className="space-y-2 pt-1">
             <button
               onClick={handleEquipToGame}
-              className="w-full py-2.5 px-4 rounded-xl font-black text-xs bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 px-3 sm:px-4 rounded-xl font-black text-xs bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green text-slate-950 shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
             >
-              <Shirt className="w-4 h-4 text-slate-950" />
-              <span>Equip Custom Skin to Game</span>
+              <Shirt className="w-4 h-4 text-slate-950 shrink-0" />
+              <span>
+                <span className="hidden xs:inline">Equip Custom Skin to Game</span>
+                <span className="xs:hidden">Equip Skin to Game</span>
+              </span>
             </button>
 
             <button
               onClick={() => setIsPublishModalOpen(true)}
-              className="w-full py-2.5 px-4 rounded-xl font-black text-xs bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 text-white shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 px-3 sm:px-4 rounded-xl font-black text-xs bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 text-white shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-white" />
-              <span>Publish to Meme Character Bazaar</span>
+              <Sparkles className="w-4 h-4 text-white shrink-0" />
+              <span>
+                <span className="hidden xs:inline">Publish to Meme Character Bazaar</span>
+                <span className="xs:hidden">Publish to Bazaar</span>
+              </span>
             </button>
 
             <button
