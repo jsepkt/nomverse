@@ -137,7 +137,7 @@ export const ToolkitSection: React.FC = () => {
               </p>
             </div>
             <a
-              href="#license"
+              href="/#license"
               className="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 hover:underline"
             >
               <span>View CC0 1.0 Legal Code</span>

@@ -237,7 +237,7 @@ export const HeroSection: React.FC = () => {
               </a>
 
               <a
-                href="#trust-center"
+                href="/#trust-center"
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:scale-105 active:scale-95 transition-all min-h-[36px]"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />

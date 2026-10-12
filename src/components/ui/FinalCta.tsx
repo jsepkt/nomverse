@@ -72,7 +72,7 @@ export const FinalCta: React.FC = () => {
             </button>
 
             <Link
-              href="#community"
+              href="/#community"
               onClick={() => sounds.playButtonClick()}
               className="tactile-button inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:py-4 rounded-2xl font-bold text-sm sm:text-base text-slate-200 glass-card hover:border-slate-500 hover:text-white transition-all cursor-pointer min-h-[48px] sm:min-h-[52px] touch-manipulation"
             >

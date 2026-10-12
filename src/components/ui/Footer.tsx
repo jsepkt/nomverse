@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck, Heart, Sparkles, ExternalLink, Zap, Flame, Gamepad2, Palette, MessageSquare, Code2 } from "lucide-react";
-import { GithubIcon } from "./icons";
+import { GithubIcon, TwitterXIcon, TelegramIcon } from "./icons";
 import { TOKEN_CONFIG } from "@/config/token";
 
 export const Footer: React.FC = () => {
@@ -65,7 +65,7 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="#community" className="hover:text-emerald-400 transition-colors flex items-center gap-1">
+                <Link href="/#community" className="hover:text-emerald-400 transition-colors flex items-center gap-1">
                   <span>Arcade Leaderboard</span>
                 </Link>
               </li>
@@ -90,27 +90,27 @@ export const Footer: React.FC = () => {
             </div>
             <ul className="space-y-2 text-slate-300">
               <li>
-                <Link href="#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
+                <Link href="/#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
                   <span>Meme Studio</span>
                 </Link>
               </li>
               <li>
-                <Link href="#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
+                <Link href="/#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
                   <span>Pixel Skin Workshop</span>
                 </Link>
               </li>
               <li>
-                <Link href="#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
+                <Link href="/#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
                   <span>NomBeats Chiptunes</span>
                 </Link>
               </li>
               <li>
-                <Link href="#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
+                <Link href="/#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
                   <span>Flex Card Studio</span>
                 </Link>
               </li>
               <li>
-                <Link href="#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
+                <Link href="/#create" className="hover:text-amber-400 transition-colors flex items-center gap-1">
                   <span>CC0 Vector Assets</span>
                 </Link>
               </li>
@@ -125,28 +125,42 @@ export const Footer: React.FC = () => {
             </div>
             <ul className="space-y-2 text-slate-300">
               <li>
-                <Link href="#community" className="hover:text-teal-400 transition-colors flex items-center gap-1">
+                <Link href="/#community" className="hover:text-teal-400 transition-colors flex items-center gap-1">
                   <span>The NomWall Feed</span>
                 </Link>
               </li>
               <li>
-                <Link href="#universe" className="hover:text-teal-400 transition-colors flex items-center gap-1">
+                <Link href="/#universe" className="hover:text-teal-400 transition-colors flex items-center gap-1">
                   <span>Living Lore Chapters</span>
                 </Link>
               </li>
               <li>
-                <Link href="#community" className="hover:text-teal-400 transition-colors flex items-center gap-1">
-                  <span>Bounties &amp; Quests</span>
-                </Link>
+                <a
+                  href={TOKEN_CONFIG.telegramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+                >
+                  <TelegramIcon className="w-3.5 h-3.5 fill-current text-cyan-400" />
+                  <span>Telegram (1.2k+)</span>
+                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
               </li>
               <li>
-                <Link href="/hall-of-fame" className="hover:text-teal-400 transition-colors flex items-center gap-1">
-                  <span>Burn Hall of Fame</span>
-                </Link>
+                <a
+                  href={TOKEN_CONFIG.twitterUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors flex items-center gap-1.5"
+                >
+                  <TwitterXIcon className="w-3 h-3 fill-current text-slate-300" />
+                  <span>Twitter / X</span>
+                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
               </li>
               <li>
-                <Link href="#what-is-nomverse" className="hover:text-teal-400 transition-colors flex items-center gap-1">
-                  <span>What is NomVerse?</span>
+                <Link href="/#trust-center" className="hover:text-emerald-400 transition-colors flex items-center gap-1">
+                  <span>Trust &amp; Verification</span>
                 </Link>
               </li>
             </ul>
@@ -161,17 +175,18 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-slate-300">
               <li>
                 <a
-                  href="https://github.com/jsepkt/nomverse"
+                  href={TOKEN_CONFIG.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-cyan-400 transition-colors flex items-center gap-1"
                 >
+                  <GithubIcon className="w-3.5 h-3.5" />
                   <span>GitHub Repository</span>
                   <ExternalLink className="w-3 h-3 text-slate-500" />
                 </a>
               </li>
               <li>
-                <Link href="#developer" className="hover:text-cyan-400 transition-colors flex items-center gap-1">
+                <Link href="/#developer" className="hover:text-cyan-400 transition-colors flex items-center gap-1">
                   <span>Developer Docs</span>
                 </Link>
               </li>
@@ -182,7 +197,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a
-                  href="https://github.com/jsepkt/nomverse/pulls"
+                  href={`${TOKEN_CONFIG.githubUrl}/pulls`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-cyan-400 transition-colors flex items-center gap-1"
@@ -198,7 +213,7 @@ export const Footer: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-white font-bold font-mono uppercase tracking-wider text-xs">
               <Flame className="w-4 h-4 text-rose-400" />
-              <span>$NOM</span>
+              <span>$NOM Token</span>
             </div>
             <ul className="space-y-2 text-slate-300">
               <li>
@@ -221,16 +236,22 @@ export const Footer: React.FC = () => {
                   href={TOKEN_CONFIG.pumpFunUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-rose-400 transition-colors flex items-center gap-1"
+                  className="hover:text-amber-400 transition-colors flex items-center gap-1"
                 >
                   <span>pump.fun Trading</span>
                   <ExternalLink className="w-3 h-3 text-slate-500" />
                 </a>
               </li>
               <li>
-                <Link href="/manifesto" className="hover:text-rose-400 transition-colors flex items-center gap-1">
-                  <span>Anti-Rug Manifesto</span>
-                </Link>
+                <a
+                  href={TOKEN_CONFIG.solscanUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-rose-400 transition-colors flex items-center gap-1"
+                >
+                  <span>Solscan Explorer</span>
+                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
               </li>
             </ul>
           </div>
