@@ -34,6 +34,13 @@ export const MoreGamesTab: React.FC = () => {
   // Mini-Game 4: NomBeats Soundboard
   const [activeBeat, setActiveBeat] = useState<string | null>(null);
 
+  // Mini-Game 5: Nomster Candy Hopper
+  const [hopperScore, setHopperScore] = useState(0);
+  const [hopperBest, setHopperBest] = useState(0);
+  const [hopperActive, setHopperActive] = useState(false);
+  const [hopperX, setHopperX] = useState(50);
+  const [hopperPlatformX, setHopperPlatformX] = useState(50);
+
   // Flappy gravity loop
   useEffect(() => {
     if (!flappyActive || flappyGameOver) return;
@@ -112,6 +119,22 @@ export const MoreGamesTab: React.FC = () => {
       default:
         sounds.playNom();
     }
+  };
+
+  const handleHopperBounce = (direction: "left" | "right") => {
+    sounds.playJumpSound();
+    setHopperActive(true);
+    const newX = direction === "left" ? Math.max(15, hopperX - 25) : Math.min(85, hopperX + 25);
+    setHopperX(newX);
+
+    const newPlatform = Math.floor(Math.random() * 60) + 20;
+    setHopperPlatformX(newPlatform);
+
+    setHopperScore((prev) => {
+      const next = prev + 10;
+      if (next > hopperBest) setHopperBest(next);
+      return next;
+    });
   };
 
   return (
@@ -409,6 +432,81 @@ export const MoreGamesTab: React.FC = () => {
           <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
             <span className="text-slate-500">Contributed by: @synthsol</span>
             <span className="text-purple-400 font-bold">Pure Synthesized Audio</span>
+          </div>
+        </div>
+
+        {/* GAME 5: Nomster Candy Hopper (Doodle Jump Style) */}
+        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between md:col-span-2">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/30">
+                Community Prototype #4
+              </span>
+              <span className="text-xs font-mono text-amber-300 flex items-center gap-1 font-bold">
+                <Trophy className="w-3.5 h-3.5" /> High Score: {hopperBest}
+              </span>
+            </div>
+
+            <div>
+              <h4 className="text-base font-black text-white flex items-center gap-2">
+                <span>Nomster Candy Hopper</span>
+                <span className="text-lg">🍬</span>
+              </h4>
+              <p className="text-xs text-slate-400">
+                Endless vertical hopper! Tap left or right to guide Nomster onto bouncing candy clouds.
+              </p>
+            </div>
+
+            {/* Hopper Arena */}
+            <div className="relative w-full h-40 rounded-xl bg-slate-950/80 border border-amber-500/30 flex flex-col items-center justify-between p-3 select-none overflow-hidden">
+              {/* Score HUD */}
+              <div className="w-full flex items-center justify-between text-xs font-mono text-slate-400 z-10">
+                <span>HEIGHT: <strong className="text-amber-300">{hopperScore}m</strong></span>
+                <span className="text-[10px] text-emerald-400 font-bold">+10 $NOM BURN PER 100m</span>
+              </div>
+
+              {/* Moving Candy Platform */}
+              <div
+                className="absolute h-3 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 shadow-[0_0_10px_rgba(245,158,11,0.5)] transition-all duration-300"
+                style={{
+                  left: `${hopperPlatformX - 15}%`,
+                  width: "30%",
+                  bottom: "35px",
+                }}
+              />
+
+              {/* Bouncing Nomster Character */}
+              <div
+                className="absolute text-2xl transition-all duration-200 animate-bounce"
+                style={{
+                  left: `${hopperX}%`,
+                  bottom: "45px",
+                }}
+              >
+                😋
+              </div>
+
+              {/* Steer Controls */}
+              <div className="w-full flex items-center justify-between gap-3 pt-2 z-10">
+                <button
+                  onClick={() => handleHopperBounce("left")}
+                  className="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-mono font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1"
+                >
+                  <span>◀ HOP LEFT</span>
+                </button>
+                <button
+                  onClick={() => handleHopperBounce("right")}
+                  className="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-mono font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1"
+                >
+                  <span>HOP RIGHT ▶</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-500">Contributed by: @nomster_dev</span>
+            <span className="text-amber-400 font-bold">1% Arcade Burn Active</span>
           </div>
         </div>
       </div>

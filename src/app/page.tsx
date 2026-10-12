@@ -11,6 +11,8 @@ import { OpenSourceSection } from "@/components/ui/OpenSourceSection";
 import { FinalCta } from "@/components/ui/FinalCta";
 import { Footer } from "@/components/ui/Footer";
 import { TournamentBanner } from "@/components/game/TournamentBanner";
+import { BurnMarqueeTicker } from "@/components/game/BurnMarqueeTicker";
+import { BondingCurveTracker } from "@/components/wallet/BondingCurveTracker";
 import { getAllStories } from "@/lib/stories";
 
 export default function HomePage() {
@@ -21,8 +23,13 @@ export default function HomePage() {
       {/* 01 — HEADER: NomVerse | Play | Universe | Create | Community | $NOM */}
       <Navbar />
 
-      {/* 01.5 — SEASON 1 ARCADE CHAMPIONSHIP & PRIZE BOUNTY BANNER */}
+      {/* 01.4 — LIVE REAL-TIME BURN MARQUEE TICKER */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 w-full pt-3 z-10">
+        <BurnMarqueeTicker />
+      </div>
+
+      {/* 01.5 — SEASON 1 ARCADE CHAMPIONSHIP & PRIZE BOUNTY BANNER */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 w-full pt-2 z-10">
         <TournamentBanner />
       </div>
 
@@ -42,6 +49,11 @@ export default function HomePage() {
 
       {/* 08 — COMMUNITY: NomWall • Quests • Hall of Fame */}
       <NomWall />
+
+      {/* 08.5 — PUMP.FUN BONDING CURVE GRADUATION TRACKER */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 w-full py-2 z-10">
+        <BondingCurveTracker />
+      </div>
 
       {/* 09 — $NOM: Supply • Tax • Contract • How to Buy • Token Details */}
       <Tokenomics />

@@ -28,15 +28,18 @@ import {
   Gift,
   Coins,
   Flame,
+  Music,
 } from "lucide-react";
 import { QuickBuyModal } from "../wallet/QuickBuyModal";
 import { TOKEN_CONFIG } from "@/config/token";
 import { UgcGameRoomsTab } from "./UgcGameRoomsTab";
 import { ArcadeVaultModal } from "./ArcadeVaultModal";
 import { TournamentBanner } from "./TournamentBanner";
+import { BurnMarqueeTicker } from "./BurnMarqueeTicker";
 import { SocialQuestsModal } from "./SocialQuestsModal";
 import { getUserVault, getTotalNomBurned } from "@/lib/arcadeVault";
 import { useAuth } from "@/context/AuthContext";
+import { chiptuneBgm } from "@/lib/chiptuneSynthesizer";
 import { sounds } from "../audio/soundEffects";
 
 interface GameRoomProps {
@@ -62,6 +65,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
   const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
   const [isVaultOpen, setIsVaultOpen] = useState<boolean>(false);
   const [isQuestsOpen, setIsQuestsOpen] = useState<boolean>(false);
+  const [isBgmPlaying, setIsBgmPlaying] = useState<boolean>(false);
   const [vaultBalance, setVaultBalance] = useState<number>(10000);
   const [totalBurned, setTotalBurned] = useState<number>(42850);
 
@@ -168,6 +172,23 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
         {/* Right: Controls & Vault Pill */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* 8-Bit Chiptune BGM Synthesizer Button */}
+          <button
+            onClick={() => {
+              const nextState = chiptuneBgm.toggle();
+              setIsBgmPlaying(nextState);
+            }}
+            className={`tactile-button px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer ${
+              isBgmPlaying
+                ? "bg-purple-500/30 text-purple-200 border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+                : "bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800 hover:bg-slate-800"
+            }`}
+            title={isBgmPlaying ? "Mute 8-Bit Synthesizer Music" : "Play 8-Bit Retro Chiptune Music"}
+          >
+            <Music className={`w-3.5 h-3.5 ${isBgmPlaying ? "text-purple-300 animate-bounce" : "text-slate-400"}`} />
+            <span className="hidden sm:inline">BGM</span>
+          </button>
+
           {/* Social Quests & Free Rewards Button */}
           <button
             onClick={() => {
@@ -251,6 +272,9 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
       {/* MAIN GAME ROOM ARENA */}
       <div className="container-fluid container-xxl flex-1 w-100 p-2 p-sm-3 p-lg-4 d-flex flex-column justify-start">
+        {/* LIVE REAL-TIME BURN MARQUEE TICKER */}
+        <BurnMarqueeTicker className="mb-2 sm:mb-3" />
+
         {/* SEASON 1 TOURNAMENT BOUNTY COUNTDOWN BANNER */}
         <div className="w-full mb-3 sm:mb-4">
           <TournamentBanner />

@@ -20,6 +20,7 @@ import {
 import { TOKEN_CONFIG } from "@/config/token";
 import { soundEngine } from "@/lib/soundEffects";
 import { sounds } from "../audio/soundEffects";
+import { chiptuneBgm } from "@/lib/chiptuneSynthesizer";
 import { ArcadeVaultModal } from "../game/ArcadeVaultModal";
 import { QuickBuyModal } from "../wallet/QuickBuyModal";
 
@@ -50,6 +51,9 @@ export const QuickActionHUD: React.FC = () => {
     setIsMuted(nextMuted);
     if (!nextMuted) {
       soundEngine.playNomSound();
+      chiptuneBgm.start();
+    } else {
+      chiptuneBgm.stop();
     }
   };
 

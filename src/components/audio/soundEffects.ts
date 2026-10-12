@@ -1,4 +1,5 @@
 // Web Audio API Procedural Synthesizer for NomVerse (Zero external sound dependencies)
+import { triggerHaptic } from "@/lib/haptics";
 
 class SoundManager {
   private ctx: AudioContext | null = null;
@@ -22,6 +23,7 @@ class SoundManager {
 
   // Tactile modern UI button click (subtle high-tech pop)
   public playButtonClick(): void {
+    triggerHaptic("selection");
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
@@ -45,6 +47,7 @@ class SoundManager {
 
   // Playful arcade jump / launch sound
   public playJumpSound(): void {
+    triggerHaptic("light");
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
@@ -68,6 +71,7 @@ class SoundManager {
 
   // Nomster eating chomp sound: quick cute crunch + pitch bend
   public playNom(): void {
+    triggerHaptic("medium");
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
@@ -107,6 +111,7 @@ class SoundManager {
 
   // Golden Solana Candy Chime
   public playGoldenChime(startTime?: number): void {
+    triggerHaptic("success");
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
@@ -158,6 +163,7 @@ class SoundManager {
 
   // Life Lost Sound: low sad pitch drop + wobble
   public playLifeLost(): void {
+    triggerHaptic("heavy");
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
@@ -182,6 +188,7 @@ class SoundManager {
 
   // FUD Glitch Hazard Hit: electric buzz impact
   public playFUDHit(): void {
+    triggerHaptic("warning");
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;
@@ -206,6 +213,7 @@ class SoundManager {
 
   // Game Over: dramatic descending minor chord
   public playGameOver(): void {
+    triggerHaptic("error");
     if (this.isMuted) return;
     const ctx = this.initCtx();
     if (!ctx) return;

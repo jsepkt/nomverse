@@ -29,6 +29,7 @@ import { SkinId } from "@/lib/skins";
 import { TOKEN_CONFIG } from "@/config/token";
 import { ShareableScoreCard } from "./ShareableScoreCard";
 import { copyToClipboard } from "@/lib/clipboard";
+import { TwitterXIcon, TelegramIcon } from "../ui/icons";
 
 interface GameOverModalProps {
   score: number;
@@ -171,6 +172,14 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
     const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
     if (typeof window !== "undefined") {
       window.open(waUrl, "_blank");
+    }
+  };
+
+  const handleShareTwitter = () => {
+    const text = `I just scored ${score.toLocaleString()} points in @NomverseSol Retro Arcade! 🎮\n\n1% of all games burned forever on Solana.\nCan you beat my score?\n\nPlay free: https://nomverse.org/play\n$NOM #Solana #Web3Gaming`;
+    const twUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    if (typeof window !== "undefined") {
+      window.open(twUrl, "_blank");
     }
   };
 
@@ -490,6 +499,26 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
               </>
             )}
           </button>
+
+          {/* 1-Click Viral Brag Grid: X (Twitter) + Telegram */}
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <button
+              onClick={handleShareTwitter}
+              className="tactile-button py-2 px-3 rounded-xl font-mono font-bold text-xs bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
+              title="Brag High Score on X"
+            >
+              <TwitterXIcon className="w-3.5 h-3.5 fill-current" />
+              <span>Brag on X</span>
+            </button>
+            <button
+              onClick={handleShareTelegram}
+              className="tactile-button py-2 px-3 rounded-xl font-mono font-bold text-xs bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/40 flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
+              title="Share Rescue Beacon in Telegram"
+            >
+              <TelegramIcon className="w-3.5 h-3.5 fill-current text-cyan-400" />
+              <span>Telegram</span>
+            </button>
+          </div>
 
           {/* Shareable Arcade Flex Card Generator */}
           <ShareableScoreCard

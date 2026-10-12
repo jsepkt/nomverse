@@ -7,6 +7,7 @@ import { Footer } from "@/components/ui/Footer";
 import { TOKEN_CONFIG } from "@/config/token";
 import { getTotalNomBurned } from "@/lib/arcadeVault";
 import { MissionControl } from "@/components/telemetry/MissionControl";
+import { BondingCurveTracker } from "@/components/wallet/BondingCurveTracker";
 import {
   Flame,
   PieChart,
@@ -56,6 +57,11 @@ export default function TokenomicsPage() {
           Zero team allocations. Zero private sales. Zero trading taxes on DEX.
           Scarcity is driven entirely by game room wagering and voluntary token incineration.
         </p>
+      </section>
+
+      {/* pump.fun Bonding Curve Graduation Telemetry */}
+      <section className="container-fluid container-xl py-2 px-3 px-sm-4 mx-auto w-100">
+        <BondingCurveTracker />
       </section>
 
       {/* Live Token Metrics Cards */}
