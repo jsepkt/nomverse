@@ -6,9 +6,11 @@ import { CreateWithNomster } from "@/components/tools/CreateWithNomster";
 import { NomverseUniverse } from "@/components/lore/NomverseUniverse";
 import { NomWall } from "@/components/wall/NomWall";
 import { Tokenomics } from "@/components/ui/Tokenomics";
+import { TrustCenter } from "@/components/ui/TrustCenter";
 import { OpenSourceSection } from "@/components/ui/OpenSourceSection";
 import { FinalCta } from "@/components/ui/FinalCta";
 import { Footer } from "@/components/ui/Footer";
+import { TournamentBanner } from "@/components/game/TournamentBanner";
 import { getAllStories } from "@/lib/stories";
 
 export default function HomePage() {
@@ -18,6 +20,11 @@ export default function HomePage() {
     <main className="relative min-h-screen flex flex-col bg-background text-foreground selection:bg-solana-green/30 selection:text-white">
       {/* 01 — HEADER: NomVerse | Play | Universe | Create | Community | $NOM */}
       <Navbar />
+
+      {/* 01.5 — SEASON 1 ARCADE CHAMPIONSHIP & PRIZE BOUNTY BANNER */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 w-full pt-3 z-10">
+        <TournamentBanner />
+      </div>
 
       {/* 02 — HERO: The open-source mascot of Web3 + Nomster + Play Now */}
       {/* 03 — QUICK PROOF: CC0 • Open Source • Solana • Arcade */}
@@ -38,6 +45,11 @@ export default function HomePage() {
 
       {/* 09 — $NOM: Supply • Tax • Contract • How to Buy • Token Details */}
       <Tokenomics />
+
+      {/* 09.5 — TRUST & VERIFICATION CENTER: Addressing all Holder & Buyer Proofs */}
+      <div id="trust-center" className="scroll-mt-20">
+        <TrustCenter />
+      </div>
 
       {/* 10 — OPEN SOURCE: GitHub • Developer Docs • CC0 • Contributions */}
       <OpenSourceSection />

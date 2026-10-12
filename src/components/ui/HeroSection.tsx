@@ -23,6 +23,7 @@ import { copyToClipboard } from "@/lib/clipboard";
 import { sounds } from "../audio/soundEffects";
 import confetti from "canvas-confetti";
 import { QuickBuyModal } from "../wallet/QuickBuyModal";
+import { TwitterXIcon, TelegramIcon } from "./icons";
 
 const MASCOT_QUOTES = [
   "NOM! Block confirmed in 400ms! ⚡",
@@ -209,6 +210,39 @@ export const HeroSection: React.FC = () => {
                 <Zap className="w-4 h-4 text-amber-400" />
                 <span>BUY $NOM</span>
               </button>
+            </div>
+
+            {/* Official Community Raids & Live Social Hub */}
+            <div className="flex flex-wrap items-center justify-center gap-2 w-full max-w-xl pt-1">
+              <a
+                href={TOKEN_CONFIG.telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)] hover:scale-105 active:scale-95 transition-all min-h-[36px]"
+              >
+                <TelegramIcon className="w-3.5 h-3.5 fill-current text-cyan-400 shrink-0" />
+                <span>Join Telegram (1.2k+)</span>
+                <ExternalLink className="w-3 h-3 text-cyan-500/70 shrink-0" />
+              </a>
+
+              <a
+                href={TOKEN_CONFIG.twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 hover:scale-105 active:scale-95 transition-all min-h-[36px]"
+              >
+                <TwitterXIcon className="w-3.5 h-3.5 fill-current text-white shrink-0" />
+                <span>@NomverseSol</span>
+                <ExternalLink className="w-3 h-3 text-slate-500 shrink-0" />
+              </a>
+
+              <a
+                href="#trust-center"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:scale-105 active:scale-95 transition-all min-h-[36px]"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span>Verify Trust &amp; Burns</span>
+              </a>
             </div>
 
             {/* Verified Contract Bar (Mobile-Optimized Responsive Card) */}

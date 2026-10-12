@@ -25,14 +25,18 @@ import {
   Rocket,
   Radio,
   Share2,
+  Gift,
+  Coins,
+  Flame,
 } from "lucide-react";
 import { QuickBuyModal } from "../wallet/QuickBuyModal";
 import { TOKEN_CONFIG } from "@/config/token";
 import { UgcGameRoomsTab } from "./UgcGameRoomsTab";
 import { ArcadeVaultModal } from "./ArcadeVaultModal";
+import { TournamentBanner } from "./TournamentBanner";
+import { SocialQuestsModal } from "./SocialQuestsModal";
 import { getUserVault, getTotalNomBurned } from "@/lib/arcadeVault";
 import { useAuth } from "@/context/AuthContext";
-import { Coins, Flame } from "lucide-react";
 import { sounds } from "../audio/soundEffects";
 
 interface GameRoomProps {
@@ -57,6 +61,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isQuickBuyOpen, setIsQuickBuyOpen] = useState<boolean>(false);
   const [isVaultOpen, setIsVaultOpen] = useState<boolean>(false);
+  const [isQuestsOpen, setIsQuestsOpen] = useState<boolean>(false);
   const [vaultBalance, setVaultBalance] = useState<number>(10000);
   const [totalBurned, setTotalBurned] = useState<number>(42850);
 
@@ -163,6 +168,20 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
         {/* Right: Controls & Vault Pill */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Social Quests & Free Rewards Button */}
+          <button
+            onClick={() => {
+              sounds.playGoldenChime();
+              setIsQuestsOpen(true);
+            }}
+            className="tactile-button px-2 sm:px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-pink-500/20 to-purple-500/20 hover:from-pink-500/30 hover:to-purple-500/30 border border-pink-500/40 text-pink-300 flex items-center gap-1 sm:gap-1.5 shadow-[0_0_15px_rgba(236,72,153,0.25)] hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+            title="Social Quests: Complete quests & earn free hearts and XP!"
+          >
+            <Gift className="w-3.5 h-3.5 text-pink-400 shrink-0" />
+            <span className="hidden xs:inline">Quests</span>
+            <span className="xs:hidden">Free</span>
+          </button>
+
           {/* In-Game $NOM Vault & Burn Sink Indicator */}
           <button
             onClick={() => setIsVaultOpen(true)}
@@ -232,6 +251,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
 
       {/* MAIN GAME ROOM ARENA */}
       <div className="container-fluid container-xxl flex-1 w-100 p-2 p-sm-3 p-lg-4 d-flex flex-column justify-start">
+        {/* SEASON 1 TOURNAMENT BOUNTY COUNTDOWN BANNER */}
+        <div className="w-full mb-3 sm:mb-4">
+          <TournamentBanner />
+        </div>
         {/* VIEW 1: HALF SIZE (SPLIT CONSOLE / THEATER MODE) */}
         {screenSize === "half" ? (
           <div className="row g-3 g-sm-4 items-start mx-0">
@@ -376,6 +399,7 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
         onBalanceUpdated={(newBal) => setVaultBalance(newBal)}
       />
       <QuickBuyModal isOpen={isQuickBuyOpen} onClose={() => setIsQuickBuyOpen(false)} />
+      <SocialQuestsModal isOpen={isQuestsOpen} onClose={() => setIsQuestsOpen(false)} />
     </div>
   );
 };

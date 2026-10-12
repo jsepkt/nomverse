@@ -37,14 +37,21 @@ export const metadata: Metadata = {
     title: "NomVerse — The Open-Source Mascot of Web3 (CC0)",
     description:
       "NomVerse is the open-source CC0 home of Nomster — play the arcade game, create memes and skins, explore the lore, and build with the NomVerse community on Solana.",
-    images: ["/mascot.svg"],
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NomVerse — The Open-Source Mascot of Web3",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "NomVerse — The Open-Source Mascot of Web3",
     description:
       "NomVerse is the open-source CC0 home of Nomster — play the arcade game, create memes and skins, explore the lore, and build with the NomVerse community on Solana.",
-    images: ["/mascot.svg"],
+    images: ["/og-image.png"],
   },
 };
 

@@ -12,6 +12,11 @@ export interface TokenConfig {
   readonly decimals: number;
   readonly totalSupply: number;
   readonly pumpFunUrl: string;
+  readonly telegramUrl: string;
+  readonly twitterUrl: string;
+  readonly githubUrl: string;
+  readonly dexScreenerUrl: string;
+  readonly solscanUrl: string;
   readonly isLocked: boolean;
   readonly lockedTimestamp: string;
 }
@@ -23,6 +28,11 @@ export const TOKEN_CONFIG: TokenConfig = Object.freeze({
   decimals: 6,
   totalSupply: 1_000_000_000, // 1 Billion standard pump.fun supply
   pumpFunUrl: `https://pump.fun/${PUMP_TOKEN_MINT}`,
+  telegramUrl: "https://t.me/nomverse_sol",
+  twitterUrl: "https://x.com/nomverse_sol",
+  githubUrl: "https://github.com/jsepkt/nomverse",
+  dexScreenerUrl: `https://dexscreener.com/solana/${PUMP_TOKEN_MINT}`,
+  solscanUrl: `https://solscan.io/token/${PUMP_TOKEN_MINT}`,
   isLocked: true,
   lockedTimestamp: "2026-09-16T17:38:23.000Z",
 });

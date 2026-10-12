@@ -22,7 +22,7 @@ import {
   ChevronRight,
   ExternalLink,
 } from "lucide-react";
-import { GithubIcon } from "./icons";
+import { GithubIcon, TwitterXIcon, TelegramIcon } from "./icons";
 import { useAuth } from "@/context/AuthContext";
 import { UserBadge } from "../auth/UserBadge";
 import { TOKEN_CONFIG } from "@/config/token";
@@ -195,6 +195,28 @@ export const Navbar: React.FC = () => {
               </button>
             )}
 
+            {/* Social Community Quick Icons */}
+            <div className="hidden xl:flex items-center gap-1">
+              <a
+                href={TOKEN_CONFIG.telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full text-slate-400 hover:text-cyan-400 hover:bg-slate-800/80 transition-colors"
+                title="Join Official Telegram Community"
+              >
+                <TelegramIcon className="w-4 h-4 fill-current" />
+              </a>
+              <a
+                href={TOKEN_CONFIG.twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors"
+                title="Follow @NomverseSol on X"
+              >
+                <TwitterXIcon className="w-3.5 h-3.5 fill-current" />
+              </a>
+            </div>
+
             {/* Mobile Hamburger Menu Toggle */}
             <button
               onClick={() => {
@@ -344,29 +366,56 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            {/* External Links */}
-            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
-              <a
-                href={TOKEN_CONFIG.pumpFunUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="min-h-[44px] p-2.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center gap-2 text-xs font-bold text-slate-200"
-              >
-                <Rocket className="w-3.5 h-3.5 text-emerald-400" />
-                <span>pump.fun</span>
-                <ExternalLink className="w-3 h-3 text-slate-500" />
-              </a>
+            {/* Official Community & Links */}
+            <div className="space-y-1.5 pt-1 border-t border-slate-800">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold px-1">
+                Official Community &amp; Links
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={TOKEN_CONFIG.telegramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[44px] p-2.5 rounded-2xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center gap-2 text-xs font-bold text-cyan-300 transition-colors"
+                >
+                  <TelegramIcon className="w-4 h-4 fill-current text-cyan-400" />
+                  <span>Telegram</span>
+                  <ExternalLink className="w-3 h-3 text-cyan-500/70" />
+                </a>
 
-              <a
-                href="https://github.com/jsepkt/nomverse"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="min-h-[44px] p-2.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center gap-2 text-xs font-bold text-slate-200"
-              >
-                <GithubIcon className="w-3.5 h-3.5 text-slate-200" />
-                <span>GitHub</span>
-                <ExternalLink className="w-3 h-3 text-slate-500" />
-              </a>
+                <a
+                  href={TOKEN_CONFIG.twitterUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[44px] p-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center gap-2 text-xs font-bold text-slate-200 transition-colors"
+                >
+                  <TwitterXIcon className="w-3.5 h-3.5 fill-current text-slate-200" />
+                  <span>Twitter / X</span>
+                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+
+                <a
+                  href={TOKEN_CONFIG.pumpFunUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[44px] p-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 flex items-center justify-center gap-2 text-xs font-bold text-amber-300 transition-colors"
+                >
+                  <Rocket className="w-3.5 h-3.5 text-amber-400" />
+                  <span>pump.fun</span>
+                  <ExternalLink className="w-3 h-3 text-amber-500/70" />
+                </a>
+
+                <a
+                  href={TOKEN_CONFIG.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[44px] p-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center gap-2 text-xs font-bold text-slate-200 transition-colors"
+                >
+                  <GithubIcon className="w-3.5 h-3.5 text-slate-200" />
+                  <span>GitHub</span>
+                  <ExternalLink className="w-3 h-3 text-slate-500" />
+                </a>
+              </div>
             </div>
 
             {/* CC0 Assurance Footer */}
