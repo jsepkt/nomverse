@@ -291,14 +291,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("ugc-arena");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "feed-nomster" } }));
                 document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
-                activeTab === "ugc-arena"
-                  ? "bg-emerald-500 text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.5)] font-black"
-                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
-              }`}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-emerald-500 text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.5)] font-black"
             >
               <span>🍬 Green Candle Frenzy</span>
               <span className="text-[9px] bg-slate-950/40 text-emerald-300 px-1.5 py-0.5 rounded font-mono">Flagship</span>
@@ -307,13 +303,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("more-games");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "nom-flap" } }));
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
-                activeTab === "more-games"
-                  ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)] font-black"
-                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
-              }`}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)] font-black"
             >
               <span>🦆 Nom Flap</span>
             </button>
@@ -321,13 +314,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("more-games");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "candy-hopper" } }));
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
-                activeTab === "more-games"
-                  ? "bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] font-black"
-                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
-              }`}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] font-black"
             >
               <span>🦘 Candy Hopper</span>
             </button>
@@ -335,13 +325,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("more-games");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "nom-invaders" } }));
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
-                activeTab === "more-games"
-                  ? "bg-purple-500 text-slate-950 shadow-[0_0_15px_rgba(153,69,255,0.5)] font-black"
-                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
-              }`}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-purple-500 text-slate-950 shadow-[0_0_15px_rgba(153,69,255,0.5)] font-black"
             >
               <span>👾 Nom Invaders</span>
               <span className="text-[9px] bg-purple-900/60 text-purple-200 px-1 py-0.5 rounded font-mono">NEW</span>
@@ -350,13 +337,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("more-games");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "tap-raid" } }));
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
-                activeTab === "more-games"
-                  ? "bg-rose-500 text-slate-950 shadow-[0_0_15px_rgba(244,63,94,0.5)] font-black"
-                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
-              }`}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-rose-500 text-slate-950 shadow-[0_0_15px_rgba(244,63,94,0.5)] font-black"
             >
               <span>⚔️ Mega-FUD Tap Raid</span>
             </button>
@@ -364,9 +348,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("more-games");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "cyber-snake" } }));
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-emerald-700 text-white hover:bg-emerald-600 border border-emerald-500/40"
             >
               <span>🐍 Cyber Snake</span>
               <span className="text-[9px] bg-emerald-950/80 text-emerald-400 px-1 py-0.5 rounded font-mono">NEW</span>
@@ -375,9 +360,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("more-games");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "candy-breakout" } }));
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-sky-700 text-white hover:bg-sky-600 border border-sky-500/40"
             >
               <span>🧱 Candy Breakout</span>
               <span className="text-[9px] bg-cyan-950/80 text-cyan-400 px-1 py-0.5 rounded font-mono">NEW</span>
@@ -386,9 +372,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("more-games");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "nom-runner" } }));
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-amber-700 text-white hover:bg-amber-600 border border-amber-500/40"
             >
               <span>🏃 Nom Runner</span>
               <span className="text-[9px] bg-amber-950/80 text-amber-400 px-1 py-0.5 rounded font-mono">NEW</span>
@@ -397,9 +384,10 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             <button
               onClick={() => {
                 sounds.playButtonClick();
-                setActiveTab("more-games");
+                window.dispatchEvent(new CustomEvent("NOM_SWITCH_GAME", { detail: { gameId: "whack-a-fud" } }));
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-rose-700 text-white hover:bg-rose-600 border border-rose-500/40"
             >
               <span>🔨 Whack-A-FUD</span>
               <span className="text-[9px] bg-rose-950/80 text-rose-400 px-1 py-0.5 rounded font-mono">NEW</span>

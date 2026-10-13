@@ -64,6 +64,11 @@ import {
   processIncomingReferral,
   recordFriendPlayCommission,
 } from "@/lib/referralSystem";
+import {
+  ArcadeCartridgeScreen,
+  CARTRIDGES,
+  CartridgeGameId,
+} from "./ArcadeCartridgeScreen";
 
 const PhaserCanvasDynamic = dynamic(
   () => import("./PhaserCanvas").then((mod) => mod.PhaserCanvas),
@@ -172,6 +177,19 @@ export const GameContainer: React.FC<GameContainerProps> = ({
     prizePool: number;
   } | null>(null);
   const [challengeWon, setChallengeWon] = useState<boolean>(false);
+
+  // 9-Game Arcade Cartridge State
+  const [activeCartridge, setActiveCartridge] = useState<CartridgeGameId>("feed-nomster");
+
+  useEffect(() => {
+    const handleGameSwitch = (e: any) => {
+      if (e.detail?.gameId) {
+        setActiveCartridge(e.detail.gameId);
+      }
+    };
+    window.addEventListener("NOM_SWITCH_GAME", handleGameSwitch);
+    return () => window.removeEventListener("NOM_SWITCH_GAME", handleGameSwitch);
+  }, []);
 
   const handleCycleDeepNom = () => {
     setDeepNomMode((prev) => {
@@ -1447,7 +1465,39 @@ export const GameContainer: React.FC<GameContainerProps> = ({
         </div>
       )}
 
-      {/* Phaser Canvas Container with Lockscreen / Game Over Overlays */}
+      {/* 9-Game Ecosystem Cartridge Quick Selector Strip */}
+      <div className="w-full mb-3 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl select-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 touch-pan-x px-1">
+          <span className="text-[10px] font-mono text-slate-400 font-bold uppercase shrink-0 flex items-center gap-1 pr-1.5 border-r border-slate-800">
+            <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden xs:inline">GAMES:</span>
+          </span>
+          {CARTRIDGES.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveCartridge(c.id);
+              }}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer active:scale-95 ${
+                activeCartridge === c.id
+                  ? "bg-gradient-to-r from-emerald-400 to-teal-300 text-slate-950 font-black shadow-[0_0_15px_rgba(20,241,149,0.4)]"
+                  : "bg-slate-950/70 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              }`}
+            >
+              <span>{c.icon}</span>
+              <span className="whitespace-nowrap">{c.name}</span>
+              {c.id === "feed-nomster" && (
+                <span className="text-[9px] bg-slate-950/40 text-emerald-300 px-1 py-0.2 rounded font-mono font-normal">
+                  Main
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Phaser Canvas Container with Lockscreen / Game Over Overlays or Retro Cartridge Screen */}
       <div
         className={
           isFullWindow
@@ -1457,114 +1507,124 @@ export const GameContainer: React.FC<GameContainerProps> = ({
             : "relative w-full max-w-[440px] mx-auto aspect-[440/520] rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(20,241,149,0.2)]"
         }
       >
-        {/* Unauthenticated Lockscreen: only shown if not logged in AND has not chosen Play as Guest */}
-        {!user && !isGuestMode && (
-          <ArcadeLockscreen
-            onPlayAsGuest={() => {
-              setIsGuestMode(true);
-              handleStartGame();
-            }}
+        {activeCartridge !== "feed-nomster" ? (
+          <ArcadeCartridgeScreen
+            gameId={activeCartridge}
+            onSelectGame={setActiveCartridge}
+            onBackToFeedNomster={() => setActiveCartridge("feed-nomster")}
           />
-        )}
+        ) : (
+          <>
+            {/* Unauthenticated Lockscreen: only shown if not logged in AND has not chosen Play as Guest */}
+            {!user && !isGuestMode && (
+              <ArcadeLockscreen
+                onPlayAsGuest={() => {
+                  setIsGuestMode(true);
+                  handleStartGame();
+                }}
+              />
+            )}
 
-        {/* Game Over Modal (3-Hour Cooldown & Community Life SOS) */}
-        {(user || isGuestMode) && isGameOver && (
-          <GameOverModal
-            score={score}
-            streak={streak}
-            equippedSkin={equippedSkin}
-            cooldownUntil={cooldownUntil}
-            onRequestSOS={handleRequestSOS}
-            onLifeRestored={handleLifeRestored}
-            raidDamageDealt={lastRaidDamage}
-            isWhaleMultiplier={holderPerks.raidMultiplier > 1}
-            onOpenReferral={() => setIsReferralModalOpen(true)}
-            onOpenDailyLootbox={() => setIsDailyLootboxOpen(true)}
-          />
-        )}
+            {/* Game Over Modal (3-Hour Cooldown & Community Life SOS) */}
+            {(user || isGuestMode) && isGameOver && (
+              <GameOverModal
+                score={score}
+                streak={streak}
+                equippedSkin={equippedSkin}
+                cooldownUntil={cooldownUntil}
+                onRequestSOS={handleRequestSOS}
+                onLifeRestored={handleLifeRestored}
+                raidDamageDealt={lastRaidDamage}
+                isWhaleMultiplier={holderPerks.raidMultiplier > 1}
+                onOpenReferral={() => setIsReferralModalOpen(true)}
+                onOpenDailyLootbox={() => setIsDailyLootboxOpen(true)}
+              />
+            )}
 
-        {/* Ready to Play Start Overlay */}
-        {(user || isGuestMode) && gameState === "idle" && !isGameOver && (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/75 backdrop-blur-sm p-4 text-center select-none animate-fade-in rounded-2xl">
-            <div className="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-3">
-              PUMP.FUN FAIR LAUNCH ARCADE
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-white font-mono mb-2">
-              FEED NOMSTER!
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xs mb-5 leading-relaxed">
-              Collect falling crypto candies! Drag Nomster left &amp; right, or flick candies into his mouth. Don&apos;t drop them!
-            </p>
-            <button
-              onClick={handleStartGame}
-              className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-sm font-mono shadow-[0_0_35px_rgba(20,241,149,0.5)] hover:shadow-[0_0_50px_rgba(20,241,149,0.8)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
-            >
-              <Play className="w-5 h-5 fill-slate-950" />
-              <span>START GAME (5 LIVES)</span>
-            </button>
-            <span className="text-[10px] font-mono text-slate-400 mt-3">
-              (Press Space or tap anywhere on canvas to start)
-            </span>
-          </div>
-        )}
+            {/* Ready to Play Start Overlay */}
+            {(user || isGuestMode) && gameState === "idle" && !isGameOver && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/75 backdrop-blur-sm p-4 text-center select-none animate-fade-in rounded-2xl">
+                <div className="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 mb-3">
+                  PUMP.FUN FAIR LAUNCH ARCADE
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-white font-mono mb-2">
+                  FEED NOMSTER!
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 max-w-xs mb-5 leading-relaxed">
+                  Collect falling crypto candies! Drag Nomster left &amp; right, or flick candies into his mouth. Don&apos;t drop them!
+                </p>
+                <button
+                  onClick={handleStartGame}
+                  className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green hover:from-emerald-300 hover:to-teal-200 text-slate-950 font-black text-sm font-mono shadow-[0_0_35px_rgba(20,241,149,0.5)] hover:shadow-[0_0_50px_rgba(20,241,149,0.8)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
+                >
+                  <Play className="w-5 h-5 fill-slate-950" />
+                  <span>START GAME (5 LIVES)</span>
+                </button>
+                <span className="text-[10px] font-mono text-slate-400 mt-3">
+                  (Press Space or tap anywhere on canvas to start)
+                </span>
+              </div>
+            )}
 
-        {/* Story Episode Victory Card */}
-        {victoryData && (
-          <EpisodeVictoryCard
-            episode={victoryData.episode}
-            score={victoryData.score}
-            streak={victoryData.streak}
-            stars={victoryData.stars}
-            onReplay={() => {
-              setVictoryData(null);
-              setResetSignal((prev) => prev + 1);
-            }}
-            onNextEpisode={handleNextEpisode}
-          />
-        )}
+            {/* Story Episode Victory Card */}
+            {victoryData && (
+              <EpisodeVictoryCard
+                episode={victoryData.episode}
+                score={victoryData.score}
+                streak={victoryData.streak}
+                stars={victoryData.stars}
+                onReplay={() => {
+                  setVictoryData(null);
+                  setResetSignal((prev) => prev + 1);
+                }}
+                onNextEpisode={handleNextEpisode}
+              />
+            )}
 
-        {/* Playable Canvas */}
-        <PhaserCanvasDynamic
-          onScoreUpdate={handleScoreUpdate}
-          onLivesUpdate={handleLivesUpdate}
-          onGameOver={handleGameOver}
-          onNomNom={handleNomNom}
-          onPowerUpActive={handlePowerUpActive}
-          onPowerUpExpired={handlePowerUpExpired}
-          onGameStateChange={handleGameStateChange}
-          onRivalDethroned={handleRivalDethroned}
-          onFeverMeterUpdate={(percent, isOverdrive) => {
-            setFeverPercent(percent);
-            setIsFeverOverdrive(isOverdrive);
-          }}
-          onDashCooldownUpdate={(ready) => setDashReady(ready)}
-          onEpisodeComplete={handleEpisodeComplete}
-          onNextLifeDropCountdown={(sec) => setNextHeartCountdown(sec)}
-          dashSignal={dashSignal}
-          episodeId={currentEpisodeId}
-          rival={rival || undefined}
-          holderTierPerks={{
-            extraLives: holderPerks.extraLives,
-            scoreMultiplier: holderPerks.scoreMultiplier,
-            raidMultiplier: holderPerks.raidMultiplier,
-            hasCrown: holderPerks.hasCrown,
-          }}
-          frenzySignal={frenzySignal}
-          resetSignal={resetSignal}
-          startSignal={startSignal}
-          initialLives={lives + holderPerks.extraLives}
-          equippedSkin={equippedSkin}
-          toddlerMode={toddlerMode}
-          waddleSignal={waddleSignal}
-          isFullWindow={isFullWindow}
-          expandedMode={expandedMode}
-          deepNomMode={deepNomMode}
-          onDeepNomTelemetry={setDeepNomTelemetry}
-        />
+            {/* Playable Canvas */}
+            <PhaserCanvasDynamic
+              onScoreUpdate={handleScoreUpdate}
+              onLivesUpdate={handleLivesUpdate}
+              onGameOver={handleGameOver}
+              onNomNom={handleNomNom}
+              onPowerUpActive={handlePowerUpActive}
+              onPowerUpExpired={handlePowerUpExpired}
+              onGameStateChange={handleGameStateChange}
+              onRivalDethroned={handleRivalDethroned}
+              onFeverMeterUpdate={(percent, isOverdrive) => {
+                setFeverPercent(percent);
+                setIsFeverOverdrive(isOverdrive);
+              }}
+              onDashCooldownUpdate={(ready) => setDashReady(ready)}
+              onEpisodeComplete={handleEpisodeComplete}
+              onNextLifeDropCountdown={(sec) => setNextHeartCountdown(sec)}
+              dashSignal={dashSignal}
+              episodeId={currentEpisodeId}
+              rival={rival || undefined}
+              holderTierPerks={{
+                extraLives: holderPerks.extraLives,
+                scoreMultiplier: holderPerks.scoreMultiplier,
+                raidMultiplier: holderPerks.raidMultiplier,
+                hasCrown: holderPerks.hasCrown,
+              }}
+              frenzySignal={frenzySignal}
+              resetSignal={resetSignal}
+              startSignal={startSignal}
+              initialLives={lives + holderPerks.extraLives}
+              equippedSkin={equippedSkin}
+              toddlerMode={toddlerMode}
+              waddleSignal={waddleSignal}
+              isFullWindow={isFullWindow}
+              expandedMode={expandedMode}
+              deepNomMode={deepNomMode}
+              onDeepNomTelemetry={setDeepNomTelemetry}
+            />
+          </>
+        )}
       </div>
 
       {/* Toddler / Kid Mode (Age 3-5) Active Banner */}
-      {toddlerMode && (
+      {toddlerMode && activeCartridge === "feed-nomster" && (
         <div className="w-full mt-2.5 px-3.5 py-2 bg-gradient-to-r from-amber-500/15 via-pink-500/15 to-amber-500/15 border border-amber-500/40 rounded-xl flex items-center justify-between text-xs font-mono text-amber-300 animate-in fade-in shadow-[0_0_15px_rgba(245,158,11,0.15)]">
           <div className="flex items-center gap-2">
             <span className="text-base">🧸</span>
@@ -1582,12 +1642,14 @@ export const GameContainer: React.FC<GameContainerProps> = ({
       )}
 
       {/* Mobile Virtual Waddle Paddles */}
-      <MobileWaddlePaddles
-        onWaddle={(dir) => setWaddleSignal({ direction: dir, timestamp: Date.now() })}
-        onDash={() => setDashSignal((prev) => prev + 1)}
-        dashReady={dashReady}
-        disabled={(!user && !isGuestMode) || isGameOver || lives <= 0}
-      />
+      {activeCartridge === "feed-nomster" && (
+        <MobileWaddlePaddles
+          onWaddle={(dir) => setWaddleSignal({ direction: dir, timestamp: Date.now() })}
+          onDash={() => setDashSignal((prev) => prev + 1)}
+          dashReady={dashReady}
+          disabled={(!user && !isGuestMode) || isGameOver || lives <= 0}
+        />
+      )}
 
       {/* Arcade Instructions & Status Footer (Hidden in Full Window for zero distraction) */}
       {!isFullWindow && (
