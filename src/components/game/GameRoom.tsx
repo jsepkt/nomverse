@@ -279,6 +279,90 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
         <div className="w-full mb-3 sm:mb-4">
           <TournamentBanner />
         </div>
+
+        {/* ECOSYSTEM GAME CARTRIDGE SELECTOR */}
+        <div className="w-full flex items-center justify-between gap-2 p-2 rounded-2xl bg-slate-950/80 border border-slate-800 shadow-lg mb-4">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 w-full">
+            <span className="text-[11px] font-mono text-slate-500 font-bold uppercase pl-2 shrink-0 flex items-center gap-1">
+              <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>GAMES:</span>
+            </span>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("ugc-arena");
+                document.getElementById("arcade-cabinet")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
+                activeTab === "ugc-arena"
+                  ? "bg-emerald-500 text-slate-950 shadow-[0_0_15px_rgba(20,241,149,0.5)] font-black"
+                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              }`}
+            >
+              <span>🍬 Green Candle Frenzy</span>
+              <span className="text-[9px] bg-slate-950/40 text-emerald-300 px-1.5 py-0.5 rounded font-mono">Flagship</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("more-games");
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
+                activeTab === "more-games"
+                  ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)] font-black"
+                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              }`}
+            >
+              <span>🦆 Nom Flap</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("more-games");
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
+                activeTab === "more-games"
+                  ? "bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] font-black"
+                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              }`}
+            >
+              <span>🦘 Candy Hopper</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("more-games");
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
+                activeTab === "more-games"
+                  ? "bg-purple-500 text-slate-950 shadow-[0_0_15px_rgba(153,69,255,0.5)] font-black"
+                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              }`}
+            >
+              <span>👾 Nom Invaders</span>
+              <span className="text-[9px] bg-purple-900/60 text-purple-200 px-1 py-0.5 rounded font-mono">NEW</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("more-games");
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
+                activeTab === "more-games"
+                  ? "bg-rose-500 text-slate-950 shadow-[0_0_15px_rgba(244,63,94,0.5)] font-black"
+                  : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+              }`}
+            >
+              <span>⚔️ Mega-FUD Tap Raid</span>
+            </button>
+          </div>
+        </div>
+
         {/* VIEW 1: HALF SIZE (SPLIT CONSOLE / THEATER MODE) */}
         {screenSize === "half" ? (
           <div className="row g-3 g-sm-4 items-start mx-0">

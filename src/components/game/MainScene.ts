@@ -491,10 +491,9 @@ export class MainScene extends Phaser.Scene {
     this.deepNomGraphics = this.add.graphics();
     this.deepNomGraphics.setDepth(18);
 
-    // Floor Sensor Line (Bottom Out of Bounds pit between corner trampolines)
+    // Floor Sensor Line (Full width floor sensor across entire screen to catch all dropped candies)
     const floorY = height - 12;
-    const pitWidth = Math.max(100, width - 150);
-    this.groundSensor = this.add.rectangle(width / 2, floorY, pitWidth, 24, 0xef4444, 0);
+    this.groundSensor = this.add.rectangle(width / 2, floorY, width + 80, 36, 0xef4444, 0);
     this.physics.add.existing(this.groundSensor, true);
 
     // Bouncy Marshmallow Corner Trampolines (Second Chance Saves!)
@@ -751,6 +750,19 @@ export class MainScene extends Phaser.Scene {
 
     const dt = delta / 1000;
     const { width: camWidth, height: camHeight } = this.cameras.main;
+
+    // Candy Watchdog: If candy drops near the bottom boundary, ensure it triggers miss/respawn
+    if (
+      this.candy &&
+      this.candy.active &&
+      this.playState === "playing" &&
+      !this.isEating &&
+      this.lives > 0 &&
+      this.candy.y >= camHeight - 24
+    ) {
+      this.handleMissCandy();
+      return;
+    }
 
     // --- DEEPNOM BALLISTIC NEURAL PREDICTOR & AUTOPILOT ---
     if (this.deepNomMode !== "off" && this.deepNomGraphics) {
@@ -2598,25 +2610,27 @@ export class MainScene extends Phaser.Scene {
     const { width, height } = this.cameras.main;
     const hazardY = height * 0.42;
 
-    const hazardCanvas = this.textures.createCanvas("fud_hazard", 36, 36);
-    if (hazardCanvas) {
-      const ctx = hazardCanvas.context;
-      ctx.fillStyle = "#EF4444";
-      ctx.beginPath();
-      for (let i = 0; i < 8; i++) {
-        const r = i % 2 === 0 ? 16 : 8;
-        const a = (i * Math.PI) / 4;
-        const x = 18 + r * Math.cos(a);
-        const y = 18 + r * Math.sin(a);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+    if (!this.textures.exists("fud_hazard")) {
+      const hazardCanvas = this.textures.createCanvas("fud_hazard", 36, 36);
+      if (hazardCanvas) {
+        const ctx = hazardCanvas.context;
+        ctx.fillStyle = "#EF4444";
+        ctx.beginPath();
+        for (let i = 0; i < 8; i++) {
+          const r = i % 2 === 0 ? 16 : 8;
+          const a = (i * Math.PI) / 4;
+          const x = 18 + r * Math.cos(a);
+          const y = 18 + r * Math.sin(a);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#FCA5A5";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        hazardCanvas.refresh();
       }
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = "#FCA5A5";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      hazardCanvas.refresh();
     }
 
     this.fudHazard = this.physics.add.sprite(50, hazardY, "fud_hazard");

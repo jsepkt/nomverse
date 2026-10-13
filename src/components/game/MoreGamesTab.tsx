@@ -41,6 +41,96 @@ export const MoreGamesTab: React.FC = () => {
   const [hopperX, setHopperX] = useState(50);
   const [hopperPlatformX, setHopperPlatformX] = useState(50);
 
+  // Mini-Game 6: Nom Invaders Space Arcade
+  const [invadersScore, setInvadersScore] = useState(0);
+  const [invadersBest, setInvadersBest] = useState(0);
+  const [invadersActive, setInvadersActive] = useState(false);
+  const [invaderPlayerX, setInvaderPlayerX] = useState(50);
+  const [invaders, setInvaders] = useState<{ id: number; x: number; y: number; alive: boolean }[]>([
+    { id: 1, x: 18, y: 22, alive: true },
+    { id: 2, x: 34, y: 22, alive: true },
+    { id: 3, x: 50, y: 22, alive: true },
+    { id: 4, x: 66, y: 22, alive: true },
+    { id: 5, x: 82, y: 22, alive: true },
+    { id: 6, x: 26, y: 48, alive: true },
+    { id: 7, x: 42, y: 48, alive: true },
+    { id: 8, x: 58, y: 48, alive: true },
+    { id: 9, x: 74, y: 48, alive: true },
+  ]);
+  const [invaderLasers, setInvaderLasers] = useState<{ id: number; x: number; y: number }[]>([]);
+
+  // Nom Invaders Laser & Collision Engine
+  useEffect(() => {
+    if (!invadersActive) return;
+    const interval = setInterval(() => {
+      setInvaderLasers((prevLasers) => {
+        if (prevLasers.length === 0) return prevLasers;
+        const updated = prevLasers
+          .map((l) => ({ ...l, y: l.y - 10 }))
+          .filter((l) => l.y > 0);
+
+        setInvaders((prevInv) => {
+          let hits = 0;
+          const nextInv = prevInv.map((inv) => {
+            if (!inv.alive) return inv;
+            const isHit = updated.some((l) => Math.abs(l.x - inv.x) < 8 && Math.abs(l.y - inv.y) < 14);
+            if (isHit) {
+              hits++;
+              return { ...inv, alive: false };
+            }
+            return inv;
+          });
+
+          if (hits > 0) {
+            sounds.playFUDHit();
+            setInvadersScore((s) => {
+              const ns = s + hits * 25;
+              if (ns > invadersBest) setInvadersBest(ns);
+              return ns;
+            });
+            if (nextInv.every((i) => !i.alive)) {
+              sounds.playGoldenChime();
+              setTimeout(() => {
+                setInvaders([
+                  { id: 1, x: 18, y: 22, alive: true },
+                  { id: 2, x: 34, y: 22, alive: true },
+                  { id: 3, x: 50, y: 22, alive: true },
+                  { id: 4, x: 66, y: 22, alive: true },
+                  { id: 5, x: 82, y: 22, alive: true },
+                  { id: 6, x: 26, y: 48, alive: true },
+                  { id: 7, x: 42, y: 48, alive: true },
+                  { id: 8, x: 58, y: 48, alive: true },
+                  { id: 9, x: 74, y: 48, alive: true },
+                ]);
+              }, 400);
+            }
+          }
+          return nextInv;
+        });
+
+        return updated.filter(
+          (l) => !invaders.some((inv) => inv.alive && Math.abs(l.x - inv.x) < 8 && Math.abs(l.y - inv.y) < 14)
+        );
+      });
+    }, 45);
+
+    return () => clearInterval(interval);
+  }, [invadersActive, invaders, invadersBest]);
+
+  const handleFireInvaderLaser = () => {
+    sounds.playLaser();
+    setInvadersActive(true);
+    setInvaderLasers((prev) => [
+      ...prev,
+      { id: Date.now() + Math.random(), x: invaderPlayerX, y: 110 },
+    ]);
+  };
+
+  const handleMoveInvaderPlayer = (dir: "left" | "right") => {
+    setInvadersActive(true);
+    setInvaderPlayerX((prev) => (dir === "left" ? Math.max(12, prev - 12) : Math.min(88, prev + 12)));
+  };
+
   // Flappy gravity loop
   useEffect(() => {
     if (!flappyActive || flappyGameOver) return;
@@ -507,6 +597,101 @@ export const MoreGamesTab: React.FC = () => {
           <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
             <span className="text-slate-500">Contributed by: @nomster_dev</span>
             <span className="text-amber-400 font-bold">1% Arcade Burn Active</span>
+          </div>
+        </div>
+
+        {/* GAME 6: Nom Invaders (Space Invaders Retro Shoot'Em Up) */}
+        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between md:col-span-2">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                Community Prototype #5
+              </span>
+              <span className="text-xs font-mono text-emerald-300 flex items-center gap-1 font-bold">
+                <Trophy className="w-3.5 h-3.5" /> High Score: {invadersBest}
+              </span>
+            </div>
+
+            <div>
+              <h4 className="text-base font-black text-white flex items-center gap-2">
+                <span>Nom Invaders (Retro Space Arcade)</span>
+                <span className="text-lg">👾</span>
+              </h4>
+              <p className="text-xs text-slate-400">
+                Retro 80s arcade shoot&apos;em up! Slide Nomster left and right to blast incoming red FUD aliens with green candle laser bolts.
+              </p>
+            </div>
+
+            {/* Invaders Arena */}
+            <div className="relative w-full h-44 rounded-xl bg-slate-950/90 border border-emerald-500/30 flex flex-col items-center justify-between p-3 select-none overflow-hidden">
+              {/* Score HUD */}
+              <div className="w-full flex items-center justify-between text-xs font-mono text-slate-400 z-10">
+                <span>SCORE: <strong className="text-emerald-400">{invadersScore}</strong></span>
+                <span className="text-[10px] text-emerald-300 font-bold">50 $NOM BURN PER WAVE</span>
+              </div>
+
+              {/* Descending Invaders Grid */}
+              <div className="absolute inset-0 pointer-events-none">
+                {invaders.map((inv) =>
+                  inv.alive ? (
+                    <span
+                      key={inv.id}
+                      className="absolute text-lg transition-transform duration-200"
+                      style={{ left: `${inv.x}%`, top: `${inv.y}px`, transform: "translate(-50%, -50%)" }}
+                    >
+                      👾
+                    </span>
+                  ) : null
+                )}
+
+                {/* Laser Bolts */}
+                {invaderLasers.map((l) => (
+                  <div
+                    key={l.id}
+                    className="absolute w-1.5 h-4 bg-emerald-400 rounded-full shadow-[0_0_8px_#14f195]"
+                    style={{ left: `${l.x}%`, top: `${l.y}px`, transform: "translate(-50%, -50%)" }}
+                  />
+                ))}
+
+                {/* Player Cannon */}
+                <div
+                  className="absolute bottom-12 text-2xl transition-all duration-75"
+                  style={{ left: `${invaderPlayerX}%`, transform: "translateX(-50%)" }}
+                >
+                  🚀
+                </div>
+              </div>
+
+              {/* Action Controls */}
+              <div className="w-full flex items-center justify-between gap-2 pt-2 z-10 mt-auto">
+                <button
+                  onClick={() => handleMoveInvaderPlayer("left")}
+                  className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-mono font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <span>◀ LEFT</span>
+                </button>
+
+                <button
+                  onClick={handleFireInvaderLaser}
+                  className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 active:scale-95 text-slate-950 font-mono font-black text-xs shadow-[0_0_15px_rgba(20,241,149,0.4)] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                  <span>FIRE LASER!</span>
+                </button>
+
+                <button
+                  onClick={() => handleMoveInvaderPlayer("right")}
+                  className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-mono font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <span>RIGHT ▶</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-500">Contributed by: @retro_sol</span>
+            <span className="text-emerald-400 font-bold">100% CC0 Public Domain</span>
           </div>
         </div>
       </div>

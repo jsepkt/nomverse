@@ -305,6 +305,20 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
           </div>
         )}
 
+        {/* Primary Instant Play Again Action for All Players */}
+        <div className="w-full pt-1">
+          <button
+            onClick={() => {
+              sounds.playButtonClick();
+              onLifeRestored();
+            }}
+            className="w-full py-3 px-4 rounded-xl font-mono font-black text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-solana-green hover:from-emerald-300 hover:to-teal-200 text-slate-950 shadow-[0_0_25px_rgba(20,241,149,0.5)] hover:shadow-[0_0_35px_rgba(20,241,149,0.8)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <RotateCcw className="w-4 h-4 fill-slate-950" />
+            <span>PLAY AGAIN (INSTANT REVIVE)</span>
+          </button>
+        </div>
+
         {/* 3-Hour Countdown Clock Display */}
         <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
           <div className="flex items-center justify-center gap-1.5 text-[11px] font-mono text-slate-400">
