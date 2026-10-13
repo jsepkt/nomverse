@@ -360,6 +360,50 @@ export const GameRoom: React.FC<GameRoomProps> = ({ initialMode = "half" }) => {
             >
               <span>⚔️ Mega-FUD Tap Raid</span>
             </button>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("more-games");
+              }}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+            >
+              <span>🐍 Cyber Snake</span>
+              <span className="text-[9px] bg-emerald-950/80 text-emerald-400 px-1 py-0.5 rounded font-mono">NEW</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("more-games");
+              }}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+            >
+              <span>🧱 Candy Breakout</span>
+              <span className="text-[9px] bg-cyan-950/80 text-cyan-400 px-1 py-0.5 rounded font-mono">NEW</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("more-games");
+              }}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+            >
+              <span>🏃 Nom Runner</span>
+              <span className="text-[9px] bg-amber-950/80 text-amber-400 px-1 py-0.5 rounded font-mono">NEW</span>
+            </button>
+
+            <button
+              onClick={() => {
+                sounds.playButtonClick();
+                setActiveTab("more-games");
+              }}
+              className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all shrink-0 cursor-pointer bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800"
+            >
+              <span>🔨 Whack-A-FUD</span>
+              <span className="text-[9px] bg-rose-950/80 text-rose-400 px-1 py-0.5 rounded font-mono">NEW</span>
+            </button>
           </div>
         </div>
 

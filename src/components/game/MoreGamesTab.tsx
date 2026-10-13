@@ -15,6 +15,9 @@ import {
   Zap,
   Swords,
   Layers,
+  Target,
+  Shield,
+  Heart,
 } from "lucide-react";
 
 export const MoreGamesTab: React.FC = () => {
@@ -129,6 +132,285 @@ export const MoreGamesTab: React.FC = () => {
   const handleMoveInvaderPlayer = (dir: "left" | "right") => {
     setInvadersActive(true);
     setInvaderPlayerX((prev) => (dir === "left" ? Math.max(12, prev - 12) : Math.min(88, prev + 12)));
+  };
+
+  // Mini-Game 7: Cyber Snake
+  const [snake, setSnake] = useState<{ x: number; y: number }[]>([
+    { x: 5, y: 5 },
+    { x: 5, y: 6 },
+    { x: 5, y: 7 },
+  ]);
+  const [snakeDir, setSnakeDir] = useState<"UP" | "DOWN" | "LEFT" | "RIGHT">("UP");
+  const [snakeFood, setSnakeFood] = useState<{ x: number; y: number }>({ x: 3, y: 3 });
+  const [snakeActive, setSnakeActive] = useState(false);
+  const [snakeGameOver, setSnakeGameOver] = useState(false);
+  const [snakeScore, setSnakeScore] = useState(0);
+  const [snakeBest, setSnakeBest] = useState(0);
+
+  const resetSnakeGame = () => {
+    setSnake([
+      { x: 5, y: 5 },
+      { x: 5, y: 6 },
+      { x: 5, y: 7 },
+    ]);
+    setSnakeDir("UP");
+    setSnakeFood({ x: Math.floor(Math.random() * 10) + 1, y: Math.floor(Math.random() * 10) + 1 });
+    setSnakeGameOver(false);
+    setSnakeScore(0);
+    setSnakeActive(true);
+  };
+
+  useEffect(() => {
+    if (!snakeActive || snakeGameOver) return;
+    const interval = setInterval(() => {
+      setSnake((prev) => {
+        const head = { ...prev[0] };
+        if (snakeDir === "UP") head.y -= 1;
+        if (snakeDir === "DOWN") head.y += 1;
+        if (snakeDir === "LEFT") head.x -= 1;
+        if (snakeDir === "RIGHT") head.x += 1;
+
+        if (head.x < 0 || head.x >= 12 || head.y < 0 || head.y >= 12) {
+          setSnakeGameOver(true);
+          sounds.playFUDHit();
+          return prev;
+        }
+
+        if (prev.some((seg) => seg.x === head.x && seg.y === head.y)) {
+          setSnakeGameOver(true);
+          sounds.playFUDHit();
+          return prev;
+        }
+
+        if (head.x === snakeFood.x && head.y === snakeFood.y) {
+          sounds.playNom();
+          setSnakeScore((s) => {
+            const ns = s + 10;
+            if (ns > snakeBest) setSnakeBest(ns);
+            return ns;
+          });
+          setSnakeFood({
+            x: Math.floor(Math.random() * 11),
+            y: Math.floor(Math.random() * 11),
+          });
+          return [head, ...prev];
+        }
+
+        return [head, ...prev.slice(0, -1)];
+      });
+    }, 160);
+
+    return () => clearInterval(interval);
+  }, [snakeActive, snakeGameOver, snakeDir, snakeFood, snakeBest]);
+
+  // Mini-Game 8: Candy Breakout
+  const [breakoutActive, setBreakoutActive] = useState(false);
+  const [breakoutGameOver, setBreakoutGameOver] = useState(false);
+  const [breakoutScore, setBreakoutScore] = useState(0);
+  const [breakoutBest, setBreakoutBest] = useState(0);
+  const [breakoutPaddleX, setBreakoutPaddleX] = useState(50);
+  const [breakoutBall, setBreakoutBall] = useState({ x: 50, y: 70, vx: 2, vy: -2.5 });
+  const [breakoutBricks, setBreakoutBricks] = useState<{ id: number; alive: boolean; color: string }[]>([
+    { id: 0, alive: true, color: "#14F195" },
+    { id: 1, alive: true, color: "#38BDF8" },
+    { id: 2, alive: true, color: "#F59E0B" },
+    { id: 3, alive: true, color: "#EC4899" },
+    { id: 4, alive: true, color: "#14F195" },
+    { id: 5, alive: true, color: "#38BDF8" },
+    { id: 6, alive: true, color: "#F59E0B" },
+    { id: 7, alive: true, color: "#EC4899" },
+  ]);
+
+  const resetBreakout = () => {
+    setBreakoutPaddleX(50);
+    setBreakoutBall({ x: 50, y: 70, vx: 2, vy: -2.5 });
+    setBreakoutBricks((prev) => prev.map((b) => ({ ...b, alive: true })));
+    setBreakoutGameOver(false);
+    setBreakoutScore(0);
+    setBreakoutActive(true);
+  };
+
+  useEffect(() => {
+    if (!breakoutActive || breakoutGameOver) return;
+    const interval = setInterval(() => {
+      setBreakoutBall((prev) => {
+        let nextX = prev.x + prev.vx;
+        let nextY = prev.y + prev.vy;
+        let nextVx = prev.vx;
+        let nextVy = prev.vy;
+
+        if (nextX <= 4 || nextX >= 96) {
+          nextVx = -nextVx;
+          sounds.playButtonClick();
+        }
+        if (nextY <= 4) {
+          nextVy = -nextVy;
+          sounds.playButtonClick();
+        }
+
+        if (nextY >= 82 && nextY <= 88 && Math.abs(nextX - breakoutPaddleX) < 18) {
+          nextVy = -Math.abs(nextVy);
+          nextVx = (nextX - breakoutPaddleX) * 0.25;
+          sounds.playJumpSound();
+        }
+
+        if (nextY >= 96) {
+          setBreakoutGameOver(true);
+          sounds.playFUDHit();
+          return prev;
+        }
+
+        if (nextY <= 45) {
+          const col = Math.floor(nextX / 25);
+          const row = Math.floor(nextY / 22);
+          const idx = row * 4 + col;
+          if (idx >= 0 && idx < 8) {
+            setBreakoutBricks((bList) => {
+              if (bList[idx] && bList[idx].alive) {
+                sounds.playNom();
+                setBreakoutScore((s) => {
+                  const ns = s + 15;
+                  if (ns > breakoutBest) setBreakoutBest(ns);
+                  return ns;
+                });
+                nextVy = -nextVy;
+                const nextB = [...bList];
+                nextB[idx] = { ...nextB[idx], alive: false };
+                if (nextB.every((b) => !b.alive)) {
+                  sounds.playGoldenChime();
+                  setTimeout(() => {
+                    setBreakoutBricks((b) => b.map((item) => ({ ...item, alive: true })));
+                  }, 400);
+                }
+                return nextB;
+              }
+              return bList;
+            });
+          }
+        }
+
+        return { x: nextX, y: nextY, vx: nextVx, vy: nextVy };
+      });
+    }, 40);
+
+    return () => clearInterval(interval);
+  }, [breakoutActive, breakoutGameOver, breakoutPaddleX, breakoutBest]);
+
+  // Mini-Game 9: Nom Runner
+  const [runnerActive, setRunnerActive] = useState(false);
+  const [runnerGameOver, setRunnerGameOver] = useState(false);
+  const [runnerScore, setRunnerScore] = useState(0);
+  const [runnerBest, setRunnerBest] = useState(0);
+  const [runnerY, setRunnerY] = useState(0);
+  const [runnerObstacleX, setRunnerObstacleX] = useState(100);
+
+  const handleRunnerJump = () => {
+    if (!runnerActive || runnerGameOver) {
+      setRunnerActive(true);
+      setRunnerGameOver(false);
+      setRunnerScore(0);
+      setRunnerObstacleX(100);
+      setRunnerY(0);
+      return;
+    }
+    if (runnerY === 0) {
+      sounds.playJumpSound();
+      setRunnerY(38);
+      setTimeout(() => setRunnerY(0), 450);
+    }
+  };
+
+  useEffect(() => {
+    if (!runnerActive || runnerGameOver) return;
+    const interval = setInterval(() => {
+      setRunnerObstacleX((prev) => {
+        if (prev <= -10) {
+          setRunnerScore((s) => {
+            const ns = s + 10;
+            if (ns > runnerBest) setRunnerBest(ns);
+            return ns;
+          });
+          return 100;
+        }
+
+        if (prev >= 14 && prev <= 26 && runnerY < 20) {
+          setRunnerGameOver(true);
+          sounds.playFUDHit();
+          return prev;
+        }
+
+        return prev - 4;
+      });
+    }, 45);
+
+    return () => clearInterval(interval);
+  }, [runnerActive, runnerGameOver, runnerY, runnerBest]);
+
+  // Mini-Game 10: Whack-A-FUD
+  const [whackActive, setWhackActive] = useState(false);
+  const [whackScore, setWhackScore] = useState(0);
+  const [whackBest, setWhackBest] = useState(0);
+  const [whackHoles, setWhackHoles] = useState<(string | null)[]>(Array(9).fill(null));
+
+  const startWhackGame = () => {
+    setWhackScore(0);
+    setWhackActive(true);
+    setWhackHoles(Array(9).fill(null));
+    sounds.playGoldenChime();
+  };
+
+  useEffect(() => {
+    if (!whackActive) return;
+    const interval = setInterval(() => {
+      const randomIdx = Math.floor(Math.random() * 9);
+      const types = ["bear", "candy", "bear", "bomb"];
+      const type = types[Math.floor(Math.random() * types.length)];
+      setWhackHoles((prev) => {
+        const next = [...prev];
+        next[randomIdx] = type;
+        return next;
+      });
+
+      setTimeout(() => {
+        setWhackHoles((prev) => {
+          const next = [...prev];
+          next[randomIdx] = null;
+          return next;
+        });
+      }, 850);
+    }, 700);
+
+    return () => clearInterval(interval);
+  }, [whackActive]);
+
+  const handleWhack = (index: number) => {
+    const item = whackHoles[index];
+    if (!item) return;
+
+    if (item === "bear") {
+      sounds.playBossHit();
+      setWhackScore((s) => {
+        const ns = s + 20;
+        if (ns > whackBest) setWhackBest(ns);
+        return ns;
+      });
+    } else if (item === "candy") {
+      sounds.playNom();
+      setWhackScore((s) => {
+        const ns = s + 10;
+        if (ns > whackBest) setWhackBest(ns);
+        return ns;
+      });
+    } else if (item === "bomb") {
+      sounds.playFUDHit();
+      setWhackScore((s) => Math.max(0, s - 15));
+    }
+
+    setWhackHoles((prev) => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
   };
 
   // Flappy gravity loop
@@ -692,6 +974,370 @@ export const MoreGamesTab: React.FC = () => {
           <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
             <span className="text-slate-500">Contributed by: @retro_sol</span>
             <span className="text-emerald-400 font-bold">100% CC0 Public Domain</span>
+          </div>
+        </div>
+
+        {/* GAME 7: Cyber Snake */}
+        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                Community Prototype #6
+              </span>
+              <span className="text-xs font-mono text-emerald-300 flex items-center gap-1 font-bold">
+                <Trophy className="w-3.5 h-3.5" /> High Score: {snakeBest}
+              </span>
+            </div>
+
+            <div>
+              <h4 className="text-base font-black text-white flex items-center gap-2">
+                <span>Cyber Snake</span>
+                <span className="text-lg">🐍</span>
+              </h4>
+              <p className="text-xs text-slate-400">
+                Classic retro Nokia snake! Slither around the cyber grid eating candies and growing your tail.
+              </p>
+            </div>
+
+            {/* Snake Arena (12x12 grid) */}
+            <div className="relative w-full h-44 rounded-xl bg-slate-950/90 border border-emerald-500/30 flex flex-col items-center justify-between p-2 select-none overflow-hidden">
+              <div className="w-full flex items-center justify-between text-xs font-mono text-slate-400 z-10 px-1">
+                <span>LENGTH: <strong className="text-emerald-400">{snake.length}</strong></span>
+                <span>SCORE: <strong className="text-emerald-300">{snakeScore}</strong></span>
+              </div>
+
+              {/* Grid Canvas */}
+              <div className="relative w-28 h-28 border border-emerald-500/20 bg-slate-950/80 rounded-lg overflow-hidden my-auto">
+                {/* Food */}
+                <div
+                  className="absolute w-[8.33%] h-[8.33%] bg-amber-400 rounded-full shadow-[0_0_8px_#f59e0b] animate-ping"
+                  style={{ left: `${snakeFood.x * 8.33}%`, top: `${snakeFood.y * 8.33}%` }}
+                />
+                <div
+                  className="absolute w-[8.33%] h-[8.33%] bg-amber-300 rounded-full"
+                  style={{ left: `${snakeFood.x * 8.33}%`, top: `${snakeFood.y * 8.33}%` }}
+                />
+
+                {/* Snake Segments */}
+                {snake.map((seg, idx) => (
+                  <div
+                    key={idx}
+                    className={`absolute w-[8.33%] h-[8.33%] rounded-sm ${
+                      idx === 0
+                        ? "bg-emerald-400 shadow-[0_0_6px_#14f195] z-10"
+                        : "bg-emerald-600/90"
+                    }`}
+                    style={{ left: `${seg.x * 8.33}%`, top: `${seg.y * 8.33}%` }}
+                  />
+                ))}
+
+                {/* Game Over Banner */}
+                {snakeGameOver && (
+                  <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center gap-1 z-20">
+                    <span className="text-[11px] font-mono text-rose-400 font-bold">GAME OVER!</span>
+                    <button
+                      onClick={resetSnakeGame}
+                      className="px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-mono text-[10px] font-bold cursor-pointer"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* D-Pad Steering */}
+              <div className="w-full flex items-center justify-between gap-1 pt-1 z-10">
+                <button
+                  onClick={() => { setSnakeDir("LEFT"); setSnakeActive(true); }}
+                  className="flex-1 py-1 px-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono font-bold cursor-pointer"
+                >
+                  ◀
+                </button>
+                <div className="flex flex-col gap-1">
+                  <button
+                    onClick={() => { setSnakeDir("UP"); setSnakeActive(true); }}
+                    className="py-1 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono font-bold cursor-pointer"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    onClick={() => { setSnakeDir("DOWN"); setSnakeActive(true); }}
+                    className="py-1 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono font-bold cursor-pointer"
+                  >
+                    ▼
+                  </button>
+                </div>
+                <button
+                  onClick={() => { setSnakeDir("RIGHT"); setSnakeActive(true); }}
+                  className="flex-1 py-1 px-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono font-bold cursor-pointer"
+                >
+                  ▶
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-500">Contributed by: @cyber_snake</span>
+            <button
+              onClick={resetSnakeGame}
+              className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>{snakeActive ? "Restart" : "Start"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* GAME 8: Candy Breakout */}
+        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/30">
+                Community Prototype #7
+              </span>
+              <span className="text-xs font-mono text-cyan-300 flex items-center gap-1 font-bold">
+                <Trophy className="w-3.5 h-3.5" /> High Score: {breakoutBest}
+              </span>
+            </div>
+
+            <div>
+              <h4 className="text-base font-black text-white flex items-center gap-2">
+                <span>Candy Breakout</span>
+                <span className="text-lg">🧱</span>
+              </h4>
+              <p className="text-xs text-slate-400">
+                Retro Arkanoid brick smasher! Slide the paddle to bounce the crypto orb into candy bricks.
+              </p>
+            </div>
+
+            {/* Breakout Arena */}
+            <div className="relative w-full h-44 rounded-xl bg-slate-950/90 border border-cyan-500/30 flex flex-col items-center justify-between p-2 select-none overflow-hidden">
+              <div className="w-full flex items-center justify-between text-xs font-mono text-slate-400 z-10">
+                <span>SCORE: <strong className="text-cyan-400">{breakoutScore}</strong></span>
+                <span className="text-[10px] text-cyan-300 font-bold">15 $NOM PER BRICK</span>
+              </div>
+
+              {/* Bricks Grid */}
+              <div className="w-full grid grid-cols-4 gap-1.5 px-2 pt-1">
+                {breakoutBricks.map((b) => (
+                  <div
+                    key={b.id}
+                    className={`h-3 rounded-md transition-all ${
+                      b.alive
+                        ? "shadow-sm border border-white/20"
+                        : "opacity-0 scale-50 pointer-events-none"
+                    }`}
+                    style={{ backgroundColor: b.color }}
+                  />
+                ))}
+              </div>
+
+              {/* Bouncing Ball */}
+              <div
+                className="absolute w-3 h-3 bg-white rounded-full shadow-[0_0_8px_#38bdf8] pointer-events-none"
+                style={{
+                  left: `${breakoutBall.x}%`,
+                  top: `${breakoutBall.y}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
+              />
+
+              {/* Paddle */}
+              <div
+                className="absolute bottom-11 h-2.5 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.6)]"
+                style={{
+                  left: `${breakoutPaddleX - 12}%`,
+                  width: "24%",
+                }}
+              />
+
+              {/* Game Over Banner */}
+              {breakoutGameOver && (
+                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center gap-1 z-20">
+                  <span className="text-xs font-mono text-rose-400 font-bold">BALL DROPPED!</span>
+                  <button
+                    onClick={resetBreakout}
+                    className="px-3 py-1 rounded bg-cyan-500 text-slate-950 font-mono text-xs font-bold cursor-pointer"
+                  >
+                    Play Again
+                  </button>
+                </div>
+              )}
+
+              {/* Paddle Controls */}
+              <div className="w-full flex items-center justify-between gap-2 pt-2 z-10 mt-auto">
+                <button
+                  onClick={() => { setBreakoutActive(true); setBreakoutPaddleX((p) => Math.max(15, p - 14)); }}
+                  className="flex-1 py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs cursor-pointer"
+                >
+                  ◀ SLIDE LEFT
+                </button>
+                <button
+                  onClick={() => { setBreakoutActive(true); setBreakoutPaddleX((p) => Math.min(85, p + 14)); }}
+                  className="flex-1 py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs cursor-pointer"
+                >
+                  SLIDE RIGHT ▶
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-500">Contributed by: @arkanom</span>
+            <button
+              onClick={resetBreakout}
+              className="text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1 cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>{breakoutActive ? "Reset" : "Launch"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* GAME 9: Nom Runner */}
+        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/30">
+                Community Prototype #8
+              </span>
+              <span className="text-xs font-mono text-amber-300 flex items-center gap-1 font-bold">
+                <Trophy className="w-3.5 h-3.5" /> High Score: {runnerBest}
+              </span>
+            </div>
+
+            <div>
+              <h4 className="text-base font-black text-white flex items-center gap-2">
+                <span>Nom Runner (Chrome Dino)</span>
+                <span className="text-lg">🏃</span>
+              </h4>
+              <p className="text-xs text-slate-400">
+                Infinite side-scrolling runner! Tap to jump over oncoming red FUD cactus spikes.
+              </p>
+            </div>
+
+            {/* Runner Arena */}
+            <div className="relative w-full h-44 rounded-xl bg-slate-950/90 border border-amber-500/30 flex flex-col items-center justify-between p-3 select-none overflow-hidden">
+              <div className="w-full flex items-center justify-between text-xs font-mono text-slate-400 z-10">
+                <span>DISTANCE: <strong className="text-amber-400">{runnerScore}m</strong></span>
+                <span className="text-[10px] text-amber-300 font-bold">SPEED: 1.2X</span>
+              </div>
+
+              {/* Running Nomster */}
+              <div
+                className="absolute text-2xl transition-all duration-150"
+                style={{
+                  left: "20%",
+                  bottom: `${30 + runnerY}px`,
+                }}
+              >
+                🦖
+              </div>
+
+              {/* Approaching FUD Cactus Obstacle */}
+              <div
+                className="absolute text-2xl transition-all duration-75"
+                style={{
+                  left: `${runnerObstacleX}%`,
+                  bottom: "30px",
+                }}
+              >
+                🌵
+              </div>
+
+              {/* Ground Strip */}
+              <div className="absolute bottom-6 left-0 right-0 h-1 bg-amber-500/40" />
+
+              {/* Game Over Banner */}
+              {runnerGameOver && (
+                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center gap-1 z-20">
+                  <span className="text-xs font-mono text-rose-400 font-bold">BONKED ON FUD!</span>
+                  <button
+                    onClick={handleRunnerJump}
+                    className="px-3 py-1 rounded bg-amber-500 text-slate-950 font-mono text-xs font-bold cursor-pointer"
+                  >
+                    Tap to Retry
+                  </button>
+                </div>
+              )}
+
+              {/* Jump Trigger Button */}
+              <button
+                onClick={handleRunnerJump}
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-400 hover:from-amber-400 hover:to-orange-300 active:scale-95 text-slate-950 font-mono font-black text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer z-10 mt-auto"
+              >
+                <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                <span>TAP TO JUMP!</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-500">Contributed by: @dino_nom</span>
+            <span className="text-amber-400 font-bold">Infinite Procedural Track</span>
+          </div>
+        </div>
+
+        {/* GAME 10: Whack-A-FUD */}
+        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-rose-400 font-bold bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/30">
+                Community Prototype #9
+              </span>
+              <span className="text-xs font-mono text-rose-300 flex items-center gap-1 font-bold">
+                <Trophy className="w-3.5 h-3.5" /> High Score: {whackBest}
+              </span>
+            </div>
+
+            <div>
+              <h4 className="text-base font-black text-white flex items-center gap-2">
+                <span>Whack-A-FUD Reflex Smash</span>
+                <span className="text-lg">🔨</span>
+              </h4>
+              <p className="text-xs text-slate-400">
+                Smash popping FUD bears 🐻 and eat green candies 🍬. Avoid the red bombs 💣!
+              </p>
+            </div>
+
+            {/* Whack 3x3 Grid */}
+            <div className="relative w-full h-44 rounded-xl bg-slate-950/90 border border-rose-500/30 flex flex-col items-center justify-between p-2 select-none overflow-hidden">
+              <div className="w-full flex items-center justify-between text-xs font-mono text-slate-400 z-10 px-1">
+                <span>SCORE: <strong className="text-rose-400">{whackScore}</strong></span>
+                <button
+                  onClick={startWhackGame}
+                  className="text-[10px] font-mono bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded border border-rose-500/40 cursor-pointer"
+                >
+                  {whackActive ? "Active" : "Start Round"}
+                </button>
+              </div>
+
+              {/* 3x3 Grid Holes */}
+              <div className="w-full grid grid-cols-3 gap-2 px-3 py-1">
+                {whackHoles.map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleWhack(idx)}
+                    className="h-8 rounded-xl bg-slate-900 border border-slate-800 hover:border-rose-500/50 flex items-center justify-center text-lg active:scale-90 transition-transform cursor-pointer"
+                  >
+                    {item === "bear" && "🐻"}
+                    {item === "candy" && "🍬"}
+                    {item === "bomb" && "💣"}
+                    {!item && "🕳️"}
+                  </button>
+                ))}
+              </div>
+
+              <div className="text-[10px] font-mono text-slate-500 mt-auto">
+                🐻 Smash = +20 • 🍬 Eat = +10 • 💣 Bomb = -15
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-500">Contributed by: @hammer_sol</span>
+            <span className="text-rose-400 font-bold">Fast-Twitch Reflex</span>
           </div>
         </div>
       </div>
